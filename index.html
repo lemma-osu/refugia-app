@@ -13,10 +13,17 @@
       integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
       crossorigin="anonymous"
     />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link href="css/map.css" rel="stylesheet" />
   </head>
 
   <body>
     <!-- Main map pane -->
+    <div id="map" class="map"></div>
     <div
       class="card text-white bg-dark m-3"
       style="max-width: 20rem; height: calc(100vh - 32px)"
@@ -87,5 +94,7 @@
       integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
       crossorigin="anonymous"
     ></script>
+    <script src="js/tokens.js"></script>
+    <script src="js/map.js"></script>
   </body>
 </html>
