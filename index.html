@@ -34,19 +34,14 @@
           This application is pretty much the coolest application in the entire
           world even though it basically does nothing at present. This card
           gives information about the map to the right and provides the
-          container to open up the cool stuff in the modal. For right now, we
-          have a single button that opens up the modal.
+          instructions to the user on how to create the modal for a particular
+          study area.
         </p>
-        <div class="d-grid gap-2">
-          <button
-            type="button"
-            class="btn btn-primary"
-            data-bs-toggle="modal"
-            data-bs-target="#example-modal"
-          >
-            Click to open the good stuff!
-          </button>
-        </div>
+        <p class="card-text">
+          To enable the modal demonstration, zoom in to an extent where the
+          cursor changes to a crosshair and double click the button. This will
+          load the modal window and show the demonstration.
+        </p>
       </div>
     </div>
 
@@ -77,6 +72,7 @@
             while to get the tiles loaded, but will eventually be placed into
             canvas elements.
           </div>
+          <div id="coord" class="modal-body"></div>
           <div class="modal-footer">
             <button
               type="button"
