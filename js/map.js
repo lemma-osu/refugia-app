@@ -40,6 +40,7 @@ const to_proj = 'PROJCS["NAD83 / Conus Albers",'
 const modal_div = document.querySelector("#example-modal");
 const modal = new bootstrap.Modal(modal_div);
 const zoom_limit = 11.5;
+const canvas = document.querySelector("#canvas");
 let current_layer;
 
 function change_map(map, layer_definition, current_layer) {
@@ -73,6 +74,39 @@ async function read_tiff(img, window) {
   return await img.readRasters({ window: window });
 }
 
+function normalize(arr) {
+  const width = arr.width;
+  const height = arr.height;
+  const data = arr[0];
+  var out = new Float32Array(height * width);
+  const min = d3.quantile(data, 0);
+  const max = d3.quantile(data, 1);
+  const range = max - min;
+  let val;
+  for (y = 0; y < height; y++) {
+    for (x = 0; x < width; x++) {
+      val = (data[(y * width) + x] - min) / range;
+      out[(y * width) + x] = val;
+    }
+  }
+  arr[0] = out;
+  return arr;
+}
+
+function update_image(canvas, arr) {
+  const min = d3.quantile(arr[0], 0.02);
+  const max = d3.quantile(arr[0], 0.98);
+  const plot = new plotty.plot({
+    canvas,
+    data: arr[0],
+    width: arr.width,
+    height: arr.height,
+    domain: [min, max],
+    colorScale: "viridis",
+  });
+  plot.render();
+}
+
 function project_point(lng, lat) {
   return proj4(from_proj, to_proj, [lng, lat]);
 }
@@ -97,7 +131,7 @@ async function display_modal(event) {
   const pt = get_rc(img, xy);
   const window = get_corners(pt, 300);
   const data = await read_tiff(img, window);
-  console.log(data);
+  update_image(canvas, data);
   const coord_div = modal_div.querySelector("#coord");
   coord_div.textContent = `Coordinate: (${xy[0].toFixed(3)}, ${xy[1].toFixed(3)})`;
   modal.show();
