@@ -62,12 +62,42 @@ function change_map(map, layer_definition, current_layer) {
   return layer_definition.layer.id;
 }
 
+async function load_tiff(path) {
+  const response = await fetch(path);
+  const arrayBuffer = await response.arrayBuffer();
+  const tiff = await GeoTIFF.fromArrayBuffer(arrayBuffer);    
+  return await tiff.getImage();
+}
+
+async function read_tiff(img, window) {
+  return await img.readRasters({ window: window });
+}
+
 function project_point(lng, lat) {
   return proj4(from_proj, to_proj, [lng, lat]);
 }
 
-function display_modal(event) {
+function get_rc(img, xy) {
+  const [ul_x, ul_y] = img.getOrigin();
+  const [x_res, y_res] = img.getResolution();
+  const row = Math.floor(Math.abs((xy[1] - ul_y) / y_res));
+  const col = Math.floor(Math.abs((xy[0] - ul_x) / x_res));
+  return [row, col];
+}
+
+function get_corners(center_rc, dim=300) {
+  const [r, c] = center_rc;
+  const half_dim = Math.floor(dim / 2);
+  return [c - half_dim, r - half_dim, c + half_dim, r + half_dim];
+}
+
+async function display_modal(event) {
   const xy = project_point(event.lngLat.lng, event.lngLat.lat);
+  const img = await load_tiff("./geotiffs/probability_masked.tif");
+  const pt = get_rc(img, xy);
+  const window = get_corners(pt, 300);
+  const data = await read_tiff(img, window);
+  console.log(data);
   const coord_div = modal_div.querySelector("#coord");
   coord_div.textContent = `Coordinate: (${xy[0].toFixed(3)}, ${xy[1].toFixed(3)})`;
   modal.show();
