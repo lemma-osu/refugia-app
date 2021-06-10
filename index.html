@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>Fire Refugia Demonstration Portal</title>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="scss/custom.scss" />
+    <link rel="stylesheet" href="css/map.css" />
+  </head>
+
+  <body>
+    <!-- Main map pane -->
+    <div id="map" class="map"></div>
+    <div
+      class="card text-white bg-dark m-3"
+      style="max-width: 20rem; height: calc(100vh - 32px)"
+    >
+      <div class="card-body">
+        <h5 class="card-title">Fire Refugia Demonstration</h5>
+        <p class="card-text">
+          This application is pretty much the coolest application in the entire
+          world even though it basically does nothing at present. This card
+          gives information about the map to the right and provides the
+          instructions to the user on how to create the modal for a particular
+          study area.
+        </p>
+        <p class="card-text">
+          To enable the modal demonstration, zoom in to an extent where the
+          cursor changes to a crosshair and double click the button. This will
+          load the modal window and show the demonstration.
+        </p>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="example-modal"
+      tabindex="-1"
+      aria-labelledby="example-modal-label"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="example-modal-label">
+              Refugia what-if?
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            We will be placing a map here that is generated dynamically from the
+            user's current position on the main map page. This will spin for a
+            while to get the tiles loaded, but will eventually be placed into
+            canvas elements.
+          </div>
+          <canvas id="canvas" width="300" height="300"></canvas>
+          <div id="coord" class="modal-body"></div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/map.js"></script>
+  </body>
+</html>
