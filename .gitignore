@@ -1,7 +1,13 @@
-js/plotty.js
-js/proj4.js
+# Private files
+_readme.txt
 js/tokens.js
 config.json
-tiles
-geotiffs
+start_tile_server.py
+
+# Build directories, static files
+.cache
+dist
+node_modules
 ogsi-80-model
+static
+tiles
