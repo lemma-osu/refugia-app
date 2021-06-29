@@ -60,14 +60,45 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">
-            We will be placing a map here that is generated dynamically from the
-            user's current position on the main map page. This will spin for a
-            while to get the tiles loaded, but will eventually be placed into
-            canvas elements.
+          <div class="modal-body container-fluid">
+            <div class="row">
+              <div id="response-panel" class="col-md-6"></div>
+              <div id="ui" class="col-md-6">
+                <p>
+                  The map on the left is refugial probability. Each map below is
+                  a covariate that helps determine probability of refugia.
+                </p>
+                <p id="coord"></p>
+                <form>
+                  <div class="form-floating mb-3">
+                    <select
+                      id="model-response"
+                      class="form-select"
+                      aria-label="Model response"
+                    >
+                      <option value="refugia" selected>Fire Refugia</option>
+                      <option value="high-severity">High Severity</option>
+                    </select>
+                    <label for="model-response">Model Response Variable</label>
+                  </div>
+                  <label for="threshold" class="form-label">Threshold</label>
+                  <input
+                    class="form-range"
+                    type="range"
+                    id="threshold"
+                    name="threshold"
+                    min="0"
+                    max="100"
+                    value="50"
+                    step="1"
+                  />
+                </form>
+              </div>
+            </div>
+            <div class="row">
+              <div id="covariate-panel" class="col-md-12"></div>
+            </div>
           </div>
-          <canvas id="canvas" width="300" height="300"></canvas>
-          <div id="coord" class="modal-body"></div>
           <div class="modal-footer">
             <button
               type="button"
