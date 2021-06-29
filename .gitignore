@@ -1,13 +1,9 @@
 # Private files
-_readme.txt
-js/tokens.js
-config.json
-start_tile_server.py
+src/tokens.js
+src/config.json
 
 # Build directories, static files
 .cache
 dist
 node_modules
-ogsi-80-model
-static
-tiles
+public/geotiffs

@@ -1,3 +1,4 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 import * as bootstrap from "bootstrap";
 import * as d3 from "d3";
 import { fromArrayBuffer } from "geotiff";
@@ -8,7 +9,7 @@ import { create_source_objects } from "./generate-map-spec.js";
 import { project_point } from "./projection.js";
 import { access_token } from "./tokens.js";
 
-import config from "../config.json";
+import config from "./config.json";
 
 mapboxgl.accessToken = access_token;
 const map = new mapboxgl.Map({
@@ -72,8 +73,8 @@ function normalize(arr) {
   const max = d3.quantile(data, 1);
   const range = max - min;
   let val;
-  for (y = 0; y < height; y++) {
-    for (x = 0; x < width; x++) {
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
       val = (data[y * width + x] - min) / range;
       out[y * width + x] = val;
     }
