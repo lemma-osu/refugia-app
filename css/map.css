@@ -4,3 +4,26 @@
   bottom: 0;
   width: 100%;
 }
+
+canvas {
+  width: 100%;
+  height: auto;
+}
+
+#covariate-panel {
+  display: inline-flex;
+  height: 350px;
+  overflow: hidden;
+  overflow-x: scroll;
+}
+
+#covariate-panel div.covariate-group {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+#covariate-panel canvas.modal-canvas,
+#covariate-panel div.modal-chart {
+  width: auto;
+  height: 150px;
+}

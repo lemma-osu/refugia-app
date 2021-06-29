@@ -1,10 +1,8 @@
-import config from "../config.json";
-
-export async function create_source_objects() {
+export async function create_source_objects(config) {
   let map_layers = [];
   const TILE_URL =
     "http://localhost:8000/tiles/{name}/{z}/{x}/{y}.png";
-  config.forEach(layer => {
+  config.tiles.forEach(layer => {
     const tiles = TILE_URL.replace("{name}", layer.name);
     map_layers[layer.name] = {
       legend: layer.legend,
