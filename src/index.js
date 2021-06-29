@@ -1,13 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as bootstrap from "bootstrap";
 import * as d3 from "d3";
-import { fromArrayBuffer } from "geotiff";
 import mapboxgl from "mapbox-gl";
 import { plot as Plot } from "plotty";
 
-import { create_source_objects } from "./generate-map-spec.js";
-import { project_point } from "./projection.js";
-import { access_token } from "./tokens.js";
+import { create_source_objects } from "./generate-map-spec";
+import { project_point } from "./projection";
+import { access_token } from "./tokens";
+import { read_raster_definitions, read_tiffs } from "./utils";
 
 import config from "./config.json";
 
@@ -15,7 +15,6 @@ mapboxgl.accessToken = access_token;
 const map = new mapboxgl.Map({
   container: "map",
   style: "mapbox://styles/mapbox/dark-v10",
-  // bounds: [[-125.0, 37.0], [-120.0, 49.5]]
   bounds: [
     [-123.0, 43.5],
     [-122.85, 43.65],
@@ -53,17 +52,6 @@ function change_map(map, layer_definition, current_layer) {
   return layer_definition.layer.id;
 }
 
-async function load_tiff(path) {
-  const response = await fetch(path);
-  const arrayBuffer = await response.arrayBuffer();
-  const tiff = await fromArrayBuffer(arrayBuffer);
-  return await tiff.getImage();
-}
-
-async function read_tiff(img, window) {
-  return await img.readRasters({ window: window });
-}
-
 function normalize(arr) {
   const width = arr.width;
   const height = arr.height;
@@ -81,43 +69,6 @@ function normalize(arr) {
   }
   arr[0] = out;
   return arr;
-}
-
-function get_rc(img, xy) {
-  const [ul_x, ul_y] = img.getOrigin();
-  const [x_res, y_res] = img.getResolution();
-  const row = Math.floor(Math.abs((xy[1] - ul_y) / y_res));
-  const col = Math.floor(Math.abs((xy[0] - ul_x) / x_res));
-  return [row, col];
-}
-
-function get_corners(center_rc, width, height) {
-  const [r, c] = center_rc;
-  const half_width = Math.floor(width / 2);
-  const half_height = Math.floor(height / 2);
-  return [c - half_width, r - half_height, c + half_width, r + half_height];
-}
-
-async function read_raster_definition(path, xy) {
-  const img = await load_tiff(path, xy);
-  const pt = get_rc(img, xy);
-  const window = get_corners(pt, canvas_width, canvas_height);
-  return {
-    img: img,
-    window: window,
-  };
-}
-
-async function read_raster_definitions(xy) {
-  const promises = config.geotiffs.map((geotiff) =>
-    read_raster_definition(geotiff.path, xy)
-  );
-  return await Promise.all(promises);
-}
-
-async function read_tiffs(img_defs) {
-  const promises = img_defs.map((def) => read_tiff(def.img, def.window));
-  return await Promise.all(promises);
 }
 
 function create_canvas_elements() {
@@ -310,7 +261,12 @@ async function display_modal(event) {
   ];
 
   const xy = project_point(event.lngLat.lng, event.lngLat.lat);
-  const img_defs = await read_raster_definitions(xy);
+  const img_defs = await read_raster_definitions(
+    config.geotiffs,
+    xy,
+    canvas_width,
+    canvas_height
+  );
   arrs = await read_tiffs(img_defs);
   const path_data = await hack_partial_dependence(arrs);
   update_canvasses(canvasses, arrs);
