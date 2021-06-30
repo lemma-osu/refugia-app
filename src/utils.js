@@ -1,5 +1,7 @@
 import { fromArrayBuffer } from "geotiff";
 
+export const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
+
 async function load_tiff(path) {
   const response = await fetch(path);
   const arrayBuffer = await response.arrayBuffer();

@@ -4,4 +4,9 @@ import { render } from "react-dom";
 
 import App from "./components/App";
 
-render(<App />, document.querySelector("#main"));
+render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.querySelector("#main")
+);
