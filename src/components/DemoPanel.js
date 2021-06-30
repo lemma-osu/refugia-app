@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Modal } from "bootstrap";
 import * as d3 from "d3";
 import { plot as Plot } from "plotty";
@@ -6,7 +6,7 @@ import { plot as Plot } from "plotty";
 import { project_point } from "../projection";
 import { read_raster_definitions, read_tiffs, zip } from "../utils";
 
-const RefugiaPanel = ({ config, clicked_coord, onHideModal }) => {
+const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
   const modal = useRef(null);
   const canvas_width = 300;
   const canvas_height = 200;
@@ -190,51 +190,52 @@ const RefugiaPanel = ({ config, clicked_coord, onHideModal }) => {
     });
   }
 
-  async function display_modal(coord) {
-    console.log("Running modal");
-    create_canvas_elements();
-
-    const xy = project_point(coord.lng, coord.lat);
-    const img_defs = await read_raster_definitions(
-      config.geotiffs,
-      xy,
-      canvas_width,
-      canvas_height
-    );
-    arrs = await read_tiffs(img_defs);
-    const path_data = await hack_partial_dependence(arrs);
-    update_canvasses(canvasses, arrs);
-    update_charts(charts, path_data);
-
-    // Create event listener for response canvas
-    const response_canvas = canvasses[0];
-    const covariate_arrs = arrs.slice(1);
-    response_canvas.addEventListener("mousemove", function (e) {
-      const rect = response_canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const canvas_x = parseInt(response_canvas.width * (x / rect.width), 10);
-      const canvas_y = parseInt(response_canvas.height * (y / rect.height), 10);
-      const offset = canvas_y * response_canvas.height + canvas_x;
-      change_dots(charts, covariate_arrs, offset);
-    });
-  }
-
   useEffect(() => {
     if (modal.current) return;
     const modal_div = document.querySelector("#example-modal");
     modal_div.addEventListener("hidden.bs.modal", onHideModal);
     modal.current = new Modal(modal_div);
-  });
+  }, [onHideModal]);
 
   useEffect(() => {
+    async function display_modal(coord) {
+      console.log("Running modal");
+      create_canvas_elements();
+
+      const xy = project_point(coord.lng, coord.lat);
+      const img_defs = await read_raster_definitions(
+        config.geotiffs,
+        xy,
+        canvas_width,
+        canvas_height
+      );
+      arrs = await read_tiffs(img_defs);
+      const path_data = await hack_partial_dependence(arrs);
+      update_canvasses(canvasses, arrs);
+      update_charts(charts, path_data);
+
+      // Create event listener for response canvas
+      const response_canvas = canvasses[0];
+      const covariate_arrs = arrs.slice(1);
+      response_canvas.addEventListener("mousemove", function (e) {
+        const rect = response_canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const canvas_x = parseInt(response_canvas.width * (x / rect.width), 10);
+        const canvas_y = parseInt(
+          response_canvas.height * (y / rect.height),
+          10
+        );
+        const offset = canvas_y * response_canvas.height + canvas_x;
+        change_dots(charts, covariate_arrs, offset);
+      });
+    }
     if (!modal.current || !clicked_coord) return;
-    console.log("Starting display");
     display_modal(clicked_coord).then(() => {
       console.log("Ready to show");
       modal.current.show();
     });
-  });
+  }, [clicked_coord]);
 
   return (
     <div
@@ -315,4 +316,4 @@ const RefugiaPanel = ({ config, clicked_coord, onHideModal }) => {
   );
 };
 
-export default RefugiaPanel;
+export default DemoPanel;

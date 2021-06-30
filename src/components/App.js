@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 
 import { access_token } from "../tokens";
 import { create_source_objects } from "../generate-map-spec";
 
-import RefugiaPanel from "./RefugiaPanel";
+import DemoPanel from "./DemoPanel";
 
 import config from "../config.json";
 
@@ -42,10 +42,10 @@ const App = () => {
     }
   };
 
-  const handle_modal_close = () => {
+  const handle_modal_close = useCallback(() => {
     set_clicked_coord(null);
     handle_cursor();
-  };
+  }, []);
 
   const change_map = (layer_definition) => {
     // Pop the current layer off
@@ -121,7 +121,7 @@ const App = () => {
           </p>
         </div>
       </div>
-      <RefugiaPanel
+      <DemoPanel
         config={config}
         clicked_coord={clicked_coord}
         onHideModal={handle_modal_close}
