@@ -6,11 +6,23 @@ import { plot as Plot } from "plotty";
 import { project_point } from "../projection";
 import { read_raster_definitions, read_tiffs, zip } from "../utils";
 
+import SliderContainer from "./SliderContainer";
+
 const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
+  const initial_thresholds = config.sliders.reduce(
+    (o, el) => ({ ...o, [el.name]: el.initial_value }),
+    {}
+  );
+  const [thresholds, set_thresholds] = useState(initial_thresholds);
+
   const modal = useRef(null);
   const canvas_width = 300;
   const canvas_height = 200;
   let canvasses, charts, arrs;
+
+  function handle_threshold_change(event) {
+    set_thresholds({ ...thresholds, [event.target.name]: +event.target.value });
+  }
 
   function create_canvas_elements() {
     const response = config.geotiffs.filter((x) => x.type === "response")[0];
@@ -266,35 +278,16 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
                   The map on the left is refugial probability. Each map below is
                   a covariate that helps determine probability of refugia.
                 </p>
-                <form>
-                  <div className="form-floating mb-3">
-                    <select
-                      id="model-response"
-                      className="form-select"
-                      aria-label="Model response"
-                      defaultValue="refugia"
-                    >
-                      <option value="refugia">Fire Refugia</option>
-                      <option value="high-severity">High Severity</option>
-                    </select>
-                    <label htmlFor="model-response">
-                      Model Response Variable
-                    </label>
-                  </div>
-                  <label htmlFor="threshold" className="form-label">
-                    Threshold
-                  </label>
-                  <input
-                    className="form-range"
-                    type="range"
-                    id="threshold"
-                    name="threshold"
-                    min="0"
-                    max="100"
-                    defaultValue="50"
-                    step="1"
-                  />
-                </form>
+                <p>Sliders:</p>
+                <ul>
+                  {Object.keys(thresholds).map((key) => (
+                    <li key={key}>{thresholds[key]}</li>
+                  ))}
+                </ul>
+                <SliderContainer
+                  sliders={config.sliders}
+                  onChange={handle_threshold_change}
+                />
               </div>
             </div>
             <div className="row">
