@@ -1,3 +1,8 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+}
+
 .map {
   position: absolute;
   top: 0;
@@ -10,6 +15,7 @@ canvas {
   height: auto;
 }
 
+/* Covariate panel, canvas and chart */
 #covariate-panel {
   display: inline-flex;
   height: 350px;
@@ -26,4 +32,23 @@ canvas {
 #covariate-panel div.modal-chart {
   width: auto;
   height: 150px;
+}
+
+/* Chart styling */
+.tick line {
+  stroke: #c0c0bb;
+  stroke-dasharray: 1 1;
+}
+
+.tick text {
+  font-size: 0.75em;
+  fill: #635f5d;
+}
+
+.line {
+  fill: none;
+  stroke: red;
+  stroke-width: 1;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }

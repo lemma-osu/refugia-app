@@ -6,4 +6,5 @@ src/config.json
 .cache
 dist
 node_modules
+public/chart_data
 public/geotiffs
