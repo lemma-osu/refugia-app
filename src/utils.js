@@ -65,6 +65,13 @@ export async function get_canvas_data(lng, lat, geotiff_path, width, height) {
   return await read_tiff(def.img, def.window);
 }
 
+export async function get_all_images(lng, lat, geotiff_paths, width, height) {
+  const promises = geotiff_paths.map((path) =>
+    get_canvas_data(lng, lat, path, width, height)
+  );
+  return await Promise.all(promises);
+}
+
 export function initialize_canvas_plot(canvas, width, height) {
   return new Plot({
     canvas: canvas,

@@ -1,18 +1,18 @@
 import React, { useRef, useEffect } from "react";
+import { isEqual } from "lodash";
 
 import {
-  get_canvas_data,
+  get_all_images,
   draw_to_plot,
   initialize_canvas_plot,
 } from "../utils";
 
-const ResponseCanvas = ({ responses, clicked_coord }) => {
+const ResponseCanvas = ({ responses, clicked_coord, thresholds }) => {
   const canvas = useRef();
   const plot = useRef();
-  const arr = useRef([[]]);
+  const arrs = useRef();
   const width = 300;
   const height = 200;
-  const geotiff_path = responses[0].geotiff_path;
 
   useEffect(() => {
     if (!plot.current) {
@@ -23,18 +23,28 @@ const ResponseCanvas = ({ responses, clicked_coord }) => {
   useEffect(() => {
     if (!plot.current || !clicked_coord) return;
     async function get_data(coord) {
-      arr.current = await get_canvas_data(
+      const paths = responses.map((r) => r.geotiff_path);
+      arrs.current = await get_all_images(
         coord.lng,
         coord.lat,
-        geotiff_path,
+        paths,
         width,
         height
       );
     }
     get_data(clicked_coord).then(() => {
-      draw_to_plot(plot.current, arr.current);
+      const idx = responses.findIndex((r) =>
+        isEqual(r.combination, thresholds)
+      );
+      draw_to_plot(plot.current, arrs.current[idx]);
     });
-  }, [plot, clicked_coord, geotiff_path]);
+  }, [plot, clicked_coord, responses]);
+
+  useEffect(() => {
+    if (!plot.current || !arrs.current) return;
+    const idx = responses.findIndex((r) => isEqual(r.combination, thresholds));
+    draw_to_plot(plot.current, arrs.current[idx]);
+  }, [thresholds, responses]);
 
   return (
     <canvas

@@ -83,6 +83,7 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
                 <ResponseCanvas
                   responses={config.responses}
                   clicked_coord={clicked_coord}
+                  thresholds={thresholds}
                 />
               </div>
               <div id="ui" className="col-md-6">
