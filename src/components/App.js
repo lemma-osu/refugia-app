@@ -14,9 +14,9 @@ const App = () => {
   const map = useRef(null);
   const map_container = useRef(null);
 
-  const [lng, set_lng] = useState(-122.925);
-  const [lat, set_lat] = useState(43.575);
-  const [zoom, set_zoom] = useState(11);
+  const [lng, set_lng] = useState(-122.8);
+  const [lat, set_lat] = useState(44.0);
+  const [zoom, set_zoom] = useState(11.2);
   const [current_layer, set_current_layer] = useState();
   const [clicked_coord, set_clicked_coord] = useState(null);
 

@@ -1,4 +1,8 @@
 import { fromArrayBuffer } from "geotiff";
+import { quantile } from "d3";
+import { plot as Plot } from "plotty";
+
+import { project_point } from "./projection";
 
 export const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 
@@ -53,4 +57,27 @@ async function read_tiff(img, window) {
 export async function read_tiffs(img_defs) {
   const promises = img_defs.map((def) => read_tiff(def.img, def.window));
   return await Promise.all(promises);
+}
+
+export async function get_canvas_data(lng, lat, geotiff_path, width, height) {
+  const xy = project_point(lng, lat);
+  const def = await read_raster_definition(geotiff_path, xy, width, height);
+  return await read_tiff(def.img, def.window);
+}
+
+export function initialize_canvas_plot(canvas, width, height) {
+  return new Plot({
+    canvas: canvas,
+    width: width,
+    height: height,
+    colorScale: "viridis",
+  });
+}
+
+export function draw_to_plot(plot, arr) {
+  const min = quantile(arr[0], 0.02);
+  const max = quantile(arr[0], 0.98);
+  plot.setData(arr[0], arr.width, arr.height);
+  plot.setDomain([min, max]);
+  plot.render();
 }

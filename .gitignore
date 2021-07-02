@@ -7,4 +7,4 @@ src/config.json
 dist
 node_modules
 public/chart_data
-public/geotiffs
+public/covariates

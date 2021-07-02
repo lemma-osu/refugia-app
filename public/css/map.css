@@ -26,6 +26,7 @@ canvas {
 #covariate-panel div.covariate-group {
   margin-left: 4px;
   margin-right: 4px;
+  width: 223px;
 }
 
 #covariate-panel canvas.modal-canvas,
