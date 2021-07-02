@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Modal } from "bootstrap";
 
+import ResponseCanvas from "./ResponseCanvas";
 import SliderContainer from "./SliderContainer";
 import CovariateContainer from "./CovariateContainer";
 
@@ -78,7 +79,12 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
           </div>
           <div className="modal-body container-fluid">
             <div className="row">
-              <div id="response-panel" className="col-md-6"></div>
+              <div id="response-panel" className="col-md-6">
+                <ResponseCanvas
+                  responses={config.responses}
+                  clicked_coord={clicked_coord}
+                />
+              </div>
               <div id="ui" className="col-md-6">
                 <p>
                   The map on the left is refugial probability. Each map below is
