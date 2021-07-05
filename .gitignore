@@ -1,13 +1,11 @@
 # Private files
-_readme.txt
-js/tokens.js
-config.json
-start_tile_server.py
+public/config.json
 
 # Build directories, static files
 .cache
+build
 dist
 node_modules
-ogsi-80-model
-static
-tiles
+public/chart_data
+public/covariates
+public/responses
