@@ -5,43 +5,26 @@ import ResponseCanvas from "./ResponseCanvas";
 import SliderContainer from "./SliderContainer";
 import CovariateContainer from "./CovariateContainer";
 
-// Functions remaining to refactor
-
-// function change_dots(charts, arrs, offset) {
-//   zip([charts, arrs]).forEach((t) => {
-//     const [chart, arr] = t;
-//     const pix =
-//       (arr[0][offset] - d3.min(arr[0])) / (d3.max(arr[0]) - d3.min(arr[0]));
-//     // change_dot(chart, pix);
-//   });
-// }
-
-// // Create event listener for response canvas
-// const response_canvas = canvasses[0];
-// const covariate_arrs = arrs.slice(1);
-// response_canvas.addEventListener("mousemove", function (e) {
-//   const rect = response_canvas.getBoundingClientRect();
-//   const x = e.clientX - rect.left;
-//   const y = e.clientY - rect.top;
-//   const canvas_x = parseInt(response_canvas.width * (x / rect.width), 10);
-//   const canvas_y = parseInt(
-//     response_canvas.height * (y / rect.height),
-//     10
-//   );
-//   const offset = canvas_y * response_canvas.height + canvas_x;
-//   change_dots(charts, covariate_arrs, offset);
-// });
-
 const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
   const initial_thresholds = config.sliders.reduce(
     (o, el) => ({ ...o, [el.name]: el.initial_value }),
     {}
   );
   const [thresholds, set_thresholds] = useState(initial_thresholds);
+  const [xy, set_xy] = useState({ x: 0, y: 0 });
   const modal = useRef(null);
 
   function handle_threshold_change(event) {
     set_thresholds({ ...thresholds, [event.target.name]: +event.target.value });
+  }
+
+  function handle_response_mousemove(event) {
+    const rect = event.target.getBoundingClientRect();
+    const scale_x = event.target.width / rect.width;
+    const scale_y = event.target.height / rect.height;
+    const x = (event.clientX - rect.left) * scale_x;
+    const y = (event.clientY - rect.top) * scale_y;
+    set_xy({ x: x, y: y });
   }
 
   useEffect(() => {
@@ -84,6 +67,7 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
                   responses={config.responses}
                   clicked_coord={clicked_coord}
                   thresholds={thresholds}
+                  onMouseMove={handle_response_mousemove}
                 />
               </div>
               <div id="ui" className="col-md-6">
@@ -91,12 +75,6 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
                   The map on the left is refugial probability. Each map below is
                   a covariate that helps determine probability of refugia.
                 </p>
-                <p>Sliders:</p>
-                <ul>
-                  {Object.keys(thresholds).map((key) => (
-                    <li key={key}>{thresholds[key]}</li>
-                  ))}
-                </ul>
                 <SliderContainer
                   sliders={config.sliders}
                   onChange={handle_threshold_change}
@@ -107,7 +85,7 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
               <CovariateContainer
                 covariates={config.covariates}
                 clicked_coord={clicked_coord}
-                threshold={0}
+                xy={xy}
               />
             </div>
           </div>

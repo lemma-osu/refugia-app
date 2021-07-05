@@ -1,7 +1,7 @@
 import React from "react";
 import CovariateGroup from "./CovariateGroup";
 
-const CovariateContainer = ({ covariates, clicked_coord, threshold }) => {
+const CovariateContainer = ({ covariates, clicked_coord, xy }) => {
   return (
     <div id="covariate-panel" className="col-md-12">
       {covariates.map((covariate) => (
@@ -12,7 +12,7 @@ const CovariateContainer = ({ covariates, clicked_coord, threshold }) => {
           clicked_coord={clicked_coord}
           geotiff_path={covariate.geotiff_path}
           chart_data_path={covariate.chart_data_path}
-          threshold={threshold}
+          xy={xy}
         />
       ))}
     </div>

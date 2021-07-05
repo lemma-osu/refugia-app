@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { min, max } from "d3";
 
 import {
   get_canvas_data,
@@ -6,10 +7,18 @@ import {
   initialize_canvas_plot,
 } from "../utils";
 
-const CovariateCanvas = ({ id, geotiff_path, clicked_coord }) => {
+const CovariateCanvas = ({
+  id,
+  geotiff_path,
+  clicked_coord,
+  xy,
+  variable_value,
+}) => {
   const canvas = useRef();
   const plot = useRef();
-  const arr = useRef([[]]);
+  const arr = useRef();
+  const arr_min = useRef(0);
+  const arr_max = useRef(0);
   const width = 300;
   const height = 200;
 
@@ -31,9 +40,19 @@ const CovariateCanvas = ({ id, geotiff_path, clicked_coord }) => {
       );
     }
     get_data(clicked_coord).then(() => {
+      arr_min.current = min(arr.current[0]);
+      arr_max.current = max(arr.current[0]);
       draw_to_plot(plot.current, arr.current);
     });
   }, [plot, clicked_coord, geotiff_path]);
+
+  useEffect(() => {
+    if (!plot.current || !arr.current) return;
+    const offset = parseInt(xy.y, 10) * arr.current.width + parseInt(xy.x, 10);
+    const value = arr.current[0][offset];
+    variable_value.current =
+      (value - arr_min.current) / (arr_max.current - arr_min.current);
+  }, [xy, variable_value]);
 
   return (
     <canvas

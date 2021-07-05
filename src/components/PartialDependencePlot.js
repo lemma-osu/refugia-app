@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { extent, scaleLinear, interpolate, csv } from "d3";
+
 import { Svg, XAxis, YAxis, Line, Dot } from "./Chart";
 
-const PartialDependencePlot = ({ chart_data_path, threshold }) => {
+const move_dot = (node, variable_value) => {
+  const length = node.getTotalLength() || 0;
+  const r = interpolate(0, length);
+  return node.getPointAtLength(r(variable_value));
+};
+
+const PartialDependencePlot = ({ chart_data_path, variable_value }) => {
   const [data, set_data] = useState([{ X: 0, Y: 0 }]);
   const [node, set_node] = useState(null);
   const [dot, set_dot] = useState([0, 0]);
@@ -10,14 +17,14 @@ const PartialDependencePlot = ({ chart_data_path, threshold }) => {
   useEffect(() => {
     async function get_data() {
       set_data(await csv(chart_data_path));
-      if (node) {
-        const length = node.getTotalLength() || 0;
-        const r = interpolate(0, length);
-        set_dot(node.getPointAtLength(r(0.01 * threshold)));
-      }
     }
     get_data();
-  }, [chart_data_path, node, threshold]);
+  }, [chart_data_path]);
+
+  useEffect(() => {
+    if (!node || !variable_value) return;
+    set_dot(move_dot(node, variable_value));
+  }, [node, variable_value]);
 
   // const width = 300;
   // const height = 300;

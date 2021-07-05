@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import CovariateCanvas from "./CovariateCanvas";
 import PartialDependencePlot from "./PartialDependencePlot";
 
@@ -8,22 +8,27 @@ const CovariateGroup = ({
   geotiff_path,
   clicked_coord,
   chart_data_path,
-  threshold,
-}) => (
-  <div className="covariate-group">
-    <div>
-      <small>{description}</small>
+  xy,
+}) => {
+  const variable_value = useRef(0);
+  return (
+    <div className="covariate-group">
+      <div>
+        <small>{description}</small>
+      </div>
+      <CovariateCanvas
+        id={name}
+        geotiff_path={geotiff_path}
+        clicked_coord={clicked_coord}
+        xy={xy}
+        variable_value={variable_value}
+      />
+      <PartialDependencePlot
+        chart_data_path={chart_data_path}
+        variable_value={variable_value.current}
+      />
     </div>
-    <CovariateCanvas
-      id={name}
-      geotiff_path={geotiff_path}
-      clicked_coord={clicked_coord}
-    />
-    <PartialDependencePlot
-      chart_data_path={chart_data_path}
-      threshold={threshold}
-    />
-  </div>
-);
+  );
+};
 
 export default CovariateGroup;

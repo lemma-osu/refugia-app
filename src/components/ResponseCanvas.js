@@ -1,18 +1,24 @@
 import React, { useRef, useEffect } from "react";
 import { isEqual } from "lodash";
 
-import {
-  get_all_images,
-  draw_to_plot,
-  initialize_canvas_plot,
-} from "../utils";
+import { get_all_images, draw_to_plot, initialize_canvas_plot } from "../utils";
 
-const ResponseCanvas = ({ responses, clicked_coord, thresholds }) => {
+const ResponseCanvas = ({
+  responses,
+  clicked_coord,
+  thresholds,
+  onMouseMove,
+}) => {
   const canvas = useRef();
   const plot = useRef();
   const arrs = useRef();
+  const initial_idx = useRef();
   const width = 300;
   const height = 200;
+
+  initial_idx.current = responses.findIndex((r) =>
+    isEqual(r.combination, thresholds)
+  );
 
   useEffect(() => {
     if (!plot.current) {
@@ -33,10 +39,7 @@ const ResponseCanvas = ({ responses, clicked_coord, thresholds }) => {
       );
     }
     get_data(clicked_coord).then(() => {
-      const idx = responses.findIndex((r) =>
-        isEqual(r.combination, thresholds)
-      );
-      draw_to_plot(plot.current, arrs.current[idx]);
+      draw_to_plot(plot.current, arrs.current[initial_idx.current]);
     });
   }, [plot, clicked_coord, responses]);
 
@@ -53,6 +56,7 @@ const ResponseCanvas = ({ responses, clicked_coord, thresholds }) => {
       className="modal-canvas"
       width={width}
       height={height}
+      onMouseMove={onMouseMove}
     ></canvas>
   );
 };
