@@ -4,9 +4,13 @@ import { render } from "react-dom";
 
 import App from "./components/App";
 
-render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.querySelector("#main")
-);
+fetch("config.json")
+  .then((response) => response.json())
+  .then((config) => {
+    render(
+      <React.StrictMode>
+        <App config={config} />
+      </React.StrictMode>,
+      document.querySelector("#main")
+    );
+  });

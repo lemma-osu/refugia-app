@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 
-import { access_token } from "../tokens";
 import { create_source_objects } from "../generate-map-spec";
 
 import DemoPanel from "./DemoPanel";
 
-import config from "../config.json";
-
-mapboxgl.accessToken = access_token;
-
-const App = () => {
+const App = ({ config }) => {
+  mapboxgl.accessToken = config.access_token;
   const map = useRef(null);
   const map_container = useRef(null);
 

@@ -1,6 +1,5 @@
 # Private files
-src/tokens.js
-src/config.json
+public/config.json
 
 # Build directories, static files
 .cache
