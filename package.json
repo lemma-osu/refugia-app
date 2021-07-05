@@ -2,6 +2,7 @@
   "name": "refugia-app",
   "version": "1.0.0",
   "description": "",
+  "homepage": "http://firerefugia.forestry.oregonstate.edu/sandbox/refugia-app",
   "main": "index.js",
   "devDependencies": {
     "concurrently": "4.1.0",

@@ -1,15 +1,12 @@
 export async function create_source_objects(config) {
   let map_layers = [];
-  const TILE_URL =
-    "http://localhost:8000/tiles/{name}/{z}/{x}/{y}.png";
-  config.tiles.forEach(layer => {
-    const tiles = TILE_URL.replace("{name}", layer.name);
+  config.tiles.forEach((layer) => {
     map_layers[layer.name] = {
       legend: layer.legend,
       source: {
         type: "raster",
         scheme: "xyz",
-        tiles: [tiles],
+        tiles: layer.tile_urls,
         tileSize: 256,
       },
       layer: {
@@ -18,7 +15,7 @@ export async function create_source_objects(config) {
         source: layer.name,
         minzoom: 5,
         maxzoom: 13,
-      }
+      },
     };
   });
   return map_layers;
