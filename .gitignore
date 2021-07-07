@@ -1,11 +1,6 @@
-# Private files
-public/config.json
-
 # Build directories, static files
 .cache
 build
 dist
 node_modules
-public/chart_data
-public/covariates
-public/responses
+public/projects

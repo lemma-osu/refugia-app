@@ -2,15 +2,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
 import { render } from "react-dom";
 
-import App from "./components/App";
+import Router from "./components/Router";
 
-fetch("config.json")
-  .then((response) => response.json())
-  .then((config) => {
-    render(
-      <React.StrictMode>
-        <App config={config} />
-      </React.StrictMode>,
-      document.querySelector("#main")
-    );
-  });
+render(
+  <React.StrictMode>
+    <Router />
+  </React.StrictMode>,
+  document.querySelector("#main")
+);
