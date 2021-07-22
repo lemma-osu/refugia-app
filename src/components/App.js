@@ -10,9 +10,9 @@ const App = ({ config }) => {
   const map = useRef(null);
   const map_container = useRef(null);
 
-  const [lng, set_lng] = useState(-122.8);
-  const [lat, set_lat] = useState(44.0);
-  const [zoom, set_zoom] = useState(11.2);
+  const [lng, set_lng] = useState(parseFloat(config.initial_lng));
+  const [lat, set_lat] = useState(parseFloat(config.initial_lat));
+  const [zoom, set_zoom] = useState(parseFloat(config.initial_zoom));
   const [current_layer, set_current_layer] = useState();
   const [clicked_coord, set_clicked_coord] = useState(null);
 
@@ -69,7 +69,7 @@ const App = ({ config }) => {
 
   async function initialize() {
     const map_layers = await create_source_objects(config);
-    set_current_layer(change_map(map_layers["ogsi-80"]));
+    set_current_layer(change_map(map_layers[config.tiles[0].name]));
   }
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { fromArrayBuffer } from "geotiff";
+import { fromUrl } from "geotiff";
 import { quantile } from "d3";
 import { plot as Plot } from "plotty";
 
@@ -7,9 +7,7 @@ import { project_point } from "./projection";
 export const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 
 async function load_tiff(path) {
-  const response = await fetch(path);
-  const arrayBuffer = await response.arrayBuffer();
-  const tiff = await fromArrayBuffer(arrayBuffer);
+  const tiff = await fromUrl(path);
   return await tiff.getImage();
 }
 
@@ -35,6 +33,7 @@ async function read_raster_definition(path, xy, canvas_width, canvas_height) {
   return {
     img: img,
     window: window,
+    nodata: parseInt(img.fileDirectory.GDAL_NODATA, 10),
   };
 }
 
@@ -78,6 +77,7 @@ export function initialize_canvas_plot(canvas, width, height) {
     width: width,
     height: height,
     colorScale: "viridis",
+    useWebGL: false,
   });
 }
 

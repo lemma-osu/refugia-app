@@ -2,7 +2,6 @@
   "name": "refugia-app",
   "version": "1.0.0",
   "description": "",
-  "homepage": ".",
   "main": "index.js",
   "devDependencies": {
     "concurrently": "4.1.0",
