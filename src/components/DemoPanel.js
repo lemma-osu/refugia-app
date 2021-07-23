@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Modal } from "bootstrap";
 
 import ResponseCanvas from "./ResponseCanvas";
@@ -11,33 +11,67 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
     {}
   );
   const [thresholds, set_thresholds] = useState(initial_thresholds);
+  const [loaded_images, set_loaded_images] = useState({});
   const [xy, set_xy] = useState({ x: 0, y: 0 });
   const modal = useRef(null);
 
-  function handle_threshold_change(event) {
-    set_thresholds({ ...thresholds, [event.target.name]: +event.target.value });
-  }
+  const init_images_object = useCallback(() => {
+    function return_paths(obj) {
+      return obj.reduce(function (acc, cur) {
+        acc[cur.geotiff_path] = false;
+        return acc;
+      }, {});
+    }
+    const covariates = return_paths(config.covariates);
+    const responses = return_paths(config.responses);
+    return { ...covariates, ...responses };
+  }, [config]);
 
-  function handle_response_mousemove(event) {
+  const loaded = useCallback((key) => {
+    set_loaded_images((s) => ({ ...s, [key]: true }));
+  }, []);
+
+  const handle_threshold_change = useCallback(
+    (event) => {
+      set_thresholds({
+        ...thresholds,
+        [event.target.name]: +event.target.value,
+      });
+    },
+    [thresholds]
+  );
+
+  const handle_response_mousemove = useCallback((event) => {
     const rect = event.target.getBoundingClientRect();
     const scale_x = event.target.width / rect.width;
     const scale_y = event.target.height / rect.height;
     const x = (event.clientX - rect.left) * scale_x;
     const y = (event.clientY - rect.top) * scale_y;
     set_xy({ x: x, y: y });
-  }
+  }, []);
+
+  const clear_loaded_images = useCallback(() => {
+    set_loaded_images(init_images_object());
+  }, [init_images_object]);
+
+  useEffect(() => {
+    clear_loaded_images();
+  }, [clear_loaded_images]);
 
   useEffect(() => {
     if (modal.current) return;
     const modal_div = document.querySelector("#example-modal");
+    modal_div.addEventListener("hidden.bs.modal", clear_loaded_images);
     modal_div.addEventListener("hidden.bs.modal", onHideModal);
     modal.current = new Modal(modal_div);
-  }, [onHideModal]);
+  }, [onHideModal, clear_loaded_images]);
 
   useEffect(() => {
     if (!modal.current || !clicked_coord) return;
-    modal.current.show();
-  }, [clicked_coord]);
+    if (Object.values(loaded_images).every((i) => i === true)) {
+      modal.current.show();
+    }
+  }, [clicked_coord, loaded_images]);
 
   return (
     <div
@@ -68,6 +102,7 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
                   clicked_coord={clicked_coord}
                   thresholds={thresholds}
                   onMouseMove={handle_response_mousemove}
+                  loaded_func={loaded}
                 />
               </div>
               <div id="ui" className="col-md-6">
@@ -86,6 +121,7 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
                 covariates={config.covariates}
                 clicked_coord={clicked_coord}
                 xy={xy}
+                loaded_func={loaded}
               />
             </div>
           </div>

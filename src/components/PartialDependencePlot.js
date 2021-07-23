@@ -26,10 +26,6 @@ const PartialDependencePlot = ({ chart_data_path, variable_value }) => {
     set_dot(move_dot(node, variable_value));
   }, [node, variable_value]);
 
-  // const width = 300;
-  // const height = 300;
-  // const margin = { top: 50, right: 50, bottom: 50, left: 50 };
-
   const width = 223;
   const height = 148;
   const margin = { top: 5, right: 5, bottom: 20, left: 20 };

@@ -37,25 +37,8 @@ async function read_raster_definition(path, xy, canvas_width, canvas_height) {
   };
 }
 
-export async function read_raster_definitions(
-  geotiffs,
-  xy,
-  canvas_width,
-  canvas_height
-) {
-  const promises = geotiffs.map((geotiff) =>
-    read_raster_definition(geotiff.path, xy, canvas_width, canvas_height)
-  );
-  return await Promise.all(promises);
-}
-
 async function read_tiff(img, window) {
   return await img.readRasters({ window: window });
-}
-
-export async function read_tiffs(img_defs) {
-  const promises = img_defs.map((def) => read_tiff(def.img, def.window));
-  return await Promise.all(promises);
 }
 
 export async function get_canvas_data(lng, lat, geotiff_path, width, height) {

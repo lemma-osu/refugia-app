@@ -8,6 +8,7 @@ const ResponseCanvas = ({
   clicked_coord,
   thresholds,
   onMouseMove,
+  loaded_func,
 }) => {
   const canvas = useRef();
   const plot = useRef();
@@ -40,8 +41,11 @@ const ResponseCanvas = ({
     }
     get_data(clicked_coord).then(() => {
       draw_to_plot(plot.current, arrs.current[initial_idx.current]);
+      responses.forEach((r) => {
+        loaded_func(r.geotiff_path);
+      });
     });
-  }, [plot, clicked_coord, responses]);
+  }, [plot, clicked_coord, responses, loaded_func]);
 
   useEffect(() => {
     if (!plot.current || !arrs.current) return;

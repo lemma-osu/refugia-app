@@ -13,6 +13,7 @@ const CovariateCanvas = ({
   clicked_coord,
   xy,
   variable_value,
+  loaded_func,
 }) => {
   const canvas = useRef();
   const plot = useRef();
@@ -43,8 +44,9 @@ const CovariateCanvas = ({
       arr_min.current = min(arr.current[0]);
       arr_max.current = max(arr.current[0]);
       draw_to_plot(plot.current, arr.current);
+      loaded_func(geotiff_path);
     });
-  }, [plot, clicked_coord, geotiff_path]);
+  }, [plot, clicked_coord, geotiff_path, loaded_func]);
 
   useEffect(() => {
     if (!plot.current || !arr.current) return;

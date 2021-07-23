@@ -9,6 +9,7 @@ const CovariateGroup = ({
   clicked_coord,
   chart_data_path,
   xy,
+  loaded_func,
 }) => {
   const variable_value = useRef(0);
   return (
@@ -22,6 +23,7 @@ const CovariateGroup = ({
         clicked_coord={clicked_coord}
         xy={xy}
         variable_value={variable_value}
+        loaded_func={loaded_func}
       />
       <PartialDependencePlot
         chart_data_path={chart_data_path}

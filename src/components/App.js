@@ -43,34 +43,37 @@ const App = ({ config }) => {
     handle_cursor();
   }, []);
 
-  const change_map = (layer_definition) => {
-    // Pop the current layer off
-    if (current_layer !== undefined) {
-      map.current.removeLayer(current_layer);
-    }
+  const change_map = useCallback(
+    (layer_definition) => {
+      // Pop the current layer off
+      if (current_layer !== undefined) {
+        map.current.removeLayer(current_layer);
+      }
 
-    // Add the new source if necessary
-    var key = layer_definition.layer.source;
-    if (
-      map.current.getSource(key) === undefined ||
-      !map.current.isSourceLoaded(key)
-    ) {
-      map.current.addSource(key, layer_definition.source);
-    }
+      // Add the new source if necessary
+      var key = layer_definition.layer.source;
+      if (
+        map.current.getSource(key) === undefined ||
+        !map.current.isSourceLoaded(key)
+      ) {
+        map.current.addSource(key, layer_definition.source);
+      }
 
-    // Add the new layer
-    var before_layer =
-      map.current.getLayer("forest-mask-layer") === undefined
-        ? "land-structure-polygon"
-        : "forest-mask-layer";
-    map.current.addLayer(layer_definition.layer, before_layer);
-    return layer_definition.layer.id;
-  };
+      // Add the new layer
+      var before_layer =
+        map.current.getLayer("forest-mask-layer") === undefined
+          ? "land-structure-polygon"
+          : "forest-mask-layer";
+      map.current.addLayer(layer_definition.layer, before_layer);
+      return layer_definition.layer.id;
+    },
+    [current_layer]
+  );
 
-  async function initialize() {
+  const initialize = useCallback(async () => {
     const map_layers = await create_source_objects(config);
     set_current_layer(change_map(map_layers[config.tiles[0].name]));
-  }
+  }, [config, change_map]);
 
   useEffect(() => {
     if (map.current) return;
@@ -85,7 +88,7 @@ const App = ({ config }) => {
     map.current.on("moveend", handle_move_end);
     map.current.on("zoomend", handle_cursor);
     map.current.on("dblclick", handle_dbl_click);
-  });
+  }, [initialize, lng, lat, zoom]);
 
   return (
     <>
