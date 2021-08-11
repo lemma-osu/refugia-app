@@ -1,30 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { extent, scaleLinear, interpolate, csv } from "d3";
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  autoType,
+  bisectLeft,
+  csv,
+  extent,
+  map as d3map,
+  scaleLinear,
+} from "d3";
 
 import { Svg, XAxis, YAxis, Line, Dot } from "./Chart";
 
-const move_dot = (node, variable_value) => {
-  const length = node.getTotalLength() || 0;
-  const r = interpolate(0, length);
-  return node.getPointAtLength(r(variable_value));
+const x_value = (d) => d.X;
+const y_value = (d) => d.Y;
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+const move_dot_factory = (data, x_scale, y_scale) => {
+  return (variable_value) => {
+    // Find the X value that corresponds to the variable value
+    // and return the (X,Y) pair at that location
+    const idx = clamp(
+      bisectLeft(d3map(data, x_value), variable_value),
+      0,
+      data.length - 1
+    );
+    var pt = new DOMPoint(
+      x_scale(x_value(data[idx])),
+      y_scale(y_value(data[idx]))
+    );
+    return pt;
+  };
 };
 
 const PartialDependencePlot = ({ chart_data_path, variable_value }) => {
   const [data, set_data] = useState([{ X: 0, Y: 0 }]);
-  const [node, set_node] = useState(null);
   const [dot, set_dot] = useState([0, 0]);
-
-  useEffect(() => {
-    async function get_data() {
-      set_data(await csv(chart_data_path));
-    }
-    get_data();
-  }, [chart_data_path]);
-
-  useEffect(() => {
-    if (!node || !variable_value) return;
-    set_dot(move_dot(node, variable_value));
-  }, [node, variable_value]);
 
   const width = 223;
   const height = 148;
@@ -33,20 +42,41 @@ const PartialDependencePlot = ({ chart_data_path, variable_value }) => {
   const inner_width = width - margin.left - margin.right;
   const inner_height = height - margin.top - margin.bottom;
 
-  const x_value = (d) => +d.X;
-  const y_value = (d) => +d.Y;
+  const x_scale = useMemo(
+    () =>
+      scaleLinear()
+        .domain(extent(data, x_value))
+        .range([0, inner_width])
+        .nice(),
+    [data, inner_width]
+  );
 
-  const x_scale = scaleLinear()
-    .domain(extent(data, x_value))
-    .range([0, inner_width])
-    .nice();
-
-  const y_scale = scaleLinear()
-    .domain(extent(data, y_value))
-    .range([0, inner_height])
-    .nice();
+  const y_scale = useMemo(
+    () =>
+      scaleLinear()
+        .domain(extent(data, y_value))
+        .range([0, inner_height])
+        .nice(),
+    [data, inner_height]
+  );
 
   const num_ticks = 5;
+
+  const move_dot = useMemo(() => {
+    return move_dot_factory(data, x_scale, y_scale);
+  }, [data, x_scale, y_scale]);
+
+  useEffect(() => {
+    async function get_data() {
+      set_data(await csv(chart_data_path, autoType));
+    }
+    get_data();
+  }, [chart_data_path]);
+
+  useEffect(() => {
+    if (!variable_value) return;
+    set_dot(move_dot(variable_value));
+  }, [variable_value, move_dot]);
 
   return (
     <Svg width={width} height={height} margin={margin}>
@@ -68,7 +98,6 @@ const PartialDependencePlot = ({ chart_data_path, variable_value }) => {
         y_scale={y_scale}
         x_value={x_value}
         y_value={y_value}
-        set_node={set_node}
       />
       <Dot
         d={dot}

@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from "react";
-import { line } from "d3";
+import React from "react";
+import { line, max, format } from "d3";
 
 export const Svg = ({ width, height, margin, children }) => {
   return (
@@ -15,6 +15,8 @@ export const XAxis = ({
   num_ticks = 5,
   tick_offset = 3,
 }) => {
+  const max_value = max(x_scale.ticks(num_ticks));
+  const formatter = max_value > 10000 ? format(".2s") : format("");
   return x_scale.ticks(num_ticks).map((tick_value) => (
     <g
       className="tick"
@@ -27,7 +29,7 @@ export const XAxis = ({
         dy=".71em"
         y={inner_height + tick_offset}
       >
-        {tick_value}
+        {formatter(tick_value)}
       </text>
     </g>
   ));
@@ -53,26 +55,13 @@ export const YAxis = ({
   ));
 };
 
-export const Line = ({
-  data,
-  x_scale,
-  y_scale,
-  x_value,
-  y_value,
-  set_node,
-}) => {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    set_node(ref.current);
-  });
-
+export const Line = ({ data, x_scale, y_scale, x_value, y_value }) => {
   const line_ = line()
     .x((d) => x_scale(x_value(d)))
     .y((d) => y_scale(y_value(d)));
 
   const d = line_(data);
-  return <path ref={ref} className="line" d={d} />;
+  return <path className="line" d={d} />;
 };
 
 export const Dot = ({ d, circle_radius }) => (
