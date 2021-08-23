@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState } from "react";
 
 import ResponseMap from "./ResponseMap";
 import DemoPanel from "./DemoPanel";
