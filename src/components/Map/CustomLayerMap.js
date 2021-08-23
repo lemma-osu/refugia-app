@@ -4,6 +4,7 @@ import { create_tilejson, add_custom_layer } from "./utils";
 
 export default function CustomLayerMap({
   base_style,
+  initial_view,
   custom_layer,
   on_loaded = () => {},
 }) {
@@ -27,5 +28,11 @@ export default function CustomLayerMap({
     add_layer();
   }, [map, add_layer]);
 
-  return <DefaultMap base_style={base_style} on_loaded={set_map} />;
+  return (
+    <DefaultMap
+      base_style={base_style}
+      initial_view={initial_view}
+      on_loaded={set_map}
+    />
+  );
 }

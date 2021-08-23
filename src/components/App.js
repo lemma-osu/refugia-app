@@ -1,98 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 
-import { create_source_objects } from "../generate-map-spec";
-
+import ResponseMap from "./ResponseMap";
 import DemoPanel from "./DemoPanel";
 
 const App = ({ config }) => {
-  mapboxgl.accessToken = config.access_token;
-  const map = useRef(null);
-  const map_container = useRef(null);
-
-  const [lng, set_lng] = useState(parseFloat(config.initial_lng));
-  const [lat, set_lat] = useState(parseFloat(config.initial_lat));
-  const [zoom, set_zoom] = useState(parseFloat(config.initial_zoom));
-  const [current_layer, set_current_layer] = useState();
   const [clicked_coord, set_clicked_coord] = useState(null);
 
-  const zoom_cursor_switch = 11.0;
-  const zoom_limit = 12.3;
-
-  const handle_cursor = () => {
-    map.current.getCanvas().style.cursor =
-      map.current.getZoom() >= zoom_cursor_switch ? "crosshair" : "grab";
-  };
-
-  const handle_move_end = () => {
-    set_lng(map.current.getCenter().lng.toFixed(4));
-    set_lat(map.current.getCenter().lat.toFixed(4));
-    set_zoom(map.current.getZoom().toFixed(2));
-  };
-
-  const handle_dbl_click = (event) => {
-    if (map.current.getZoom() >= zoom_cursor_switch) {
-      event.preventDefault();
-      map.current.getCanvas().style.cursor = "wait";
-      set_clicked_coord(event.lngLat);
-    }
-  };
-
-  const handle_modal_close = useCallback(() => {
+  function handle_modal_close() {
     set_clicked_coord(null);
-    handle_cursor();
-  }, []);
-
-  const change_map = useCallback(
-    (layer_definition) => {
-      // Pop the current layer off
-      if (current_layer !== undefined) {
-        map.current.removeLayer(current_layer);
-      }
-
-      // Add the new source if necessary
-      var key = layer_definition.layer.source;
-      if (
-        map.current.getSource(key) === undefined ||
-        !map.current.isSourceLoaded(key)
-      ) {
-        map.current.addSource(key, layer_definition.source);
-      }
-
-      // Add the new layer
-      var before_layer =
-        map.current.getLayer("forest-mask-layer") === undefined
-          ? "land-structure-polygon"
-          : "forest-mask-layer";
-      map.current.addLayer(layer_definition.layer, before_layer);
-      return layer_definition.layer.id;
-    },
-    [current_layer]
-  );
-
-  const initialize = useCallback(async () => {
-    const map_layers = await create_source_objects(config);
-    set_current_layer(change_map(map_layers[config.tiles[0].name]));
-  }, [config, change_map]);
-
-  useEffect(() => {
-    if (map.current) return;
-    map.current = new mapboxgl.Map({
-      container: map_container.current,
-      style: "mapbox://styles/mapbox/dark-v10",
-      center: [lng, lat],
-      zoom: zoom,
-      maxZoom: zoom_limit,
-    });
-    map.current.on("load", initialize);
-    map.current.on("moveend", handle_move_end);
-    map.current.on("zoomend", handle_cursor);
-    map.current.on("dblclick", handle_dbl_click);
-  }, [initialize, lng, lat, zoom]);
+  }
 
   return (
     <>
-      <div ref={map_container} className="map"></div>
+      <ResponseMap config={config} on_clicked_coord={set_clicked_coord} />
       <div
         className="card text-white bg-dark m-3"
         style={{ maxWidth: "20rem", height: "calc(100vh - 32px)" }}
@@ -110,13 +30,6 @@ const App = ({ config }) => {
             To enable the modal demonstration, zoom in to an extent where the
             cursor changes to a crosshair and double click the button. This will
             load the modal window and show the demonstration.
-          </p>
-          <p className="card-text">
-            Longitude: {lng}
-            <br />
-            Latitude: {lat}
-            <br />
-            Zoom: {zoom}
           </p>
         </div>
       </div>
