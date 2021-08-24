@@ -2,17 +2,27 @@ import React, { useState } from "react";
 
 import ResponseMap from "./ResponseMap";
 import DemoPanel from "./DemoPanel";
+import { ResponseDropdown } from "./Card";
 
-const App = ({ config }) => {
+export default function App({ config }) {
   const [clicked_coord, set_clicked_coord] = useState(null);
+  const [idx, set_idx] = useState(0);
 
   function handle_modal_close() {
     set_clicked_coord(null);
   }
 
+  function handle_change_index(e) {
+    set_idx(+e.currentTarget.value);
+  }
+
   return (
     <>
-      <ResponseMap config={config} on_clicked_coord={set_clicked_coord} />
+      <ResponseMap
+        config={config}
+        idx={idx}
+        on_clicked_coord={set_clicked_coord}
+      />
       <div
         className="card text-white bg-dark m-3"
         style={{ maxWidth: "20rem", height: "calc(100vh - 32px)" }}
@@ -31,15 +41,15 @@ const App = ({ config }) => {
             cursor changes to a crosshair and double click the button. This will
             load the modal window and show the demonstration.
           </p>
+          <ResponseDropdown config={config} on_change={handle_change_index} />
         </div>
       </div>
-      <DemoPanel
-        config={config}
-        clicked_coord={clicked_coord}
-        onHideModal={handle_modal_close}
-      />
     </>
   );
-};
 
-export default App;
+  // <DemoPanel
+  //   config={config}
+  //   clicked_coord={clicked_coord}
+  //   onHideModal={handle_modal_close}
+  // />
+}

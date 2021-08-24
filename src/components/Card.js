@@ -20,3 +20,13 @@ export function Dropdown({ on_change }) {
     </select>
   );
 }
+
+export function ResponseDropdown({ config, on_change }) {
+  return (
+    <select onChange={on_change}>
+      {config.tiles.map((d, i) => (
+        <option value={i}>{d.name}</option>
+      ))}
+    </select>
+  );
+}

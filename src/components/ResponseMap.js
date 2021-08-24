@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
+import DefaultMap from "./Map/DefaultMap";
 import CustomLayerMap from "./Map/CustomLayerMap";
+import CustomMultiLayerMap from "./Map/CustomMultiLayerMap";
+import SwipeMap from "./Map/SwipeMap";
 
-export default function ResponseMap({ config, on_clicked_coord }) {
+export default function ResponseMap({ config, idx, on_clicked_coord }) {
   const [map, set_map] = useState(null);
 
   const zoom_cursor_switch = 11.0;
@@ -26,16 +29,42 @@ export default function ResponseMap({ config, on_clicked_coord }) {
     map.on("dblclick", handle_dbl_click);
   }, [map, on_clicked_coord]);
 
+  // <CustomLayerMap
+  // base_style="mapbox://styles/mapbox/dark-v10"
+  // initial_view={{
+  //   lng: config.initial_lng,
+  //   lat: config.initial_lat,
+  //   zoom: config.initial_zoom,
+  // }}
+  // custom_layer={config.tiles[0]}
+  // on_loaded={set_map}
+  // />
+
   return (
-    <CustomLayerMap
-      base_style="mapbox://styles/mapbox/dark-v10"
-      initial_view={{
-        lng: config.initial_lng,
-        lat: config.initial_lat,
-        zoom: config.initial_zoom,
-      }}
-      custom_layer={config.tiles[0]}
-      on_loaded={set_map}
+    <SwipeMap
+      left={
+        <CustomMultiLayerMap
+          base_style="mapbox://styles/mapbox/dark-v10"
+          initial_view={{
+            lng: config.initial_lng,
+            lat: config.initial_lat,
+            zoom: config.initial_zoom,
+          }}
+          custom_layers={config.tiles}
+          layer_idx={idx}
+          on_loaded={set_map}
+        />
+      }
+      right={
+        <DefaultMap
+          base_style="mapbox://styles/mapbox/satellite-streets-v11"
+          initial_view={{
+            lng: config.initial_lng,
+            lat: config.initial_lat,
+            zoom: config.initial_zoom,
+          }}
+        />
+      }
     />
   );
 }
