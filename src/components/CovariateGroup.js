@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import CovariateCanvas from "./CovariateCanvas";
 import PartialDependencePlot from "./PartialDependencePlot";
 
-const CovariateGroup = ({
+export default function CovariateGroup({
   name,
   description,
   geotiffPath,
@@ -10,7 +10,7 @@ const CovariateGroup = ({
   chartDataPath,
   xy,
   loadedFunc,
-}) => {
+}) {
   const variableValue = useRef(0);
   return (
     <div className="covariate-group">
@@ -31,6 +31,4 @@ const CovariateGroup = ({
       />
     </div>
   );
-};
-
-export default CovariateGroup;
+}

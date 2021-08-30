@@ -1,7 +1,7 @@
 import React from "react";
 import { min, max } from "d3";
 
-const Slider = ({ data, onChange }) => {
+export default function Slider({ data, onChange }) {
   const minValue = min(data.steps, (d) => d.value);
   const maxValue = max(data.steps, (d) => d.value);
   return (
@@ -22,6 +22,4 @@ const Slider = ({ data, onChange }) => {
       />
     </>
   );
-};
-
-export default Slider;
+}

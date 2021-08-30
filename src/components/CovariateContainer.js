@@ -1,7 +1,12 @@
 import React from "react";
 import CovariateGroup from "./CovariateGroup";
 
-const CovariateContainer = ({ covariates, clickedCoord, xy, loadedFunc }) => {
+export default function CovariateContainer({
+  covariates,
+  clickedCoord,
+  xy,
+  loadedFunc,
+}) {
   return (
     <div id="covariate-panel" className="col-md-12">
       {covariates.map((covariate) => (
@@ -18,6 +23,4 @@ const CovariateContainer = ({ covariates, clickedCoord, xy, loadedFunc }) => {
       ))}
     </div>
   );
-};
-
-export default CovariateContainer;
+}

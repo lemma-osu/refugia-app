@@ -5,7 +5,7 @@ import ResponseCanvas from "./ResponseCanvas";
 import SliderContainer from "./SliderContainer";
 import CovariateContainer from "./CovariateContainer";
 
-const DemoPanel = ({ config, clickedCoord, onHideModal }) => {
+export default function DemoPanel({ config, clickedCoord, onHideModal }) {
   const initialThresholds = config.sliders.reduce(
     (o, el) => ({ ...o, [el.name]: el.initial_value }),
     {}
@@ -138,6 +138,4 @@ const DemoPanel = ({ config, clickedCoord, onHideModal }) => {
       </div>
     </div>
   );
-};
-
-export default DemoPanel;
+}

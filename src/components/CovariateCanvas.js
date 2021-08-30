@@ -2,14 +2,14 @@ import React, { useRef, useEffect } from "react";
 
 import { getCanvasData, drawToPlot, initializeCanvasPlot } from "../utils";
 
-const CovariateCanvas = ({
+export default function CovariateCanvas({
   id,
   geotiffPath,
   clickedCoord,
   xy,
   variableValue,
   loadedFunc,
-}) => {
+}) {
   const canvas = useRef();
   const plot = useRef();
   const arr = useRef();
@@ -54,6 +54,4 @@ const CovariateCanvas = ({
       height={height}
     ></canvas>
   );
-};
-
-export default CovariateCanvas;
+}

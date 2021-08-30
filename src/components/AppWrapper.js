@@ -3,7 +3,7 @@ import { useRouteMatch } from "react-router";
 
 import App from "./App";
 
-const AppWrapper = () => {
+export default function AppWrapper() {
   const [config, setConfig] = useState(null);
   let { url } = useRouteMatch();
 
@@ -19,5 +19,3 @@ const AppWrapper = () => {
 
   return <>{config && <App config={config} />}</>;
 };
-
-export default AppWrapper;

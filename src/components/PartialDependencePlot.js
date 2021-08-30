@@ -28,7 +28,10 @@ const moveDotFactory = (data, xScale, yScale) => {
   };
 };
 
-const PartialDependencePlot = ({ chartDataPath, variableValue }) => {
+export default function PartialDependencePlot({
+  chartDataPath,
+  variableValue,
+}) {
   const [data, setData] = useState([{ X: 0, Y: 0 }]);
   const [dot, setDot] = useState([0, 0]);
 
@@ -100,6 +103,4 @@ const PartialDependencePlot = ({ chartDataPath, variableValue }) => {
       />
     </Svg>
   );
-};
-
-export default PartialDependencePlot;
+}

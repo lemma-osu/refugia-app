@@ -1,20 +1,15 @@
 import React from "react";
 import { line, max, format } from "d3";
 
-export const Svg = ({ width, height, margin, children }) => {
+export function Svg({ width, height, margin, children }) {
   return (
     <svg width={width} height={height}>
       <g transform={`translate(${margin.left},${margin.top})`}>{children}</g>
     </svg>
   );
-};
+}
 
-export const XAxis = ({
-  xScale,
-  innerHeight,
-  numTicks = 5,
-  tickOffset = 3,
-}) => {
+export function XAxis({ xScale, innerHeight, numTicks = 5, tickOffset = 3 }) {
   const maxValue = max(xScale.ticks(numTicks));
   const formatter = maxValue > 10000 ? format(".2s") : format("");
   return xScale.ticks(numTicks).map((tickValue) => (
@@ -33,9 +28,9 @@ export const XAxis = ({
       </text>
     </g>
   ));
-};
+}
 
-export const YAxis = ({ yScale, innerWidth, numTicks = 5, tickOffset = 3 }) => {
+export function YAxis({ yScale, innerWidth, numTicks = 5, tickOffset = 3 }) {
   return yScale.ticks(numTicks).map((tickValue) => (
     <g
       className="tick"
@@ -48,17 +43,17 @@ export const YAxis = ({ yScale, innerWidth, numTicks = 5, tickOffset = 3 }) => {
       </text>
     </g>
   ));
-};
+}
 
-export const Line = ({ data, xScale, yScale, xValue, yValue }) => {
+export function Line({ data, xScale, yScale, xValue, yValue }) {
   const line_ = line()
     .x((d) => xScale(xValue(d)))
     .y((d) => yScale(yValue(d)));
 
   const d = line_(data);
   return <path className="line" d={d} />;
-};
+}
 
-export const Dot = ({ d, circleRadius }) => (
-  <circle className="dot" cx={d.x} cy={d.y} r={circleRadius} />
-);
+export function Dot({ d, circleRadius }) {
+  return <circle className="dot" cx={d.x} cy={d.y} r={circleRadius} />;
+}
