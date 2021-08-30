@@ -56,6 +56,7 @@ export default function App({ config }) {
       <ResponseMap
         config={config}
         idx={idx}
+        miwSize={miwSize}
         onClickedCoord={setClickedCoord}
       />
 
