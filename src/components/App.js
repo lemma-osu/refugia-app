@@ -1,13 +1,20 @@
 import React, { useState } from "react";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
 
 import ResponseMap from "./ResponseMap";
 import DemoPanel from "./DemoPanel";
 import { ResponseDropdown } from "./Card";
+import IntroductionPanel from "./IntroductionPanel";
 
 export default function App({ config }) {
   const [clickedCoord, setClickedCoord] = useState(null);
+  const [showIntro, setShowIntro] = useState(false);
   const [idx, setIdx] = useState(0);
 
+  // Event handlers
+  const handleCloseIntro = () => setShowIntro(false);
+  const handleShowIntro = () => setShowIntro(true);
 
   function handleModalClose() {
     setClickedCoord(null);
@@ -20,27 +27,28 @@ export default function App({ config }) {
         idx={idx}
         onClickedCoord={setClickedCoord}
       />
-      <div
-        className="card text-white bg-dark m-3"
+
+      <Card
+        bg="dark"
+        text="white"
+        className="m-3"
         style={{ maxWidth: "20rem", height: "calc(100vh - 32px)" }}
       >
-        <div className="card-body">
-          <h5 className="card-title">Fire Refugia Demonstration</h5>
-          <p className="card-text">
-            This application is pretty much the coolest application in the
-            entire world even though it basically does nothing at present. This
-            card gives information about the map to the right and provides the
-            instructions to the user on how to create the modal for a particular
-            study area.
-          </p>
-          <p className="card-text">
-            To enable the modal demonstration, zoom in to an extent where the
-            cursor changes to a crosshair and double click the button. This will
-            load the modal window and show the demonstration.
-          </p>
-          <ResponseDropdown config={config} on_change={handle_change_index} />
-        </div>
-      </div>
+        <Card.Body>
+          <Card.Title>EcoVis</Card.Title>
+          <div className="d-grid">
+            <Button variant="primary" onClick={handleShowIntro}>
+              Show Introduction
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+
+      <IntroductionPanel
+        title="EcoVis Tool"
+        show={showIntro}
+        onHide={handleCloseIntro}
+      />
     </>
   );
 

@@ -18,6 +18,7 @@
     "plotty": "^0.4.6",
     "proj4": "^2.7.2",
     "react": "^16.6.3",
+    "react-bootstrap": "next",
     "react-dom": "^16.6.3",
     "react-router-dom": "^5.0.0",
     "prop-types": "^15.7.2"
