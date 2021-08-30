@@ -1,18 +1,14 @@
 import React, { useRef, useEffect } from "react";
 
-import {
-  get_canvas_data,
-  draw_to_plot,
-  initialize_canvas_plot,
-} from "../utils";
+import { getCanvasData, drawToPlot, initializeCanvasPlot } from "../utils";
 
 const CovariateCanvas = ({
   id,
-  geotiff_path,
-  clicked_coord,
+  geotiffPath,
+  clickedCoord,
   xy,
-  variable_value,
-  loaded_func,
+  variableValue,
+  loadedFunc,
 }) => {
   const canvas = useRef();
   const plot = useRef();
@@ -22,32 +18,32 @@ const CovariateCanvas = ({
 
   useEffect(() => {
     if (!plot.current) {
-      plot.current = initialize_canvas_plot(canvas.current, width, height);
+      plot.current = initializeCanvasPlot(canvas.current, width, height);
     }
   }, [plot]);
 
   useEffect(() => {
-    if (!plot.current || !clicked_coord) return;
-    async function get_data(coord) {
-      arr.current = await get_canvas_data(
+    if (!plot.current || !clickedCoord) return;
+    async function getData(coord) {
+      arr.current = await getCanvasData(
         coord.lng,
         coord.lat,
-        geotiff_path,
+        geotiffPath,
         width,
         height
       );
     }
-    get_data(clicked_coord).then(() => {
-      draw_to_plot(plot.current, arr.current);
-      loaded_func(geotiff_path);
+    getData(clickedCoord).then(() => {
+      drawToPlot(plot.current, arr.current);
+      loadedFunc(geotiffPath);
     });
-  }, [plot, clicked_coord, geotiff_path, loaded_func]);
+  }, [plot, clickedCoord, geotiffPath, loadedFunc]);
 
   useEffect(() => {
     if (!plot.current || !arr.current) return;
     const offset = parseInt(xy.y, 10) * arr.current.width + parseInt(xy.x, 10);
-    variable_value.current = arr.current[0][offset];
-  }, [xy, variable_value]);
+    variableValue.current = arr.current[0][offset];
+  }, [xy, variableValue]);
 
   return (
     <canvas

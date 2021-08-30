@@ -2,25 +2,32 @@ import "mapbox-gl-compare/dist/mapbox-gl-compare.css";
 import Compare from "!mapbox-gl-compare"; // eslint-disable-line import/no-webpack-loader-syntax
 import React, { useRef, useState, useEffect } from "react";
 
-export default function SwipeMap({ left, right }) {
+export default function SwipeMap({ left, right, onLoaded }) {
   const container = useRef(null);
-  const [compare, set_compare] = useState(null);
-  const [left_map, set_left_map] = useState(null);
-  const [right_map, set_right_map] = useState(null);
+  const [compare, setCompare] = useState(null);
+  const [leftMap, setLeftMap] = useState(null);
+  const [rightMap, setRightMap] = useState(null);
 
-  function add_loaded_callback(el, cb) {
-    return React.cloneElement(el, { on_loaded: cb });
+  function addLoadedCallback(el, cb) {
+    return React.cloneElement(el, { onLoaded: cb });
   }
 
   useEffect(() => {
-    if (!left_map || !right_map || compare) return;
-    set_compare(new Compare(left_map, right_map, container.current, {}));
-  }, [left_map, right_map, compare]);
+    if (!leftMap || !rightMap || compare) return;
+    setCompare(new Compare(leftMap, rightMap, container.current, {}));
+  }, [leftMap, rightMap, compare]);
+
+  // Call onLoaded once the compare loads and return both the
+  // left and right maps
+  useEffect(() => {
+    if (!compare) return;
+    onLoaded({ left: leftMap, right: rightMap });
+  }, [compare, leftMap, rightMap, onLoaded]);
 
   return (
     <div ref={container}>
-      {add_loaded_callback(left, set_left_map)}
-      {add_loaded_callback(right, set_right_map)}
+      {addLoadedCallback(left, setLeftMap)}
+      {addLoadedCallback(right, setRightMap)}
     </div>
   );
 }

@@ -1,66 +1,66 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DefaultMap from "./DefaultMap";
-import { create_tilejson, add_custom_layer, remove_layer } from "./utils";
+import { createTilejson, addCustomLayer, removeLayer } from "./utils";
 
 export default function CustomMultiLayerMap({
-  base_style,
-  initial_view,
-  custom_layers,
-  layer_idx = 0,
-  on_loaded = () => {},
+  baseStyle,
+  initialView,
+  customLayers,
+  layerIdx = 0,
+  onLoaded,
 }) {
-  const [map, set_map] = useState(null);
-  const [layers, set_layers] = useState(null);
-  const [layer_state, set_layer_state] = useState({ new: null, old: null });
+  const [map, setMap] = useState(null);
+  const [layers, setLayers] = useState(null);
+  const [layerState, setLayerState] = useState({ new: null, old: null });
 
-  function switch_custom_layer(map, new_layer, old_layer) {
+  function switchCustomLayer(map, newLayer, oldLayer) {
     // Pop the old layer off if it is currently in the map layer stack
-    if (old_layer) {
-      remove_layer(map, old_layer);
+    if (oldLayer) {
+      removeLayer(map, oldLayer);
     }
-    add_custom_layer(map, new_layer);
+    addCustomLayer(map, newLayer);
   }
 
   // Read in tilejson for all custom layers
-  const set_custom_layers = useCallback(() => {
-    set_layers(
-      custom_layers.map((custom_layer) => {
-        return create_tilejson(custom_layer);
+  const setCustomLayers = useCallback(() => {
+    setLayers(
+      customLayers.map((customLayer) => {
+        return createTilejson(customLayer);
       })
     );
-  }, [custom_layers]);
+  }, [customLayers]);
 
-  // Call on_loaded once the map loads
+  // Call onLoaded once the map loads
   useEffect(() => {
     if (!map) return;
-    on_loaded(map);
-  }, [map, on_loaded]);
+    onLoaded(map);
+  }, [map, onLoaded]);
 
   // Set event handler to add custom tiles once map is defined
   useEffect(() => {
     if (!map) return;
-    set_custom_layers();
-  }, [map, set_custom_layers]);
+    setCustomLayers();
+  }, [map, setCustomLayers]);
 
   // Update layer state after layers have been loaded
   useEffect(() => {
     if (!layers) return;
-    set_layer_state((layer_state) => ({
-      new: layer_idx,
-      old: layer_state.new,
+    setLayerState((layerState) => ({
+      new: layerIdx,
+      old: layerState.new,
     }));
-  }, [layers, layer_idx]);
+  }, [layers, layerIdx]);
 
   useEffect(() => {
-    if (!layers || layer_state.new === null) return;
-    switch_custom_layer(map, layers[layer_state.new], layers[layer_state.old]);
-  }, [map, layers, layer_state]);
+    if (!layers || layerState.new === null) return;
+    switchCustomLayer(map, layers[layerState.new], layers[layerState.old]);
+  }, [map, layers, layerState]);
 
   return (
     <DefaultMap
-      base_style={base_style}
-      initial_view={initial_view}
-      on_loaded={set_map}
+      baseStyle={baseStyle}
+      initialView={initialView}
+      onLoaded={setMap}
     />
   );
 }

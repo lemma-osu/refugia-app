@@ -1,38 +1,38 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DefaultMap from "./DefaultMap";
-import { create_tilejson, add_custom_layer } from "./utils";
+import { createTilejson, addCustomLayer } from "./utils";
 
 export default function CustomLayerMap({
-  base_style,
-  initial_view,
-  custom_layer,
-  on_loaded = () => {},
+  baseStyle,
+  initialView,
+  customLayer,
+  onLoaded = () => {},
 }) {
-  const [map, set_map] = useState(null);
+  const [map, setMap] = useState(null);
 
   // Function to add layer to map
-  const add_layer = useCallback(() => {
-    const layer_definition = create_tilejson(custom_layer);
-    add_custom_layer(map, layer_definition);
-  }, [custom_layer, map]);
+  const addLayer = useCallback(() => {
+    const layerDefinition = createTilejson(customLayer);
+    addCustomLayer(map, layerDefinition);
+  }, [customLayer, map]);
 
-  // Call on_loaded once the map loads
+  // Call onLoaded once the map loads
   useEffect(() => {
     if (!map) return;
-    on_loaded(map);
-  }, [map, on_loaded]);
+    onLoaded(map);
+  }, [map, onLoaded]);
 
   // Set event handler to add custom tiles once map is defined
   useEffect(() => {
     if (!map) return;
-    add_layer();
-  }, [map, add_layer]);
+    addLayer();
+  }, [map, addLayer]);
 
   return (
     <DefaultMap
-      base_style={base_style}
-      initial_view={initial_view}
-      on_loaded={set_map}
+      baseStyle={baseStyle}
+      initialView={initialView}
+      onLoaded={setMap}
     />
   );
 }

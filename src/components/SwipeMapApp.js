@@ -2,28 +2,28 @@ import React, { useEffect, useState } from "react";
 import { useRouteMatch } from "react-router";
 
 import DefaultMap from "./Map/DefaultMap";
-import CustomLayerMap from "./Map/CustomLayerMap";
+// import CustomLayerMap from "./Map/CustomLayerMap";
 import CustomMultiLayerMap from "./Map/CustomMultiLayerMap";
 import SwipeMap from "./Map/SwipeMap";
 import Card, { Dropdown } from "./Card";
 
 export default function SwipeMapApp() {
-  const [config, set_config] = useState(null);
-  const [idx, set_idx] = useState();
+  const [config, setConfig] = useState(null);
+  const [idx, setIdx] = useState();
   let { url } = useRouteMatch();
 
   useEffect(() => {
     if (config) return;
-    const config_fn = `${url}/config.json`;
-    fetch(config_fn)
+    const configFn = `${url}/config.json`;
+    fetch(configFn)
       .then((response) => response.json())
       .then((data) => {
-        set_config(data);
+        setConfig(data);
       });
   }, [config, url]);
 
-  const change_index = (value) => {
-    set_idx(+value);
+  const changeIndex = (value) => {
+    setIdx(+value);
   };
 
   // // Swipe with base (left) and custom layer (right)
@@ -33,12 +33,12 @@ export default function SwipeMapApp() {
   //       <SwipeMap
   //         left={
   //           <CustomLayerMap
-  //             base_style="mapbox://styles/mapbox/dark-v10"
-  //             custom_layer={config.tiles[0]}
+  //             baseStyle="mapbox://styles/mapbox/dark-v10"
+  //             customLayer={config.tiles[0]}
   //           />
   //         }
   //         right={
-  //           <DefaultMap base_style="mapbox://styles/mapbox/satellite-streets-v11" />
+  //           <DefaultMap baseStyle="mapbox://styles/mapbox/satellite-streets-v11" />
   //         }
   //       />
   //     )}
@@ -52,20 +52,20 @@ export default function SwipeMapApp() {
         <SwipeMap
           left={
             <CustomMultiLayerMap
-              base_style="mapbox://styles/mapbox/dark-v10"
-              initial_view={{
+              baseStyle="mapbox://styles/mapbox/dark-v10"
+              initialView={{
                 lng: config.initial_lng,
                 lat: config.initial_lat,
                 zoom: config.initial_zoom,
               }}
-              custom_layers={config.tiles}
-              layer_idx={idx}
+              customLayers={config.tiles}
+              layerIdx={idx}
             />
           }
           right={
             <DefaultMap
-              base_style="mapbox://styles/mapbox/satellite-streets-v11"
-              initial_view={{
+              baseStyle="mapbox://styles/mapbox/satellite-streets-v11"
+              initialView={{
                 lng: config.initial_lng,
                 lat: config.initial_lat,
                 zoom: config.initial_zoom,
@@ -75,7 +75,7 @@ export default function SwipeMapApp() {
         />
       )}
       <Card>
-        <Dropdown on_change={change_index} />
+        <Dropdown onChange={changeIndex} />
       </Card>
     </>
   );

@@ -5,35 +5,35 @@ import ResponseCanvas from "./ResponseCanvas";
 import SliderContainer from "./SliderContainer";
 import CovariateContainer from "./CovariateContainer";
 
-const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
-  const initial_thresholds = config.sliders.reduce(
+const DemoPanel = ({ config, clickedCoord, onHideModal }) => {
+  const initialThresholds = config.sliders.reduce(
     (o, el) => ({ ...o, [el.name]: el.initial_value }),
     {}
   );
-  const [thresholds, set_thresholds] = useState(initial_thresholds);
-  const [loaded_images, set_loaded_images] = useState({});
-  const [xy, set_xy] = useState({ x: 0, y: 0 });
+  const [thresholds, setThresholds] = useState(initialThresholds);
+  const [loadedImages, setLoadedImages] = useState({});
+  const [xy, setXy] = useState({ x: 0, y: 0 });
   const modal = useRef(null);
 
-  const init_images_object = useCallback(() => {
-    function return_paths(obj) {
+  const initImagesObject = useCallback(() => {
+    function returnPaths(obj) {
       return obj.reduce(function (acc, cur) {
         acc[cur.geotiff_path] = false;
         return acc;
       }, {});
     }
-    const covariates = return_paths(config.covariates);
-    const responses = return_paths(config.responses);
+    const covariates = returnPaths(config.covariates);
+    const responses = returnPaths(config.responses);
     return { ...covariates, ...responses };
   }, [config]);
 
   const loaded = useCallback((key) => {
-    set_loaded_images((s) => ({ ...s, [key]: true }));
+    setLoadedImages((s) => ({ ...s, [key]: true }));
   }, []);
 
-  const handle_threshold_change = useCallback(
+  const handleThresholdChange = useCallback(
     (event) => {
-      set_thresholds({
+      setThresholds({
         ...thresholds,
         [event.target.name]: +event.target.value,
       });
@@ -41,37 +41,37 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
     [thresholds]
   );
 
-  const handle_response_mousemove = useCallback((event) => {
+  const handleResponseMousemove = useCallback((event) => {
     const rect = event.target.getBoundingClientRect();
-    const scale_x = event.target.width / rect.width;
-    const scale_y = event.target.height / rect.height;
-    const x = (event.clientX - rect.left) * scale_x;
-    const y = (event.clientY - rect.top) * scale_y;
-    set_xy({ x: x, y: y });
+    const scaleX = event.target.width / rect.width;
+    const scaleY = event.target.height / rect.height;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+    setXy({ x: x, y: y });
   }, []);
 
-  const clear_loaded_images = useCallback(() => {
-    set_loaded_images(init_images_object());
-  }, [init_images_object]);
+  const clearLoadedImages = useCallback(() => {
+    setLoadedImages(initImagesObject());
+  }, [initImagesObject]);
 
   useEffect(() => {
-    clear_loaded_images();
-  }, [clear_loaded_images]);
+    clearLoadedImages();
+  }, [clearLoadedImages]);
 
   useEffect(() => {
     if (modal.current) return;
-    const modal_div = document.querySelector("#example-modal");
-    modal_div.addEventListener("hidden.bs.modal", clear_loaded_images);
-    modal_div.addEventListener("hidden.bs.modal", onHideModal);
-    modal.current = new Modal(modal_div);
-  }, [onHideModal, clear_loaded_images]);
+    const modalDiv = document.querySelector("#example-modal");
+    modalDiv.addEventListener("hidden.bs.modal", clearLoadedImages);
+    modalDiv.addEventListener("hidden.bs.modal", onHideModal);
+    modal.current = new Modal(modalDiv);
+  }, [onHideModal, clearLoadedImages]);
 
   useEffect(() => {
-    if (!modal.current || !clicked_coord) return;
-    if (Object.values(loaded_images).every((i) => i === true)) {
+    if (!modal.current || !clickedCoord) return;
+    if (Object.values(loadedImages).every((i) => i === true)) {
       modal.current.show();
     }
-  }, [clicked_coord, loaded_images]);
+  }, [clickedCoord, loadedImages]);
 
   return (
     <div
@@ -99,10 +99,10 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
               <div id="response-panel" className="col-md-6">
                 <ResponseCanvas
                   responses={config.responses}
-                  clicked_coord={clicked_coord}
+                  clickedCoord={clickedCoord}
                   thresholds={thresholds}
-                  onMouseMove={handle_response_mousemove}
-                  loaded_func={loaded}
+                  onMouseMove={handleResponseMousemove}
+                  loadedFunc={loaded}
                 />
               </div>
               <div id="ui" className="col-md-6">
@@ -112,16 +112,16 @@ const DemoPanel = ({ config, clicked_coord, onHideModal }) => {
                 </p>
                 <SliderContainer
                   sliders={config.sliders}
-                  onChange={handle_threshold_change}
+                  onChange={handleThresholdChange}
                 />
               </div>
             </div>
             <div className="row">
               <CovariateContainer
                 covariates={config.covariates}
-                clicked_coord={clicked_coord}
+                clickedCoord={clickedCoord}
                 xy={xy}
-                loaded_func={loaded}
+                loadedFunc={loaded}
               />
             </div>
           </div>

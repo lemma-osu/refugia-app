@@ -11,9 +11,9 @@ export default function Card({ children }) {
   );
 }
 
-export function Dropdown({ on_change }) {
+export function Dropdown({ onChange }) {
   return (
-    <select onChange={(e) => on_change(e.currentTarget.value)}>
+    <select onChange={(e) => onChange(e.currentTarget.value)}>
       <option value="0">nofp</option>
       <option value="1">ogsi</option>
       <option value="2">op</option>

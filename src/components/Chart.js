@@ -10,60 +10,55 @@ export const Svg = ({ width, height, margin, children }) => {
 };
 
 export const XAxis = ({
-  x_scale,
-  inner_height,
-  num_ticks = 5,
-  tick_offset = 3,
+  xScale,
+  innerHeight,
+  numTicks = 5,
+  tickOffset = 3,
 }) => {
-  const max_value = max(x_scale.ticks(num_ticks));
-  const formatter = max_value > 10000 ? format(".2s") : format("");
-  return x_scale.ticks(num_ticks).map((tick_value) => (
+  const maxValue = max(xScale.ticks(numTicks));
+  const formatter = maxValue > 10000 ? format(".2s") : format("");
+  return xScale.ticks(numTicks).map((tickValue) => (
     <g
       className="tick"
-      key={tick_value}
-      transform={`translate(${x_scale(tick_value)}, 0)`}
+      key={tickValue}
+      transform={`translate(${xScale(tickValue)}, 0)`}
     >
-      <line y2={inner_height} stroke="black" />
+      <line y2={innerHeight} stroke="black" />
       <text
         style={{ textAnchor: "middle" }}
         dy=".71em"
-        y={inner_height + tick_offset}
+        y={innerHeight + tickOffset}
       >
-        {formatter(tick_value)}
+        {formatter(tickValue)}
       </text>
     </g>
   ));
 };
 
-export const YAxis = ({
-  y_scale,
-  inner_width,
-  num_ticks = 5,
-  tick_offset = 3,
-}) => {
-  return y_scale.ticks(num_ticks).map((tick_value) => (
+export const YAxis = ({ yScale, innerWidth, numTicks = 5, tickOffset = 3 }) => {
+  return yScale.ticks(numTicks).map((tickValue) => (
     <g
       className="tick"
-      key={tick_value}
-      transform={`translate(0, ${y_scale(tick_value)})`}
+      key={tickValue}
+      transform={`translate(0, ${yScale(tickValue)})`}
     >
-      <line x2={inner_width} stroke="black" />
-      <text style={{ textAnchor: "end" }} dy=".32em" x={-tick_offset}>
-        {tick_value}
+      <line x2={innerWidth} stroke="black" />
+      <text style={{ textAnchor: "end" }} dy=".32em" x={-tickOffset}>
+        {tickValue}
       </text>
     </g>
   ));
 };
 
-export const Line = ({ data, x_scale, y_scale, x_value, y_value }) => {
+export const Line = ({ data, xScale, yScale, xValue, yValue }) => {
   const line_ = line()
-    .x((d) => x_scale(x_value(d)))
-    .y((d) => y_scale(y_value(d)));
+    .x((d) => xScale(xValue(d)))
+    .y((d) => yScale(yValue(d)));
 
   const d = line_(data);
   return <path className="line" d={d} />;
 };
 
-export const Dot = ({ d, circle_radius }) => (
-  <circle className="dot" cx={d.x} cy={d.y} r={circle_radius} />
+export const Dot = ({ d, circleRadius }) => (
+  <circle className="dot" cx={d.x} cy={d.y} r={circleRadius} />
 );

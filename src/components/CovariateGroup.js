@@ -5,13 +5,13 @@ import PartialDependencePlot from "./PartialDependencePlot";
 const CovariateGroup = ({
   name,
   description,
-  geotiff_path,
-  clicked_coord,
-  chart_data_path,
+  geotiffPath,
+  clickedCoord,
+  chartDataPath,
   xy,
-  loaded_func,
+  loadedFunc,
 }) => {
-  const variable_value = useRef(0);
+  const variableValue = useRef(0);
   return (
     <div className="covariate-group">
       <div>
@@ -19,15 +19,15 @@ const CovariateGroup = ({
       </div>
       <CovariateCanvas
         id={name}
-        geotiff_path={geotiff_path}
-        clicked_coord={clicked_coord}
+        geotiffPath={geotiffPath}
+        clickedCoord={clickedCoord}
         xy={xy}
-        variable_value={variable_value}
-        loaded_func={loaded_func}
+        variableValue={variableValue}
+        loadedFunc={loadedFunc}
       />
       <PartialDependencePlot
-        chart_data_path={chart_data_path}
-        variable_value={variable_value.current}
+        chartDataPath={chartDataPath}
+        variableValue={variableValue.current}
       />
     </div>
   );

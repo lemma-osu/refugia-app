@@ -5,15 +5,12 @@ import DemoPanel from "./DemoPanel";
 import { ResponseDropdown } from "./Card";
 
 export default function App({ config }) {
-  const [clicked_coord, set_clicked_coord] = useState(null);
-  const [idx, set_idx] = useState(0);
+  const [clickedCoord, setClickedCoord] = useState(null);
+  const [idx, setIdx] = useState(0);
 
-  function handle_modal_close() {
-    set_clicked_coord(null);
-  }
 
-  function handle_change_index(e) {
-    set_idx(+e.currentTarget.value);
+  function handleModalClose() {
+    setClickedCoord(null);
   }
 
   return (
@@ -21,7 +18,7 @@ export default function App({ config }) {
       <ResponseMap
         config={config}
         idx={idx}
-        on_clicked_coord={set_clicked_coord}
+        onClickedCoord={setClickedCoord}
       />
       <div
         className="card text-white bg-dark m-3"
@@ -49,7 +46,7 @@ export default function App({ config }) {
 
   // <DemoPanel
   //   config={config}
-  //   clicked_coord={clicked_coord}
-  //   onHideModal={handle_modal_close}
+  //   clickedCoord={clickedCoord}
+  //   onHideModal={handleModalClose}
   // />
 }

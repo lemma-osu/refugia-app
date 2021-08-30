@@ -1,7 +1,7 @@
 export async function create_source_objects(config) {
-  let map_layers = [];
+  let mapLayers = [];
   config.tiles.forEach((layer) => {
-    map_layers[layer.name] = {
+    mapLayers[layer.name] = {
       legend: layer.legend,
       source: {
         type: "raster",
@@ -18,5 +18,5 @@ export async function create_source_objects(config) {
       },
     };
   });
-  return map_layers;
+  return mapLayers;
 }

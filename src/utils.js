@@ -2,34 +2,34 @@ import { fromUrl } from "geotiff";
 import { quantile } from "d3";
 import { plot as Plot } from "plotty";
 
-import { project_point } from "./projection";
+import { projectPoint } from "./projection";
 
 export const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 
-async function load_tiff(path) {
+async function loadTiff(path) {
   const tiff = await fromUrl(path);
   return await tiff.getImage();
 }
 
-function get_rc(img, xy) {
-  const [ul_x, ul_y] = img.getOrigin();
-  const [x_res, y_res] = img.getResolution();
-  const row = Math.floor(Math.abs((xy[1] - ul_y) / y_res));
-  const col = Math.floor(Math.abs((xy[0] - ul_x) / x_res));
+function getRowCol(img, xy) {
+  const [ulX, ulY] = img.getOrigin();
+  const [xRes, yRes] = img.getResolution();
+  const row = Math.floor(Math.abs((xy[1] - ulY) / yRes));
+  const col = Math.floor(Math.abs((xy[0] - ulX) / xRes));
   return [row, col];
 }
 
-function get_corners(center_rc, width, height) {
-  const [r, c] = center_rc;
-  const half_width = Math.floor(width / 2);
-  const half_height = Math.floor(height / 2);
-  return [c - half_width, r - half_height, c + half_width, r + half_height];
+function getCorners(centerRowCol, width, height) {
+  const [r, c] = centerRowCol;
+  const halfWidth = Math.floor(width / 2);
+  const halfHeight = Math.floor(height / 2);
+  return [c - halfWidth, r - halfHeight, c + halfWidth, r + halfHeight];
 }
 
-async function read_raster_definition(path, xy, canvas_width, canvas_height) {
-  const img = await load_tiff(path, xy);
-  const pt = get_rc(img, xy);
-  const window = get_corners(pt, canvas_width, canvas_height);
+async function readRasterDefinition(path, xy, canvasWidth, canvasHeight) {
+  const img = await loadTiff(path, xy);
+  const pt = getRowCol(img, xy);
+  const window = getCorners(pt, canvasWidth, canvasHeight);
   return {
     img: img,
     window: window,
@@ -37,24 +37,24 @@ async function read_raster_definition(path, xy, canvas_width, canvas_height) {
   };
 }
 
-async function read_tiff(img, window) {
+async function readTiff(img, window) {
   return await img.readRasters({ window: window });
 }
 
-export async function get_canvas_data(lng, lat, geotiff_path, width, height) {
-  const xy = project_point(lng, lat);
-  const def = await read_raster_definition(geotiff_path, xy, width, height);
-  return await read_tiff(def.img, def.window);
+export async function getCanvasData(lng, lat, geotiffPath, width, height) {
+  const xy = projectPoint(lng, lat);
+  const def = await readRasterDefinition(geotiffPath, xy, width, height);
+  return await readTiff(def.img, def.window);
 }
 
-export async function get_all_images(lng, lat, geotiff_paths, width, height) {
-  const promises = geotiff_paths.map((path) =>
-    get_canvas_data(lng, lat, path, width, height)
+export async function getAllImages(lng, lat, geotiffPaths, width, height) {
+  const promises = geotiffPaths.map((path) =>
+    getCanvasData(lng, lat, path, width, height)
   );
   return await Promise.all(promises);
 }
 
-export function initialize_canvas_plot(canvas, width, height) {
+export function initializeCanvasPlot(canvas, width, height) {
   return new Plot({
     canvas: canvas,
     width: width,
@@ -64,7 +64,7 @@ export function initialize_canvas_plot(canvas, width, height) {
   });
 }
 
-export function draw_to_plot(plot, arr) {
+export function drawToPlot(plot, arr) {
   const min = quantile(arr[0], 0.02);
   const max = quantile(arr[0], 0.98);
   plot.setData(arr[0], arr.width, arr.height);

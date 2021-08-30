@@ -1,4 +1,4 @@
-export function create_tilejson(layer) {
+export function createTilejson(layer) {
   return {
     source: {
       type: "raster",
@@ -16,21 +16,21 @@ export function create_tilejson(layer) {
   };
 }
 
-export function add_custom_layer(map, layer_definition) {
+export function addCustomLayer(map, layerDefinition) {
   // Add the new source if necessary
-  const source = layer_definition.layer.source;
+  const source = layerDefinition.layer.source;
   if (map.getSource(source) === undefined || !map.isSourceLoaded(source)) {
-    map.addSource(source, layer_definition.source);
+    map.addSource(source, layerDefinition.source);
   }
 
   // Add the new layer
-  const before_layer =
+  const beforeLayer =
     map.getLayer("forest-mask-layer") === undefined
       ? "land-structure-polygon"
       : "forest-mask-layer";
-  map.addLayer(layer_definition.layer, before_layer);
+  map.addLayer(layerDefinition.layer, beforeLayer);
 }
 
-export function remove_layer(map, layer) {
+export function removeLayer(map, layer) {
   map.removeLayer(layer.layer.id);
 }
