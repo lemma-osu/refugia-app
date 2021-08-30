@@ -6,6 +6,8 @@ import ResponseMap from "./ResponseMap";
 import DemoPanel from "./DemoPanel";
 import { ResponseDropdown, MiwDropdown } from "./Dropdown";
 import IntroductionPanel from "./IntroductionPanel";
+import ColorRamp from "./ColorRamp";
+import { isEqual } from "lodash";
 
 const MIW_SIZES = {
   0: [300, 200],
@@ -72,6 +74,12 @@ export default function App({ config }) {
           </div>
           <ResponseDropdown config={config} onChange={handleChangeResponse} />
           <MiwDropdown onChange={handleChangeMiw} />
+          <ColorRamp />
+          <div className="d-grid">
+            <Button variant="success" onClick={handleShowIntro}>
+              To the MIW!!!
+            </Button>
+          </div>
         </Card.Body>
       </Card>
 
