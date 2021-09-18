@@ -175,7 +175,7 @@ export default function ResponseMap({ config, idx, miwSize, onClickedCoord }) {
       layout: {},
       paint: {
         "fill-color": "#0080ff",
-        "fill-opacity": 0.5,
+        "fill-opacity": 0,
       },
     });
 
@@ -185,7 +185,7 @@ export default function ResponseMap({ config, idx, miwSize, onClickedCoord }) {
       source: "box",
       layout: {},
       paint: {
-        "line-color": "#000",
+        "line-color": "#ffff00",
         "line-width": 3,
       },
     });
