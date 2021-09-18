@@ -1,27 +1,73 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
 
-export function ResponseDropdown({ config, onChange }) {
+function ResponseVariableDropdown({ v, selected, onChange }) {
+  function handleChange(e) {
+    onChange({ [e.target.name]: +e.target.value });
+  }
+
+  return (
+    <Form.Group className="mb-3 mt-3 ms-3">
+      <Form.Label>{v.description}</Form.Label>
+      <Form.Select
+        name={v.name}
+        aria-label={v.description}
+        value={selected}
+        onChange={handleChange}
+      >
+        {v.steps.map((d) => (
+          <option key={d.value} value={d.value}>
+            {d.label}
+          </option>
+        ))}
+      </Form.Select>
+    </Form.Group>
+  );
+}
+
+function ResponseVariableDropdownGroup({ variables, responses, onChange }) {
   return (
     <>
-      {config.sliders.map((s, i) => (
-        <Form.Group key={i} className="mb-3 mt-3">
-          <Form.Label>{s.description}</Form.Label>
-          <Form.Select
-            name={s.name}
-            defaultValue={s.initial_value}
-            aria-label={s.description}
-            onChange={onChange}
-          >
-            {s.steps.map((d) => (
-              <option key={d.value} value={d.value}>
-                {d.label}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+      {variables.map((v, idx) => (
+        <ResponseVariableDropdown
+          key={idx}
+          v={v}
+          selected={responses[v.name]}
+          onChange={onChange}
+        />
       ))}
     </>
+  );
+}
+
+export function ResponseSurfaceDropdown({
+  config,
+  surface,
+  responses,
+  onSurfaceChange,
+  onResponseChange,
+}) {
+  return (
+    <Form.Group className="mb-3 mt-3">
+      <Form.Label>Response Surface</Form.Label>
+      <Form.Select
+        name="response"
+        defaultValue={0}
+        aria-label="Response Surface"
+        onChange={onSurfaceChange}
+      >
+        {config.sliders.map((s, i) => (
+          <option key={i} value={i}>
+            {s.description}
+          </option>
+        ))}
+      </Form.Select>
+      <ResponseVariableDropdownGroup
+        variables={config.sliders[surface].variables}
+        responses={responses}
+        onChange={onResponseChange}
+      />
+    </Form.Group>
   );
 }
 

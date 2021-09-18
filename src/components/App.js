@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
 import ResponseMap from "./ResponseMap";
 import DemoPanel from "./DemoPanel";
-import { ResponseDropdown, MiwDropdown } from "./Dropdown";
+import { ResponseSurfaceDropdown, MiwDropdown } from "./Dropdown";
 import IntroductionPanel from "./IntroductionPanel";
 import ColorRamp from "./ColorRamp";
 import { isEqual } from "lodash";
@@ -14,12 +14,52 @@ const MIW_SIZES = {
   1: [600, 400],
 };
 
-export default function App({ config }) {
-  const initialResponses = config.sliders.reduce(
-    (o, el) => ({ ...o, [el.name]: el.initial_value }),
+// Function to set the default values for the varying variables
+// for each of the response surfaces
+const getDefaultResponses = (config) => {
+  return config.sliders.reduce(
+    (obj, el, idx) => ({
+      ...obj,
+      [idx]: el.variables.reduce(
+        (obj, el) => ({ ...obj, [el.name]: el.initial_value }),
+        {}
+      ),
+    }),
     {}
   );
-  const [responses, setResponses] = useState(initialResponses);
+};
+
+const initializeState = (config) => {
+  const defaultResponses = getDefaultResponses(config);
+  return {
+    surface: 0,
+    responses: defaultResponses[0],
+    defaultResponses: defaultResponses,
+  };
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_SURFACE":
+      return {
+        ...state,
+        surface: action.payload,
+        responses: state.defaultResponses[action.payload],
+      };
+
+    case "SET_RESPONSES":
+      return {
+        ...state,
+        responses: action.payload,
+      };
+
+    default:
+      return state;
+  }
+}
+
+export default function App({ config }) {
+  const [state, dispatch] = useReducer(reducer, config, initializeState);
 
   const [clickedCoord, setClickedCoord] = useState(null);
   const [showIntro, setShowIntro] = useState(false);
@@ -34,11 +74,13 @@ export default function App({ config }) {
     setClickedCoord(null);
   }
 
-  const handleChangeResponse = (event) => {
-    setResponses({
-      ...responses,
-      [event.target.name]: +event.target.value,
-    });
+  const handleSurfaceChange = (event) => {
+    dispatch({ type: "SET_SURFACE", payload: +event.target.value });
+  };
+
+  const handleResponseChange = (changed) => {
+    const responses = { ...state.responses, ...changed };
+    dispatch({ type: "SET_RESPONSES", payload: responses });
   };
 
   const handleChangeMiw = (event) => {
@@ -73,7 +115,13 @@ export default function App({ config }) {
               Show Introduction
             </Button>
           </div>
-          <ResponseDropdown config={config} onChange={handleChangeResponse} />
+          <ResponseSurfaceDropdown
+            config={config}
+            surface={state.surface}
+            responses={state.responses}
+            onSurfaceChange={handleSurfaceChange}
+            onResponseChange={handleResponseChange}
+          />
           <MiwDropdown onChange={handleChangeMiw} />
           <ColorRamp />
           <div className="d-grid">
