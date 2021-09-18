@@ -64,7 +64,7 @@ export default function App({ config }) {
 
   const [clickedCoord, setClickedCoord] = useState(null);
   const [showIntro, setShowIntro] = useState(false);
-  const [idx, setIdx] = useState(0);
+  const [tileIdx, setTileIdx] = useState(0);
   const [miwSize, setMiwSize] = useState([300, 200]);
 
   // Event handlers
@@ -89,16 +89,15 @@ export default function App({ config }) {
   };
 
   useEffect(() => {
-    setIdx(
-      config.responses.findIndex((r) => isEqual(r.combination, responses))
-    );
-  }, [config, responses]);
+    const comb = { ...state.responses, surface: state.surface };
+    setTileIdx(config.tiles.findIndex((r) => isEqual(r.combination, comb)));
+  }, [config, state.surface, state.responses]);
 
   return (
     <>
       <ResponseMap
         config={config}
-        idx={idx}
+        idx={tileIdx}
         miwSize={miwSize}
         onClickedCoord={setClickedCoord}
       />
@@ -110,7 +109,11 @@ export default function App({ config }) {
         style={{ maxWidth: "20rem", height: "calc(100vh - 32px)" }}
       >
         <Card.Body>
-          <Card.Title>EcoVis</Card.Title>
+          <Card.Title>Eco-Vis</Card.Title>
+          <div className="pb-3">
+            Placeholder text for any descriptive text of Eco-Vis that users
+            should have before hitting the "Show Introduction" button
+          </div>
           <div className="d-grid">
             <Button variant="primary" onClick={handleShowIntro}>
               Show Introduction
