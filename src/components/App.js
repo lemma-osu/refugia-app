@@ -61,6 +61,10 @@ function reducer(state, action) {
 
 export default function App({ config }) {
   const [state, dispatch] = useReducer(reducer, config, initializeState);
+  const [location, setLocation] = useState({
+    lng: config.initial_lng,
+    lat: config.initial_lat,
+  });
 
   const [clickedCoord, setClickedCoord] = useState(null);
   const [showIntro, setShowIntro] = useState(false);
@@ -88,6 +92,10 @@ export default function App({ config }) {
     setMiwSize(MIW_SIZES[+event.target.value]);
   };
 
+  const handleLocationChange = (event) => {
+    setLocation(event.lngLat);
+  };
+
   useEffect(() => {
     const comb = { ...state.responses, surface: state.surface };
     setTileIdx(config.tiles.findIndex((r) => isEqual(r.combination, comb)));
@@ -99,6 +107,7 @@ export default function App({ config }) {
         config={config}
         idx={tileIdx}
         miwSize={miwSize}
+        onMouseMove={handleLocationChange}
         onClickedCoord={setClickedCoord}
       />
 
@@ -118,6 +127,10 @@ export default function App({ config }) {
             <Button variant="primary" onClick={handleShowIntro}>
               Show Introduction
             </Button>
+          </div>
+          <div className="mt-3">
+            Latitude: {location.lat.toFixed(4)} | Longitude:{" "}
+            {location.lng.toFixed(4)}
           </div>
           <ResponseSurfaceDropdown
             config={config}

@@ -72,7 +72,13 @@ function reducer(state, action) {
   }
 }
 
-export default function ResponseMap({ config, idx, miwSize, onClickedCoord }) {
+export default function ResponseMap({
+  config,
+  idx,
+  miwSize,
+  onMouseMove,
+  onClickedCoord,
+}) {
   const [map, setMap] = useState(null);
   const [state, dispatch] = useReducer(
     reducer,
@@ -138,6 +144,11 @@ export default function ResponseMap({ config, idx, miwSize, onClickedCoord }) {
     setMapHandlers();
   }, [state.offset]);
 
+  useEffect(() => {
+    if (!map) return;
+    map.on("mousemove", onMouseMove);
+  }, [map, onMouseMove]);
+
   // useEffect(() => {
   //   if (!map) return;
 
@@ -192,11 +203,13 @@ export default function ResponseMap({ config, idx, miwSize, onClickedCoord }) {
 
     map.on("mouseenter", "box", () => {
       map.setPaintProperty("box", "fill-color", "#3bb2d0");
+      map.setPaintProperty("outline", "line-color", "#ff6600");
       canvas.style.cursor = "move";
     });
 
     map.on("mouseleave", "box", () => {
       map.setPaintProperty("box", "fill-color", "#0080ff");
+      map.setPaintProperty("outline", "line-color", "#ffff00");
       canvas.style.cursor = "";
     });
 
