@@ -74,17 +74,20 @@ export function ResponseSurfaceDropdown({
 export function MiwDropdown({ onChange }) {
   return (
     <Form.Group className="mb-3 mt-3">
-      <Form.Label>Model Inspector Widow (MIW) Size</Form.Label>
+      <Form.Label>Model Inspector Window (MIW) Size</Form.Label>
       <Form.Select
         name="miw-select"
-        defaultValue={0}
+        defaultValue={1}
         aria-label="MIW Size"
         onChange={onChange}
       >
         <option key={0} value={0}>
-          9 x 6 kilometers
+          4.5 x 3 kilometers
         </option>
         <option key={1} value={1}>
+          9 x 6 kilometers
+        </option>
+        <option key={2} value={2}>
           18 x 12 kilometers
         </option>
       </Form.Select>

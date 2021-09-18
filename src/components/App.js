@@ -10,8 +10,9 @@ import ColorRamp from "./ColorRamp";
 import { isEqual } from "lodash";
 
 const MIW_SIZES = {
-  0: [300, 200],
-  1: [600, 400],
+  0: [150, 100],
+  1: [300, 200],
+  2: [600, 400],
 };
 
 // Function to set the default values for the varying variables
