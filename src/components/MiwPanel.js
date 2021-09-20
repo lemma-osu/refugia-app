@@ -9,6 +9,7 @@ import CovariateContainer from "./CovariateContainer";
 export default function MiwPanel({
   show,
   config,
+  miwResponseIdx,
   miwLocation,
   onHide,
 }) {

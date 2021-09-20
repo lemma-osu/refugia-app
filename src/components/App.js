@@ -72,6 +72,7 @@ export default function App({ config }) {
   const [showIntro, setShowIntro] = useState(false);
   const [showMiw, setShowMiw] = useState(false);
   const [tileIdx, setTileIdx] = useState(0);
+  const [miwResponseIdx, setMiwResponseIdx] = useState(0);
   const [miwSize, setMiwSize] = useState([300, 200]);
 
   // Event handlers
@@ -104,6 +105,9 @@ export default function App({ config }) {
   useEffect(() => {
     const comb = { ...state.responses, surface: state.surface };
     setTileIdx(config.tiles.findIndex((r) => isEqual(r.combination, comb)));
+    setMiwResponseIdx(
+      config.responses.findIndex((r) => isEqual(r.combination, comb))
+    );
   }, [config, state.surface, state.responses]);
 
   return (
@@ -167,6 +171,7 @@ export default function App({ config }) {
       <MiwPanel
         config={config}
         show={showMiw}
+        miwResponseIdx={miwResponseIdx}
         miwLocation={miwLocation}
         onHide={handleMiwClose}
       />
