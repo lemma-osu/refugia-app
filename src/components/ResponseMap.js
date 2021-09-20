@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useState, useReducer, useEffect, useCallback } from "react";
 import DefaultMap from "./Map/DefaultMap";
 import CustomMultiLayerMap from "./Map/CustomMultiLayerMap";
 import SwipeMap from "./Map/SwipeMap";
@@ -128,16 +128,21 @@ export default function ResponseMap({
     initialize
   );
 
-  function renderBox(coord) {
-    if (!map || !map.getSource("box")) return;
-    state.geojson.features[0].geometry.coordinates = makeBox(
-      coord,
-      state.offset
-    );
-    map.getSource("box").setData(state.geojson);
-  }
+  // Render box based on current coordinate
+  const renderBox = useCallback(
+    (coord) => {
+      if (!map || !map.getSource("box")) return;
+      state.geojson.features[0].geometry.coordinates = makeBox(
+        coord,
+        state.offset
+      );
+      map.getSource("box").setData(state.geojson);
+    },
+    [map, state.offset, state.geojson]
+  );
 
-  function setMapHandlers() {
+  // Set map handlers each time focus is on MIW
+  const setMiwBoxHandlers = useCallback(() => {
     if (!map) return;
     const canvas = map.getCanvasContainer();
 
@@ -174,7 +179,7 @@ export default function ResponseMap({
 
     // Register the mousedown on box
     map.on("mousedown", "box", onDown);
-  }
+  }, [map, renderBox, onMiwMove]);
 
   // Set the map reference once the maps have loaded
   function handleMapLoad(compareMaps) {
@@ -186,11 +191,15 @@ export default function ResponseMap({
     dispatch({ type: "SET_OFFSET", payload: miwSize });
   }, [miwSize]);
 
+  // Update the handlers to pick up changes to box size
+  useEffect(() => {
+    setMiwBoxHandlers();
+  }, [state.offset, setMiwBoxHandlers]);
+
   // Rerender box
   useEffect(() => {
     renderBox(state.coord);
-    setMapHandlers();
-  }, [state.offset]);
+  }, [state.coord, state.offset, renderBox]);
 
   // Add event handler to report mouse location
   useEffect(() => {
@@ -198,6 +207,7 @@ export default function ResponseMap({
     map.on("mousemove", onMouseMove);
   }, [map, onMouseMove]);
 
+  // Add source/layers for box once map loads
   useEffect(() => {
     if (!map) return;
 
@@ -241,9 +251,7 @@ export default function ResponseMap({
       map.setPaintProperty("outline", "line-color", "#ffff00");
       canvas.style.cursor = "";
     });
-
-    setMapHandlers();
-  }, [map]);
+  }, [map, state.geojson]);
 
   return (
     <SwipeMap
