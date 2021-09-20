@@ -74,12 +74,8 @@ export default function App({ config }) {
   const [miwSize, setMiwSize] = useState([300, 200]);
 
   // Event handlers
-  const handleCloseIntro = () => setShowIntro(false);
-  const handleShowIntro = () => setShowIntro(true);
-
-  function handleModalClose() {
-    setClickedCoord(null);
-  }
+  const handleIntroClose = () => setShowIntro(false);
+  const handleIntroShow = () => setShowIntro(true);
 
   const handleSurfaceChange = (event) => {
     dispatch({ type: "SET_SURFACE", payload: +event.target.value });
@@ -90,7 +86,7 @@ export default function App({ config }) {
     dispatch({ type: "SET_RESPONSES", payload: responses });
   };
 
-  const handleChangeMiw = (event) => {
+  const handleMiwSizeChange = (event) => {
     setMiwSize(MIW_SIZES[+event.target.value]);
   };
 
@@ -130,7 +126,7 @@ export default function App({ config }) {
             should have before hitting the "Show Introduction" button
           </div>
           <div className="d-grid">
-            <Button variant="primary" onClick={handleShowIntro}>
+            <Button variant="primary" onClick={handleIntroShow}>
               Show Introduction
             </Button>
           </div>
@@ -149,10 +145,10 @@ export default function App({ config }) {
             onSurfaceChange={handleSurfaceChange}
             onResponseChange={handleResponseChange}
           />
-          <MiwDropdown onChange={handleChangeMiw} />
+          <MiwDropdown onChange={handleMiwSizeChange} />
           <ColorRamp />
           <div className="d-grid">
-            <Button variant="success" onClick={handleShowIntro}>
+            <Button variant="success" onClick={handleIntroShow}>
               To the MIW!!!
             </Button>
           </div>
@@ -162,7 +158,7 @@ export default function App({ config }) {
       <IntroductionPanel
         title="EcoVis Tool"
         show={showIntro}
-        onHide={handleCloseIntro}
+        onHide={handleIntroClose}
       />
     </>
   );
