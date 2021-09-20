@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState, useReducer, useCallback } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
@@ -65,8 +65,10 @@ export default function App({ config }) {
     lng: config.initial_lng,
     lat: config.initial_lat,
   });
-
-  const [clickedCoord, setClickedCoord] = useState(null);
+  const [miwLocation, setMiwLocation] = useState({
+    lng: config.initial_lng,
+    lat: config.initial_lat,
+  });
   const [showIntro, setShowIntro] = useState(false);
   const [tileIdx, setTileIdx] = useState(0);
   const [miwSize, setMiwSize] = useState([300, 200]);
@@ -92,9 +94,13 @@ export default function App({ config }) {
     setMiwSize(MIW_SIZES[+event.target.value]);
   };
 
-  const handleLocationChange = (event) => {
+  const handleLocationChange = useCallback((event) => {
     setLocation(event.lngLat);
-  };
+  }, []);
+
+  const handleMiwLocationChange = useCallback((coord) => {
+    setMiwLocation(coord);
+  }, []);
 
   useEffect(() => {
     const comb = { ...state.responses, surface: state.surface };
@@ -108,7 +114,7 @@ export default function App({ config }) {
         idx={tileIdx}
         miwSize={miwSize}
         onMouseMove={handleLocationChange}
-        onClickedCoord={setClickedCoord}
+        onMiwMove={handleMiwLocationChange}
       />
 
       <Card
@@ -131,6 +137,10 @@ export default function App({ config }) {
           <div className="mt-3">
             Latitude: {location.lat.toFixed(4)} | Longitude:{" "}
             {location.lng.toFixed(4)}
+          </div>
+          <div className="mt-3">
+            MIW Lat: {miwLocation.lat.toFixed(4)} | MIW Long:{" "}
+            {miwLocation.lng.toFixed(4)}
           </div>
           <ResponseSurfaceDropdown
             config={config}

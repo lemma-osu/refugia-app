@@ -116,7 +116,7 @@ export default function ResponseMap({
   idx,
   miwSize,
   onMouseMove,
-  onClickedCoord,
+  onMiwMove,
 }) {
   // Reference to map
   const [map, setMap] = useState(null);
@@ -155,6 +155,7 @@ export default function ResponseMap({
         payload: coord,
       });
       renderBox(coord);
+      onMiwMove(coord);
     }
 
     // On mouse released, turn off onMove event
