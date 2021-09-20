@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
 import ResponseMap from "./ResponseMap";
-import DemoPanel from "./DemoPanel";
+import MiwPanel from "./MiwPanel";
 import { ResponseSurfaceDropdown, MiwDropdown } from "./Dropdown";
 import IntroductionPanel from "./IntroductionPanel";
 import ColorRamp from "./ColorRamp";
@@ -70,12 +70,15 @@ export default function App({ config }) {
     lat: config.initial_lat,
   });
   const [showIntro, setShowIntro] = useState(false);
+  const [showMiw, setShowMiw] = useState(false);
   const [tileIdx, setTileIdx] = useState(0);
   const [miwSize, setMiwSize] = useState([300, 200]);
 
   // Event handlers
   const handleIntroClose = () => setShowIntro(false);
   const handleIntroShow = () => setShowIntro(true);
+  const handleMiwClose = () => setShowMiw(false);
+  const handleMiwShow = () => setShowMiw(true);
 
   const handleSurfaceChange = (event) => {
     dispatch({ type: "SET_SURFACE", payload: +event.target.value });
@@ -148,7 +151,7 @@ export default function App({ config }) {
           <MiwDropdown onChange={handleMiwSizeChange} />
           <ColorRamp />
           <div className="d-grid">
-            <Button variant="success" onClick={handleIntroShow}>
+            <Button variant="success" onClick={handleMiwShow}>
               To the MIW!!!
             </Button>
           </div>
@@ -160,12 +163,13 @@ export default function App({ config }) {
         show={showIntro}
         onHide={handleIntroClose}
       />
+
+      <MiwPanel
+        config={config}
+        show={showMiw}
+        miwLocation={miwLocation}
+        onHide={handleMiwClose}
+      />
     </>
   );
-
-  // <DemoPanel
-  //   config={config}
-  //   clickedCoord={clickedCoord}
-  //   onHideModal={handleModalClose}
-  // />
 }
