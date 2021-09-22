@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import { Modal } from "bootstrap";
 
 import ResponseCanvas from "./ResponseCanvas";
 import SliderContainer from "./SliderContainer";
@@ -61,68 +60,95 @@ export default function MiwPanel({
   //   setLoadedImages(initImagesObject());
   // }, [initImagesObject]);
 
+  const modal = useRef(null);
   // useEffect(() => {
   //   clearLoadedImages();
   // }, [clearLoadedImages]);
 
-  // useEffect(() => {
-  //   if (modal.current) return;
-  //   const modalDiv = document.querySelector("#example-modal");
-  //   modalDiv.addEventListener("hidden.bs.modal", clearLoadedImages);
-  //   modalDiv.addEventListener("hidden.bs.modal", onHide);
-  //   modal.current = new Modal(modalDiv);
-  // }, [onHideModal, clearLoadedImages]);
+  useEffect(() => {
+    if (modal.current) return;
+    const modalDiv = document.querySelector("#miw-modal");
+    modalDiv.addEventListener("hidden.bs.modal", clearLoadedImages);
+    modalDiv.addEventListener("hidden.bs.modal", onHide);
+    modal.current = new Modal(modalDiv);
+  }, [onHide, clearLoadedImages]);
 
-  // useEffect(() => {
-  //   if (!modal.current || !clickedCoord) return;
-  //   if (Object.values(loadedImages).every((i) => i === true)) {
-  //     modal.current.show();
-  //   }
-  // }, [clickedCoord, loadedImages]);
+  useEffect(() => {
+    if (!modal.current || !miwLocation) return;
+    if (Object.values(loadedImages).every((i) => i === true)) {
+      modal.current.show();
+    }
+  }, [miwLocation, loadedImages]);
 
   return (
-    <Modal show={show} onHide={onHide} size="xl">
-      <Modal.Header closeButton>
-        <Modal.Title>Model Inspector Window (MIW)</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="row">
-          <div id="response-panel" className="col-md-6">
-            {/* <ResponseCanvas
-              responses={config.responses}
-              miwLocation={miwLocation}
-              thresholds={thresholds}
-              onMouseMove={handleResponseMousemove}
-              loadedFunc={loaded}
-            /> */}
+    <div
+      className="modal fade"
+      id="miw-modal"
+      tabIndex="-1"
+      aria-labelledby="miw-model-label"
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-xl modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5>Model Inspector Window (MIW)</h5>
+            <button
+              type="button"
+              className="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div className="modal-body container-fluid">
+            <div className="row">
+              <div id="response-panel" className="col-md-6">
+                <ResponseCanvas
+                  responses={config.responses}
+                  centerCoord={miwLocation}
+                  width={miwSize[0]}
+                  height={miwSize[1]}
+                  currentIdx={currentIdx}
+                  onMouseMove={handleResponseMousemove}
+                  onLoaded={handleImageLoaded}
+                />
+              </div>
+              <div id="ui" className="col-md-6">
+                <p>
+                  The map on the left is refugial probability. Each map below is
+                  a covariate that helps determine probability of refugia. As
+                  you mouse over the map on the left, the corresponding
+                  covariates values at the mouse location are shown in the
+                  response curves below.
+                </p>
+                <ResponseVariableDropdownGroup
+                  variables={config.sliders[currentSurface].variables}
+                  responses={thresholds}
+                  onChange={handleThresholdChange}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <CovariateContainer
+                covariates={config.covariates}
+                centerCoord={miwLocation}
+                width={miwSize[0]}
+                height={miwSize[1]}
+                xy={xy}
+                onLoaded={handleImageLoaded}
+              />
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
           </div>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="primary" onClick={onHide}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
+      </div>
+    </div>
   );
-
-  //         <div id="ui" className="col-md-6">
-  //           <p>
-  //             The map on the left is refugial probability. Each map below is
-  //             a covariate that helps determine probability of refugia.
-  //           </p>
-  //           <SliderContainer
-  //             sliders={config.sliders}
-  //             onChange={handleThresholdChange}
-  //           />
-  //         </div>
-  //       </div>
-  //       <div className="row">
-  //         <CovariateContainer
-  //           covariates={config.covariates}
-  //           clickedCoord={clickedCoord}
-  //           xy={xy}
-  //           loadedFunc={loaded}
-  //         />
-  //       </div>
 }
