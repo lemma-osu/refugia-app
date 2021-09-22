@@ -25,7 +25,7 @@ function ResponseVariableDropdown({ v, selected, onChange }) {
   );
 }
 
-function ResponseVariableDropdownGroup({ variables, responses, onChange }) {
+export function ResponseVariableDropdownGroup({ variables, responses, onChange }) {
   return (
     <>
       {variables.map((v, idx) => (

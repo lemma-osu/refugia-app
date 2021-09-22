@@ -3,8 +3,8 @@ import { Modal } from "bootstrap";
 import { isEqual } from "lodash";
 
 import ResponseCanvas from "./ResponseCanvas";
-import SliderContainer from "./SliderContainer";
 import CovariateContainer from "./CovariateContainer";
+import { ResponseVariableDropdownGroup } from "./Dropdown";
 
 export default function MiwPanel({
   config,
