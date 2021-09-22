@@ -141,10 +141,6 @@ export default function App({ config }) {
             Latitude: {location.lat.toFixed(4)} | Longitude:{" "}
             {location.lng.toFixed(4)}
           </div>
-          <div className="mt-3">
-            MIW Lat: {miwLocation.lat.toFixed(4)} | MIW Long:{" "}
-            {miwLocation.lng.toFixed(4)}
-          </div>
           <ResponseSurfaceDropdown
             config={config}
             surface={state.surface}
@@ -154,9 +150,12 @@ export default function App({ config }) {
           />
           <MiwDropdown onChange={handleMiwSizeChange} />
           <ColorRamp />
-          <div className="d-grid">
+          <div className="d-grid gap-3">
             <Button variant="success" onClick={handleMiwShow}>
               To the MIW!!!
+            </Button>
+            <Button variant="success" onClick={handleIntroShow}>
+              Download Current Layer
             </Button>
           </div>
         </Card.Body>
@@ -168,13 +167,16 @@ export default function App({ config }) {
         onHide={handleIntroClose}
       />
 
-      <MiwPanel
-        config={config}
-        show={showMiw}
-        miwResponseIdx={miwResponseIdx}
-        miwLocation={miwLocation}
-        onHide={handleMiwClose}
-      />
+      {showMiw && (
+        <MiwPanel
+          config={config}
+          miwResponseIdx={miwResponseIdx}
+          miwLocation={miwLocation}
+          miwSize={miwSize}
+          currentSurface={state.surface}
+          onHide={handleMiwClose}
+        />
+      )}
     </>
   );
 }
