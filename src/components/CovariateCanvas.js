@@ -5,25 +5,27 @@ import { getCanvasData, drawToPlot, initializeCanvasPlot } from "../utils";
 export default function CovariateCanvas({
   id,
   geotiffPath,
-  clickedCoord,
+  centerCoord,
+  width,
+  height,
   xy,
   variableValue,
-  loadedFunc,
+  onLoaded,
 }) {
   const canvas = useRef();
   const plot = useRef();
   const arr = useRef();
-  const width = 300;
-  const height = 200;
 
+  // Create canvas element with the correct size
   useEffect(() => {
     if (!plot.current) {
       plot.current = initializeCanvasPlot(canvas.current, width, height);
     }
-  }, [plot]);
+  }, [plot, width, height]);
 
+  // Load the image once the canvas has initialized
   useEffect(() => {
-    if (!plot.current || !clickedCoord) return;
+    if (!plot.current || !centerCoord) return;
     async function getData(coord) {
       arr.current = await getCanvasData(
         coord.lng,
@@ -33,12 +35,14 @@ export default function CovariateCanvas({
         height
       );
     }
-    getData(clickedCoord).then(() => {
+    getData(centerCoord).then(() => {
       drawToPlot(plot.current, arr.current);
-      loadedFunc(geotiffPath);
+      onLoaded(geotiffPath);
     });
-  }, [plot, clickedCoord, geotiffPath, loadedFunc]);
+  }, [plot, centerCoord, geotiffPath, onLoaded, width, height]);
 
+  // Retrieve the value in the array at the xy offset and store in
+  // variableValue ref provided by parent
   useEffect(() => {
     if (!plot.current || !arr.current) return;
     const offset = parseInt(xy.y, 10) * arr.current.width + parseInt(xy.x, 10);

@@ -3,9 +3,11 @@ import CovariateGroup from "./CovariateGroup";
 
 export default function CovariateContainer({
   covariates,
-  clickedCoord,
+  centerCoord,
+  width,
+  height,
   xy,
-  loadedFunc,
+  onLoaded,
 }) {
   return (
     <div id="covariate-panel" className="col-md-12">
@@ -14,11 +16,13 @@ export default function CovariateContainer({
           key={covariate.name}
           name={covariate.name}
           description={covariate.description}
-          clickedCoord={clickedCoord}
-          geotiffPath={covariate.geotiffPath}
-          chartDataPath={covariate.chartDataPath}
+          centerCoord={centerCoord}
+          width={width}
+          height={height}
+          geotiffPath={covariate.geotiff_path}
+          chartDataPath={covariate.chart_data_path}
           xy={xy}
-          loadedFunc={loadedFunc}
+          onLoaded={onLoaded}
         />
       ))}
     </div>

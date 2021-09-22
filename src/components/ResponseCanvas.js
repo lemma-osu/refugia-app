@@ -3,19 +3,19 @@ import { isEqual } from "lodash";
 
 import { getAllImages, drawToPlot, initializeCanvasPlot } from "../utils";
 
-const ResponseCanvas = ({
+export default function ResponseCanvas({
   responses,
-  clickedCoord,
   thresholds,
+  centerCoord,
+  width,
+  height,
   onMouseMove,
-  loadedFunc,
-}) => {
+  onLoaded,
+}) {
   const canvas = useRef();
   const plot = useRef();
   const arrs = useRef();
   const initialIdx = useRef();
-  const width = 300;
-  const height = 200;
 
   initialIdx.current = responses.findIndex((r) =>
     isEqual(r.combination, thresholds)
@@ -25,10 +25,10 @@ const ResponseCanvas = ({
     if (!plot.current) {
       plot.current = initializeCanvasPlot(canvas.current, width, height);
     }
-  }, [plot]);
+  }, [plot, width, height]);
 
   useEffect(() => {
-    if (!plot.current || !clickedCoord) return;
+    if (!plot.current || !centerCoord) return;
     async function getData(coord) {
       const paths = responses.map((r) => r.geotiff_path);
       arrs.current = await getAllImages(
@@ -42,10 +42,10 @@ const ResponseCanvas = ({
     getData(clickedCoord).then(() => {
       drawToPlot(plot.current, arrs.current[initialIdx.current]);
       responses.forEach((r) => {
-        loadedFunc(r.geotiff_path);
+        onLoaded(r.geotiff_path);
       });
     });
-  }, [plot, clickedCoord, responses, loadedFunc]);
+  }, [plot, centerCoord, responses, onLoaded, width, height, currentIdx]);
 
   useEffect(() => {
     if (!plot.current || !arrs.current) return;
@@ -63,6 +63,4 @@ const ResponseCanvas = ({
       onMouseMove={onMouseMove}
     ></canvas>
   );
-};
-
-export default ResponseCanvas;
+}

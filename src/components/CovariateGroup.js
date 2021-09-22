@@ -6,10 +6,12 @@ export default function CovariateGroup({
   name,
   description,
   geotiffPath,
-  clickedCoord,
+  centerCoord,
+  width,
+  height,
   chartDataPath,
   xy,
-  loadedFunc,
+  onLoaded,
 }) {
   const variableValue = useRef(0);
   return (
@@ -20,10 +22,12 @@ export default function CovariateGroup({
       <CovariateCanvas
         id={name}
         geotiffPath={geotiffPath}
-        clickedCoord={clickedCoord}
+        centerCoord={centerCoord}
+        width={width}
+        height={height}
         xy={xy}
         variableValue={variableValue}
-        loadedFunc={loadedFunc}
+        onLoaded={onLoaded}
       />
       <PartialDependencePlot
         chartDataPath={chartDataPath}

@@ -6,10 +6,10 @@ import SliderContainer from "./SliderContainer";
 import CovariateContainer from "./CovariateContainer";
 
 export default function MiwPanel({
-  show,
   config,
   miwResponseIdx,
   miwLocation,
+  miwSize,
   onHide,
 }) {
   const initialThresholds = config.sliders.reduce(
