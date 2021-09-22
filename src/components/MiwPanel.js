@@ -27,7 +27,31 @@ export default function MiwPanel({
   const [thresholds, setThresholds] = useState(currentResponses);
   const [currentIdx, setCurrentIdx] = useState(miwResponseIdx);
 
+  // Initialize the loadedImages object to track which images have
+  // finished loading into canvas objects
+  const initImagesObject = useCallback(() => {
+    function returnPaths(obj) {
+      return obj.reduce(function (acc, cur) {
+        acc[cur.geotiff_path] = false;
+        return acc;
+      }, {});
+    }
+
+    const covariatePaths = returnPaths(config.covariates);
+    const responsePaths = returnPaths(responses);
+    return { ...covariatePaths, ...responsePaths };
+  }, [config.covariates, responses]);
+
+  const [loadedImages, setLoadedImages] = useState(initImagesObject);
+  const [xy, setXy] = useState({ x: 0, y: 0 });
   const modal = useRef(null);
+
+  // Function to fire when an individual image has loaded.  This
+  // updates the loadedImages object for this variable
+  const handleImageLoaded = useCallback((key) => {
+    setLoadedImages((s) => ({ ...s, [key]: true }));
+  }, []);
+
   const handleThresholdChange = useCallback(
     (obj) => {
       setThresholds({
@@ -44,6 +68,15 @@ export default function MiwPanel({
     const idx = responses.findIndex((r) => isEqual(r.combination, comb));
     setCurrentIdx(idx);
   }, [thresholds, responses, currentSurface]);
+
+  const handleResponseMousemove = useCallback((event) => {
+    const rect = event.target.getBoundingClientRect();
+    const scaleX = event.target.width / rect.width;
+    const scaleY = event.target.height / rect.height;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+    setXy({ x: x, y: y });
+  }, []);
 
   // useEffect(() => {
   //   clearLoadedImages();
