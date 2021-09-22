@@ -1,25 +1,19 @@
 import React, { useRef, useEffect } from "react";
-import { isEqual } from "lodash";
 
 import { getAllImages, drawToPlot, initializeCanvasPlot } from "../utils";
 
 export default function ResponseCanvas({
   responses,
-  thresholds,
   centerCoord,
   width,
   height,
+  currentIdx,
   onMouseMove,
   onLoaded,
 }) {
   const canvas = useRef();
   const plot = useRef();
   const arrs = useRef();
-  const initialIdx = useRef();
-
-  initialIdx.current = responses.findIndex((r) =>
-    isEqual(r.combination, thresholds)
-  );
 
   useEffect(() => {
     if (!plot.current) {
@@ -39,8 +33,8 @@ export default function ResponseCanvas({
         height
       );
     }
-    getData(clickedCoord).then(() => {
-      drawToPlot(plot.current, arrs.current[initialIdx.current]);
+    getData(centerCoord).then(() => {
+      drawToPlot(plot.current, arrs.current[currentIdx]);
       responses.forEach((r) => {
         onLoaded(r.geotiff_path);
       });
@@ -49,9 +43,8 @@ export default function ResponseCanvas({
 
   useEffect(() => {
     if (!plot.current || !arrs.current) return;
-    const idx = responses.findIndex((r) => isEqual(r.combination, thresholds));
-    drawToPlot(plot.current, arrs.current[idx]);
-  }, [thresholds, responses]);
+    drawToPlot(plot.current, arrs.current[currentIdx]);
+  }, [currentIdx]);
 
   return (
     <canvas

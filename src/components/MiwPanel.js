@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Modal } from "bootstrap";
+import { isEqual } from "lodash";
 
 import ResponseCanvas from "./ResponseCanvas";
 import SliderContainer from "./SliderContainer";
@@ -10,57 +11,40 @@ export default function MiwPanel({
   miwResponseIdx,
   miwLocation,
   miwSize,
+  currentSurface,
   onHide,
 }) {
-  const initialThresholds = config.sliders.reduce(
-    (o, el) => ({ ...o, [el.name]: el.initial_value }),
-    {}
+  // Filter the response surfaces to just the ones with the currentSurface
+  const responses = config.responses.filter(
+    (r) => r.combination.surface === currentSurface
   );
-  const [thresholds, setThresholds] = useState(initialThresholds);
-  // const [loadedImages, setLoadedImages] = useState({});
-  // const [xy, setXy] = useState({ x: 0, y: 0 });
-  // const modal = useRef(null);
 
-  // const initImagesObject = useCallback(() => {
-  //   function returnPaths(obj) {
-  //     return obj.reduce(function (acc, cur) {
-  //       acc[cur.geotiff_path] = false;
-  //       return acc;
-  //     }, {});
-  //   }
-  //   const covariates = returnPaths(config.covariates);
-  //   const responses = returnPaths(config.responses);
-  //   return { ...covariates, ...responses };
-  // }, [config]);
+  // Obtain the current values of the responses based on miwResponseIdx
+  const currentResponses = { ...config.responses[miwResponseIdx].combination };
+  delete currentResponses.surface;
 
-  // const loaded = useCallback((key) => {
-  //   setLoadedImages((s) => ({ ...s, [key]: true }));
-  // }, []);
-
-  // const handleThresholdChange = useCallback(
-  //   (event) => {
-  //     setThresholds({
-  //       ...thresholds,
-  //       [event.target.name]: +event.target.value,
-  //     });
-  //   },
-  //   [thresholds]
-  // );
-
-  // const handleResponseMousemove = useCallback((event) => {
-  //   const rect = event.target.getBoundingClientRect();
-  //   const scaleX = event.target.width / rect.width;
-  //   const scaleY = event.target.height / rect.height;
-  //   const x = (event.clientX - rect.left) * scaleX;
-  //   const y = (event.clientY - rect.top) * scaleY;
-  //   setXy({ x: x, y: y });
-  // }, []);
-
-  // const clearLoadedImages = useCallback(() => {
-  //   setLoadedImages(initImagesObject());
-  // }, [initImagesObject]);
+  // Set state for current values of thresholds and index
+  const [thresholds, setThresholds] = useState(currentResponses);
+  const [currentIdx, setCurrentIdx] = useState(miwResponseIdx);
 
   const modal = useRef(null);
+  const handleThresholdChange = useCallback(
+    (obj) => {
+      setThresholds({
+        ...thresholds,
+        ...obj,
+      });
+    },
+    [thresholds]
+  );
+
+  useEffect(() => {
+    if (!thresholds) return;
+    const comb = { ...thresholds, surface: currentSurface };
+    const idx = responses.findIndex((r) => isEqual(r.combination, comb));
+    setCurrentIdx(idx);
+  }, [thresholds, responses, currentSurface]);
+
   // useEffect(() => {
   //   clearLoadedImages();
   // }, [clearLoadedImages]);
