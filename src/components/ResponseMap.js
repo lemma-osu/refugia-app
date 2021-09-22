@@ -39,9 +39,13 @@ function makeBox(coord, offset) {
  * @returns {Object}
  */
 function getOffset(lat, miwSize) {
+  // TODO: This is a total hack.  My calculations above are producing
+  // a rectangle that is too big.  This is a scale reducer just to
+  // shrink the visible size of the rectangle on the map.
+  const scaleReducer = 0.7;
   return {
-    lng: miwSize[0] * LNG_DEGREES_PER_PIXEL(lat),
-    lat: miwSize[1] * LAT_DEGREES_PER_PIXEL,
+    lng: (miwSize[0] / 2.0) * LNG_DEGREES_PER_PIXEL(lat) * scaleReducer,
+    lat: (miwSize[1] / 2.0) * LAT_DEGREES_PER_PIXEL * scaleReducer,
   };
 }
 
