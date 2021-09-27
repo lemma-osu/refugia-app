@@ -73,12 +73,13 @@ function initializeGeojson(coord, offset) {
 /**
  * Initialize state for this component
  * @param {Object} obj - Container object
- * @param {Object} obj.config - Model configuration
+ * @param {float} obj.initialLng - Initial longitude
+ * @param {float} obj.initialLat - Initial latitude
  * @param {float[][]} obj.miwSize - Initial MIW size
  * @returns {Object}
  */
-function initialize({ config, miwSize }) {
-  const coord = { lng: config.initial_lng, lat: config.initial_lat };
+function initialize({ initialLng, initialLat, miwSize }) {
+  const coord = { lng: initialLng, lat: initialLat };
   const offset = getOffset(coord.lat, miwSize);
   const geojson = initializeGeojson(coord, offset);
   return {
@@ -116,9 +117,12 @@ function reducer(state, action) {
 }
 
 export default function ResponseMap({
-  config,
+  tiles,
   idx,
   miwSize,
+  initialLng,
+  initialLat,
+  initialZoom,
   onMouseMove,
   onMiwMove,
 }) {
@@ -128,7 +132,7 @@ export default function ResponseMap({
   // Set up reducer and initial state
   const [state, dispatch] = useReducer(
     reducer,
-    { config, miwSize },
+    { initialLng, initialLat, miwSize },
     initialize
   );
 
@@ -264,12 +268,12 @@ export default function ResponseMap({
         <CustomMultiLayerMap
           baseStyle="mapbox://styles/mapbox/dark-v10"
           initialView={{
-            lng: config.initial_lng,
-            lat: config.initial_lat,
-            zoom: config.initial_zoom,
+            lng: initialLng,
+            lat: initialLat,
+            zoom: initialZoom,
             maxZoom: MAX_ZOOM,
           }}
-          customLayers={config.tiles}
+          customLayers={tiles}
           layerIdx={idx}
         />
       }
@@ -277,9 +281,9 @@ export default function ResponseMap({
         <DefaultMap
           baseStyle="mapbox://styles/mapbox/satellite-streets-v11"
           initialView={{
-            lng: config.initial_lng,
-            lat: config.initial_lat,
-            zoom: config.initial_zoom,
+            lng: initialLng,
+            lat: initialLat,
+            zoom: initialZoom,
             maxZoom: MAX_ZOOM,
           }}
         />

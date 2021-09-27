@@ -62,12 +62,12 @@ function reducer(state, action) {
 export default function App({ config }) {
   const [state, dispatch] = useReducer(reducer, config, initializeState);
   const [location, setLocation] = useState({
-    lng: config.initial_lng,
-    lat: config.initial_lat,
+    lng: config.map.initial_lng,
+    lat: config.map.initial_lat,
   });
   const [miwLocation, setMiwLocation] = useState({
-    lng: config.initial_lng,
-    lat: config.initial_lat,
+    lng: config.map.initial_lng,
+    lat: config.map.initial_lat,
   });
   const [showIntro, setShowIntro] = useState(false);
   const [showMiw, setShowMiw] = useState(false);
@@ -104,7 +104,8 @@ export default function App({ config }) {
 
   useEffect(() => {
     const comb = { ...state.responses, surface: state.surface };
-    setTileIdx(config.tiles.findIndex((r) => isEqual(r.combination, comb)));
+    const tiles = config.map.probability_surfaces[state.surface].tiles;
+    setTileIdx(tiles.findIndex((r) => isEqual(r.combination, comb)));
     setMiwResponseIdx(
       config.responses.findIndex((r) => isEqual(r.combination, comb))
     );
@@ -113,9 +114,12 @@ export default function App({ config }) {
   return (
     <>
       <ResponseMap
-        config={config}
+        tiles={config.map.probability_surfaces[state.surface].tiles}
         idx={tileIdx}
         miwSize={miwSize}
+        initialLng={config.map.initial_lng}
+        initialLat={config.map.initial_lat}
+        initialZoom={config.map.initial_zoom}
         onMouseMove={handleLocationChange}
         onMiwMove={handleMiwLocationChange}
       />

@@ -46,15 +46,15 @@ export default function CustomMultiLayerMap({
   useEffect(() => {
     if (!layers) return;
     setLayerState((layerState) => ({
-      new: layerIdx,
+      new: layers[layerIdx],
       old: layerState.new,
     }));
   }, [layers, layerIdx]);
 
   useEffect(() => {
-    if (!layers || layerState.new === null) return;
-    switchCustomLayer(map, layers[layerState.new], layers[layerState.old]);
-  }, [map, layers, layerState]);
+    if (layerState.new === null) return;
+    switchCustomLayer(map, layerState.new, layerState.old);
+  }, [map, layerState]);
 
   return (
     <DefaultMap
