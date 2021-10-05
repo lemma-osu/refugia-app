@@ -69,6 +69,7 @@ export default function App({ config }) {
     lng: config.map.initial_lng,
     lat: config.map.initial_lat,
   });
+  const [region, setRegion] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
   const [showMiw, setShowMiw] = useState(false);
   const [tileIdx, setTileIdx] = useState(0);
@@ -102,8 +103,9 @@ export default function App({ config }) {
     setLocation(event.lngLat);
   }, []);
 
-  const handleMiwLocationChange = useCallback((coord) => {
+  const handleMiwLocationChange = useCallback(({ coord, region }) => {
     setMiwLocation(coord);
+    setRegion(region);
   }, []);
 
   useEffect(() => {
@@ -126,6 +128,7 @@ export default function App({ config }) {
     <>
       <ResponseMap
         tiles={config.probability_surfaces[state.surface].responses}
+        regionGeojson={config.region_geojson}
         idx={tileIdx}
         miwSize={miwSize}
         initialLng={config.map.initial_lng}
@@ -189,6 +192,7 @@ export default function App({ config }) {
           miwLocation={miwLocation}
           miwSize={miwSize}
           currentSurface={state.surface}
+          currentRegion={region}
           onHide={handleMiwClose}
         />
       )}

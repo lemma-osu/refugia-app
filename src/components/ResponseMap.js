@@ -118,6 +118,7 @@ function reducer(state, action) {
 
 export default function ResponseMap({
   tiles,
+  regionGeojson,
   idx,
   miwSize,
   initialLng,
@@ -166,7 +167,8 @@ export default function ResponseMap({
       const features = map.queryRenderedFeatures(e.point, {
         layers: ["regions-layer"],
       });
-      onMiwMove(coord);
+      const region = features[0].properties.Id;
+      onMiwMove({ coord: coord, region: region });
     }
 
     // On mouse released, turn off onMove event
@@ -269,7 +271,7 @@ export default function ResponseMap({
     if (!map) return;
     map.addSource("regions", {
       type: "geojson",
-      data: "/projects/v1_small/regions.geojson",
+      data: regionGeojson,
     });
 
     map.addLayer({

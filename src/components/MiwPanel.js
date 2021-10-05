@@ -51,9 +51,11 @@ export default function MiwPanel({
   miwLocation,
   miwSize,
   currentSurface,
+  currentRegion,
   onHide,
 }) {
   const surfaceConfig = config.probability_surfaces[currentSurface];
+  const regionConfig = surfaceConfig.regions[currentRegion];
 
   // Get the responses
   const responses = surfaceConfig.responses;
@@ -80,7 +82,7 @@ export default function MiwPanel({
   } = useImagesFetch({
     lng: miwLocation.lng,
     lat: miwLocation.lat,
-    paths: returnPaths(surfaceConfig.regions[0].static_covariates),
+    paths: returnPaths(regionConfig.static_covariates),
     width: miwSize[0],
     height: miwSize[1],
   });
@@ -102,7 +104,7 @@ export default function MiwPanel({
   } = useImagesFetch({
     lng: miwLocation.lng,
     lat: miwLocation.lat,
-    paths: returnDynamicPaths(surfaceConfig.regions[0].dynamic_covariates[0]),
+    paths: returnDynamicPaths(regionConfig.dynamic_covariates[0]),
     width: miwSize[0],
     height: miwSize[1],
   });
@@ -113,15 +115,15 @@ export default function MiwPanel({
   } = useImagesFetch({
     lng: miwLocation.lng,
     lat: miwLocation.lat,
-    paths: returnDynamicPaths(surfaceConfig.regions[0].dynamic_covariates[1]),
+    paths: returnDynamicPaths(regionConfig.dynamic_covariates[1]),
     width: miwSize[0],
     height: miwSize[1],
   });
   const imageCount =
-    surfaceConfig.regions[0].static_covariates.length +
+    regionConfig.static_covariates.length +
     responses.length +
-    surfaceConfig.regions[0].dynamic_covariates[0].geotiff_paths.length +
-    surfaceConfig.regions[0].dynamic_covariates[1].geotiff_paths.length;
+    regionConfig.dynamic_covariates[0].geotiff_paths.length +
+    regionConfig.dynamic_covariates[1].geotiff_paths.length;
   const percent =
     ((covariateDone + responseDone + firstVaryingDone + secondVaryingDone) /
       imageCount) *
@@ -221,8 +223,7 @@ export default function MiwPanel({
                         imageData={firstVaryingData}
                         selected={thresholds[realizations[0].name]}
                         chartDataPath={
-                          surfaceConfig.regions[0].dynamic_covariates[0]
-                            .chart_data_path
+                          regionConfig.dynamic_covariates[0].chart_data_path
                         }
                         xy={xy}
                         onChange={handleThresholdChange}
@@ -232,8 +233,7 @@ export default function MiwPanel({
                         imageData={secondVaryingData}
                         selected={thresholds[realizations[1].name]}
                         chartDataPath={
-                          surfaceConfig.regions[0].dynamic_covariates[1]
-                            .chart_data_path
+                          regionConfig.dynamic_covariates[1].chart_data_path
                         }
                         xy={xy}
                         onChange={handleThresholdChange}
@@ -243,7 +243,7 @@ export default function MiwPanel({
                 </div>
                 <div className="row">
                   <CovariateContainer
-                    covariates={surfaceConfig.regions[0].static_covariates}
+                    covariates={regionConfig.static_covariates}
                     covariateData={covariateData}
                     xy={xy}
                   />
