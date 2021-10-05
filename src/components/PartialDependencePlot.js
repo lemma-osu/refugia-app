@@ -84,7 +84,7 @@ export default function PartialDependencePlot({
   }, [chartDataPath]);
 
   useEffect(() => {
-    if (!variableValue) return;
+    if (variableValue === null || variableValue === undefined) return;
     setDot(moveDot(variableValue));
   }, [variableValue, moveDot]);
 

@@ -1,5 +1,5 @@
 import { fromUrl } from "geotiff";
-import { quantile } from "d3";
+import { quantile, csv, autoType } from "d3";
 import { plot as Plot, addColorScale } from "plotty";
 
 import { projectPoint } from "./projection";
@@ -87,4 +87,13 @@ export function drawToPlot(plot, arr, imageStats) {
   plot.setData(arr[0], arr.width, arr.height);
   plot.setDomain([imageStats.min, imageStats.max]);
   plot.render();
+}
+
+export async function getPercentiles(statisticsPath, percentileArr) {
+  const data = await csv(statisticsPath, autoType);
+  const dict = {};
+  data.forEach((d) => (dict[d.PERCENTILE] = d.VALUE));
+  return percentileArr.map((percentile) => {
+    return dict[percentile];
+  });
 }

@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Modal } from "bootstrap";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { isEqual } from "lodash";
-import { getCanvasData } from "../utils";
+import { getCanvasData, getPercentiles } from "../utils";
 
 import ResponseCanvas from "./ResponseCanvas";
 import CovariateContainer from "./CovariateContainer";
@@ -60,8 +60,8 @@ export default function MiwPanel({
   // Get the responses
   const responses = surfaceConfig.responses;
   const responseStats = responses.map((r) => ({
-    min: r.min,
-    max: r.max,
+    min: 0.0,
+    max: 1.0,
     noData: r.nodata,
   }));
 
@@ -143,6 +143,7 @@ export default function MiwPanel({
         ...thresholds,
         ...obj,
       });
+      setXy({ ...xy });
     },
     [thresholds]
   );
@@ -169,6 +170,18 @@ export default function MiwPanel({
     modal.current = new Modal(modalDiv);
     modal.current.show();
   }, [onHide]);
+
+  useEffect(() => {
+    const promises = regionConfig.static_covariates.map((c) =>
+      getPercentiles(c.statistics_path, [2, 98])
+    );
+    Promise.all(promises).then((data) => {
+      regionConfig.static_covariates.forEach((d, i) => {
+        d["min"] = data[i][0];
+        d["max"] = data[i][1];
+      });
+    });
+  }, [regionConfig]);
 
   const Loading = ({ progress }) => (
     <>
