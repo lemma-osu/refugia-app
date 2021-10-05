@@ -163,6 +163,9 @@ export default function ResponseMap({
         payload: coord,
       });
       renderBox(coord);
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ["regions-layer"],
+      });
       onMiwMove(coord);
     }
 
@@ -261,6 +264,24 @@ export default function ResponseMap({
       canvas.style.cursor = "";
     });
   }, [map, state.geojson]);
+
+  useEffect(() => {
+    if (!map) return;
+    map.addSource("regions", {
+      type: "geojson",
+      data: "/projects/v1_small/regions.geojson",
+    });
+
+    map.addLayer({
+      id: "regions-layer",
+      type: "fill",
+      source: "regions",
+      paint: {
+        "fill-color": "#0080ff",
+        "fill-opacity": 0,
+      },
+    });
+  }, [map]);
 
   return (
     <SwipeMap

@@ -1,7 +1,7 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
 
-function ResponseVariableDropdown({ v, selected, onChange }) {
+export function ResponseVariableDropdown({ v, selected, onChange }) {
   function handleChange(e) {
     onChange({ [e.target.name]: +e.target.value });
   }
@@ -25,7 +25,11 @@ function ResponseVariableDropdown({ v, selected, onChange }) {
   );
 }
 
-export function ResponseVariableDropdownGroup({ variables, responses, onChange }) {
+export function ResponseVariableDropdownGroup({
+  variables,
+  responses,
+  onChange,
+}) {
   return (
     <>
       {variables.map((v, idx) => (
@@ -56,14 +60,14 @@ export function ResponseSurfaceDropdown({
         aria-label="Response Surface"
         onChange={onSurfaceChange}
       >
-        {config.sliders.map((s, i) => (
+        {config.probability_surfaces.map((s, i) => (
           <option key={i} value={i}>
             {s.description}
           </option>
         ))}
       </Form.Select>
       <ResponseVariableDropdownGroup
-        variables={config.sliders[surface].variables}
+        variables={config.probability_surfaces[surface].realizations}
         responses={responses}
         onChange={onResponseChange}
       />

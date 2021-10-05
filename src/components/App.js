@@ -18,10 +18,10 @@ const MIW_SIZES = {
 // Function to set the default values for the varying variables
 // for each of the response surfaces
 const getDefaultResponses = (config) => {
-  return config.sliders.reduce(
+  return config.probability_surfaces.reduce(
     (obj, el, idx) => ({
       ...obj,
-      [idx]: el.variables.reduce(
+      [idx]: el.realizations.reduce(
         (obj, el) => ({ ...obj, [el.name]: el.initial_value }),
         {}
       ),
@@ -74,6 +74,10 @@ export default function App({ config }) {
   const [tileIdx, setTileIdx] = useState(0);
   const [miwResponseIdx, setMiwResponseIdx] = useState(0);
   const [miwSize, setMiwSize] = useState([300, 200]);
+  const [ramp, setRamp] = useState(() => {
+    var key = config.probability_surfaces[state.surface].color_ramp;
+    return config.color_ramps[key];
+  });
 
   // Event handlers
   const handleIntroClose = () => setShowIntro(false);
@@ -103,18 +107,25 @@ export default function App({ config }) {
   }, []);
 
   useEffect(() => {
-    const comb = { ...state.responses, surface: state.surface };
-    const tiles = config.map.probability_surfaces[state.surface].tiles;
-    setTileIdx(tiles.findIndex((r) => isEqual(r.combination, comb)));
+    const surface = config.probability_surfaces[state.surface];
+    const responses = surface.responses;
+    setTileIdx(
+      responses.findIndex((r) => isEqual(r.combination, state.responses))
+    );
     setMiwResponseIdx(
-      config.responses.findIndex((r) => isEqual(r.combination, comb))
+      responses.findIndex((r) => isEqual(r.combination, state.responses))
     );
   }, [config, state.surface, state.responses]);
+
+  useEffect(() => {
+    const key = config.probability_surfaces[state.surface].color_ramp;
+    setRamp(config.color_ramps[key]);
+  }, [config, state.surface]);
 
   return (
     <>
       <ResponseMap
-        tiles={config.map.probability_surfaces[state.surface].tiles}
+        tiles={config.probability_surfaces[state.surface].responses}
         idx={tileIdx}
         miwSize={miwSize}
         initialLng={config.map.initial_lng}
@@ -153,7 +164,7 @@ export default function App({ config }) {
             onResponseChange={handleResponseChange}
           />
           <MiwDropdown onChange={handleMiwSizeChange} />
-          <ColorRamp />
+          <ColorRamp specification={ramp} width={286} height={30} />
           <div className="d-grid gap-3">
             <Button variant="success" onClick={handleMiwShow}>
               To the MIW!!!

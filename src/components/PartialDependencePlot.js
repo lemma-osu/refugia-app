@@ -62,7 +62,23 @@ export default function PartialDependencePlot({
 
   useEffect(() => {
     async function getData() {
-      setData(await csv(chartDataPath, autoType));
+      const raw = await csv(chartDataPath, autoType);
+      const size = 200;
+      const step = (raw.length - 1) / (size - 1);
+      const interpolated = new Array(size);
+      for (let i = 0; i < size; i++) {
+        const t = i * step;
+        const lowerIdx = parseInt(Math.floor(t), 10);
+        const upperIdx = parseInt(Math.ceil(t), 10);
+        const x =
+          (t - lowerIdx) * (raw[upperIdx].X - raw[lowerIdx].X) +
+          raw[lowerIdx].X;
+        const y =
+          (t - lowerIdx) * (raw[upperIdx].Y - raw[lowerIdx].Y) +
+          raw[lowerIdx].Y;
+        interpolated[i] = { X: x, Y: y };
+      }
+      setData(interpolated);
     }
     getData();
   }, [chartDataPath]);

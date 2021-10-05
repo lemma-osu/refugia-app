@@ -1,8 +1,24 @@
 import { fromUrl } from "geotiff";
 import { quantile } from "d3";
-import { plot as Plot } from "plotty";
+import { plot as Plot, addColorScale } from "plotty";
 
 import { projectPoint } from "./projection";
+
+// Color scales for plotty
+addColorScale(
+  "refugia",
+  [
+    "rgb(140, 81, 10)",
+    "rgb(140, 81, 10)",
+    "rgb(216, 179, 101)",
+    "rgb(246, 232, 195)",
+    "rgb(199, 234, 229)",
+    "rgb(90, 180, 172)",
+    "rgb(1, 102, 94)",
+    "rgb(1, 102, 94)",
+  ],
+  [0.0, 0.239, 0.301, 0.358, 0.417, 0.501, 0.679, 1.0]
+);
 
 export const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 
@@ -54,20 +70,21 @@ export async function getAllImages(lng, lat, geotiffPaths, width, height) {
   return await Promise.all(promises);
 }
 
-export function initializeCanvasPlot(canvas, width, height) {
+export function initializeCanvasPlot(canvas, width, height, noData) {
   return new Plot({
     canvas: canvas,
     width: width,
     height: height,
-    colorScale: "viridis",
+    noDataValue: noData,
+    colorScale: "refugia",
     useWebGL: false,
   });
 }
 
-export function drawToPlot(plot, arr) {
-  const min = quantile(arr[0], 0.02);
-  const max = quantile(arr[0], 0.98);
+export function drawToPlot(plot, arr, imageStats) {
+  // const min = quantile(arr[0], 0.02);
+  // const max = quantile(arr[0], 0.98);
   plot.setData(arr[0], arr.width, arr.height);
-  plot.setDomain([min, max]);
+  plot.setDomain([imageStats.min, imageStats.max]);
   plot.render();
 }

@@ -1,66 +1,54 @@
 import React from "react";
 import { Svg } from "./Chart";
 
-export default function ColorRamp() {
+export default function ColorRamp({ specification, width, height }) {
   const margin = { left: 0, right: 0, top: 0, bottom: 0 };
-  const width = 286;
+  const textHeight = 15;
+  const barOffset = textHeight + 10;
+  const labelOffset = barOffset + height + 20;
+  const totalHeight = labelOffset + 15;
   return (
-    <Svg width={width} height={100} margin={margin}>
+    <Svg width={width} height={totalHeight} margin={margin}>
       <defs>
         <linearGradient id="grad" x1="0%" x2="100%" y1="0%" y2="0%">
-          <stop
-            offset="0%"
-            style={{ stopColor: `rgb(140, 81, 10)`, stopOpacity: 0.9 }}
-          ></stop>
-          <stop
-            offset="23.9%"
-            style={{ stopColor: `rgb(140, 81, 10)`, stopOpacity: 0.9 }}
-          ></stop>
-          <stop
-            offset="30.1%"
-            style={{ stopColor: `rgb(216, 179, 101)`, stopOpacity: 0.9 }}
-          ></stop>
-          <stop
-            offset="35.8%"
-            style={{ stopColor: `rgb(246, 232, 195)`, stopOpacity: 0.9 }}
-          ></stop>
-          <stop
-            offset="41.7%"
-            style={{ stopColor: `rgb(199, 234, 229)`, stopOpacity: 0.9 }}
-          ></stop>
-          <stop
-            offset="50.1%"
-            style={{ stopColor: `rgb(90, 180, 172)`, stopOpacity: 0.9 }}
-          ></stop>
-          <stop
-            offset="67.9%"
-            style={{ stopColor: `rgb(1, 102, 94)`, stopOpacity: 0.9 }}
-          ></stop>
-          <stop
-            offset="100%"
-            style={{ stopColor: `rgb(1, 102, 94)`, stopOpacity: 0.9 }}
-          ></stop>
+          {specification.map((stop, idx) => (
+            <stop
+              key={idx}
+              offset={`${stop.offset}%`}
+              style={{ stopColor: `${stop.color}`, stopOpacity: 0.9 }}
+            ></stop>
+          ))}
         </linearGradient>
       </defs>
-      <text fill="white" transform="translate(0,15)">
-        Refugial Probability
+      <text fill="white" transform={`translate(0, ${textHeight})`}>
+        Probability
       </text>
-      <rect x="0" y="25" width={width} height="30" fill="url(#grad)"></rect>
+      <rect
+        x="0"
+        y={barOffset}
+        width={width}
+        height={height}
+        fill="url(#grad)"
+      ></rect>
       <g>
-        <text fill="white" textAnchor="start" transform={`translate(0,75)`}>
+        <text
+          fill="white"
+          textAnchor="start"
+          transform={`translate(0, ${labelOffset})`}
+        >
           0.0
         </text>
         <text
           fill="white"
           textAnchor="middle"
-          transform={`translate(${width / 2}, 75)`}
+          transform={`translate(${width / 2}, ${labelOffset})`}
         >
           0.5
         </text>
         <text
           fill="white"
           textAnchor="end"
-          transform={`translate(${width},75)`}
+          transform={`translate(${width}, ${labelOffset})`}
         >
           1.0
         </text>
@@ -68,4 +56,3 @@ export default function ColorRamp() {
     </Svg>
   );
 }
-

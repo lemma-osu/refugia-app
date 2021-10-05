@@ -1,10 +1,49 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Modal } from "bootstrap";
+import ProgressBar from "react-bootstrap/ProgressBar";
 import { isEqual } from "lodash";
+import { getCanvasData } from "../utils";
 
 import ResponseCanvas from "./ResponseCanvas";
 import CovariateContainer from "./CovariateContainer";
-import { ResponseVariableDropdownGroup } from "./Dropdown";
+import RealizationGroup from "./RealizationGroup";
+
+// Async loader of all images
+export function useImagesFetch({ lng, lat, paths, width, height }) {
+  const [state, setState] = useState({
+    loading: true,
+    done: 0,
+    data: [],
+  });
+
+  const handleProgress = (result) => {
+    setState((state) => ({ ...state, done: state.done + 1 }));
+    return result;
+  };
+
+  useEffect(() => {
+    const promises = paths
+      .map((path) => {
+        return getCanvasData(lng, lat, path, width, height);
+      })
+      .map((p) => p.then(handleProgress));
+    Promise.all(promises).then((data) => {
+      setState((state) => ({ loading: false, done: state.done, data }));
+    });
+  }, []);
+
+  return state;
+}
+
+// Get image paths from configuration
+function returnPaths(obj) {
+  return obj.map(({ geotiff_path }) => geotiff_path);
+}
+
+// Get image paths from dynamic covariates
+function returnDynamicPaths(obj) {
+  return obj.geotiff_paths.map(({ path }) => path);
+}
 
 export default function MiwPanel({
   config,
@@ -14,43 +53,87 @@ export default function MiwPanel({
   currentSurface,
   onHide,
 }) {
-  // Filter the response surfaces to just the ones with the currentSurface
-  const responses = config.responses.filter(
-    (r) => r.combination.surface === currentSurface
-  );
+  const surfaceConfig = config.probability_surfaces[currentSurface];
+
+  // Get the responses
+  const responses = surfaceConfig.responses;
+  const responseStats = responses.map((r) => ({
+    min: r.min,
+    max: r.max,
+    noData: r.nodata,
+  }));
+
+  const realizations = surfaceConfig.realizations;
 
   // Obtain the current values of the responses based on miwResponseIdx
-  const currentResponses = { ...config.responses[miwResponseIdx].combination };
-  delete currentResponses.surface;
+  const currentResponse = responses[miwResponseIdx].combination;
 
   // Set state for current values of thresholds and index
-  const [thresholds, setThresholds] = useState(currentResponses);
+  const [thresholds, setThresholds] = useState(currentResponse);
   const [currentIdx, setCurrentIdx] = useState(miwResponseIdx);
 
-  // Initialize the loadedImages object to track which images have
-  // finished loading into canvas objects
-  const initImagesObject = useCallback(() => {
-    function returnPaths(obj) {
-      return obj.reduce(function (acc, cur) {
-        acc[cur.geotiff_path] = false;
-        return acc;
-      }, {});
-    }
+  // Retrieve all the needed images
+  const {
+    loading: covariateLoading,
+    done: covariateDone,
+    data: covariateData,
+  } = useImagesFetch({
+    lng: miwLocation.lng,
+    lat: miwLocation.lat,
+    paths: returnPaths(surfaceConfig.regions[0].static_covariates),
+    width: miwSize[0],
+    height: miwSize[1],
+  });
+  const {
+    loading: responseLoading,
+    done: responseDone,
+    data: responseData,
+  } = useImagesFetch({
+    lng: miwLocation.lng,
+    lat: miwLocation.lat,
+    paths: returnPaths(responses),
+    width: miwSize[0],
+    height: miwSize[1],
+  });
+  const {
+    loading: firstVaryingLoading,
+    done: firstVaryingDone,
+    data: firstVaryingData,
+  } = useImagesFetch({
+    lng: miwLocation.lng,
+    lat: miwLocation.lat,
+    paths: returnDynamicPaths(surfaceConfig.regions[0].dynamic_covariates[0]),
+    width: miwSize[0],
+    height: miwSize[1],
+  });
+  const {
+    loading: secondVaryingLoading,
+    done: secondVaryingDone,
+    data: secondVaryingData,
+  } = useImagesFetch({
+    lng: miwLocation.lng,
+    lat: miwLocation.lat,
+    paths: returnDynamicPaths(surfaceConfig.regions[0].dynamic_covariates[1]),
+    width: miwSize[0],
+    height: miwSize[1],
+  });
+  const imageCount =
+    surfaceConfig.regions[0].static_covariates.length +
+    responses.length +
+    surfaceConfig.regions[0].dynamic_covariates[0].geotiff_paths.length +
+    surfaceConfig.regions[0].dynamic_covariates[1].geotiff_paths.length;
+  const percent =
+    ((covariateDone + responseDone + firstVaryingDone + secondVaryingDone) /
+      imageCount) *
+    100;
+  const loading =
+    covariateLoading ||
+    responseLoading ||
+    firstVaryingLoading ||
+    secondVaryingLoading;
 
-    const covariatePaths = returnPaths(config.covariates);
-    const responsePaths = returnPaths(responses);
-    return { ...covariatePaths, ...responsePaths };
-  }, [config.covariates, responses]);
-
-  const [loadedImages, setLoadedImages] = useState(initImagesObject);
   const [xy, setXy] = useState({ x: 0, y: 0 });
   const modal = useRef(null);
-
-  // Function to fire when an individual image has loaded.  This
-  // updates the loadedImages object for this variable
-  const handleImageLoaded = useCallback((key) => {
-    setLoadedImages((s) => ({ ...s, [key]: true }));
-  }, []);
 
   const handleThresholdChange = useCallback(
     (obj) => {
@@ -64,8 +147,7 @@ export default function MiwPanel({
 
   useEffect(() => {
     if (!thresholds) return;
-    const comb = { ...thresholds, surface: currentSurface };
-    const idx = responses.findIndex((r) => isEqual(r.combination, comb));
+    const idx = responses.findIndex((r) => isEqual(r.combination, thresholds));
     setCurrentIdx(idx);
   }, [thresholds, responses, currentSurface]);
 
@@ -78,24 +160,20 @@ export default function MiwPanel({
     setXy({ x: x, y: y });
   }, []);
 
-  // useEffect(() => {
-  //   clearLoadedImages();
-  // }, [clearLoadedImages]);
-
   useEffect(() => {
     if (modal.current) return;
     const modalDiv = document.querySelector("#miw-modal");
-    modalDiv.addEventListener("hidden.bs.modal", clearLoadedImages);
     modalDiv.addEventListener("hidden.bs.modal", onHide);
     modal.current = new Modal(modalDiv);
-  }, [onHide, clearLoadedImages]);
+    modal.current.show();
+  }, [onHide]);
 
-  useEffect(() => {
-    if (!modal.current || !miwLocation) return;
-    if (Object.values(loadedImages).every((i) => i === true)) {
-      modal.current.show();
-    }
-  }, [miwLocation, loadedImages]);
+  const Loading = ({ progress }) => (
+    <>
+      <h5>Loading all images</h5>
+      <ProgressBar now={progress} />
+    </>
+  );
 
   return (
     <div
@@ -117,43 +195,61 @@ export default function MiwPanel({
             ></button>
           </div>
           <div className="modal-body container-fluid">
-            <div className="row">
-              <div id="response-panel" className="col-md-6">
-                <ResponseCanvas
-                  responses={config.responses}
-                  centerCoord={miwLocation}
-                  width={miwSize[0]}
-                  height={miwSize[1]}
-                  currentIdx={currentIdx}
-                  onMouseMove={handleResponseMousemove}
-                  onLoaded={handleImageLoaded}
-                />
-              </div>
-              <div id="ui" className="col-md-6">
-                <p>
-                  The map on the left is refugial probability. Each map below is
-                  a covariate that helps determine probability of refugia. As
-                  you mouse over the map on the left, the corresponding
-                  covariates values at the mouse location are shown in the
-                  response curves below.
-                </p>
-                <ResponseVariableDropdownGroup
-                  variables={config.sliders[currentSurface].variables}
-                  responses={thresholds}
-                  onChange={handleThresholdChange}
-                />
-              </div>
-            </div>
-            <div className="row">
-              <CovariateContainer
-                covariates={config.covariates}
-                centerCoord={miwLocation}
-                width={miwSize[0]}
-                height={miwSize[1]}
-                xy={xy}
-                onLoaded={handleImageLoaded}
-              />
-            </div>
+            {loading && <Loading progress={percent} />}
+            {!loading && (
+              <>
+                <div className="row">
+                  <div id="response-panel" className="col-md-6">
+                    <ResponseCanvas
+                      responseData={responseData}
+                      responseStats={responseStats}
+                      currentIdx={currentIdx}
+                      onMouseMove={handleResponseMousemove}
+                    />
+                  </div>
+                  <div id="ui" className="col-md-6">
+                    <p>
+                      The map on the left is refugial probability. Each map
+                      below is a covariate that helps determine probability of
+                      refugia. As you mouse over the map on the left, the
+                      corresponding covariates values at the mouse location are
+                      shown in the response curves below.
+                    </p>
+                    <div id="realization-panel" className="col-md-12">
+                      <RealizationGroup
+                        v={realizations[0]}
+                        imageData={firstVaryingData}
+                        selected={thresholds[realizations[0].name]}
+                        chartDataPath={
+                          surfaceConfig.regions[0].dynamic_covariates[0]
+                            .chart_data_path
+                        }
+                        xy={xy}
+                        onChange={handleThresholdChange}
+                      />
+                      <RealizationGroup
+                        v={realizations[1]}
+                        imageData={secondVaryingData}
+                        selected={thresholds[realizations[1].name]}
+                        chartDataPath={
+                          surfaceConfig.regions[0].dynamic_covariates[1]
+                            .chart_data_path
+                        }
+                        xy={xy}
+                        onChange={handleThresholdChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <CovariateContainer
+                    covariates={surfaceConfig.regions[0].static_covariates}
+                    covariateData={covariateData}
+                    xy={xy}
+                  />
+                </div>
+              </>
+            )}
           </div>
           <div className="modal-footer">
             <button

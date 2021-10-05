@@ -5,13 +5,10 @@ import PartialDependencePlot from "./PartialDependencePlot";
 export default function CovariateGroup({
   name,
   description,
-  geotiffPath,
-  centerCoord,
-  width,
-  height,
+  imageData,
+  imageStats,
   chartDataPath,
   xy,
-  onLoaded,
 }) {
   const variableValue = useRef(0);
   return (
@@ -21,13 +18,10 @@ export default function CovariateGroup({
       </div>
       <CovariateCanvas
         id={name}
-        geotiffPath={geotiffPath}
-        centerCoord={centerCoord}
-        width={width}
-        height={height}
+        imageData={imageData}
+        imageStats={imageStats}
         xy={xy}
         variableValue={variableValue}
-        onLoaded={onLoaded}
       />
       <PartialDependencePlot
         chartDataPath={chartDataPath}

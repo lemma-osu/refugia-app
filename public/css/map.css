@@ -10,6 +10,10 @@ body {
   width: 100%;
 }
 
+.modal-content {
+  min-height: 890px;
+}
+
 canvas {
   width: 100%;
   height: auto;
@@ -29,10 +33,38 @@ canvas {
   width: 223px;
 }
 
-#covariate-panel canvas.modal-canvas,
 #covariate-panel div.modal-chart {
   width: auto;
   height: 150px;
+}
+
+#covariate-panel div.stage {
+  position: relative;
+  width: auto;
+  height: 150px;
+}
+
+#covariate-panel canvas.modal-canvas {
+  position: absolute;
+}
+
+#covariate-panel canvas.background {
+  z-index: 1;
+}
+
+#covariate-panel canvas.foreground {
+  z-index: 2;
+}
+
+/* Realization panel */
+#realization-panel {
+  display: inline-flex;
+}
+
+#realization-panel div.realization-group {
+  margin-left: 4px;
+  margin-right: 4px;
+  width: 223px;
 }
 
 /* Chart styling */
