@@ -24,7 +24,8 @@ export default function CovariateCanvas({
         canvas.current,
         width,
         height,
-        imageStats.noData
+        imageStats.noData,
+        "covariate"
       );
     }
   }, [plot, width, height]);

@@ -85,3 +85,7 @@ canvas {
   stroke-linejoin: round;
   stroke-linecap: round;
 }
+
+.ramp-text {
+  font-size: 0.75em;
+}

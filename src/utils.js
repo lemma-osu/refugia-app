@@ -20,6 +20,46 @@ addColorScale(
   [0.0, 0.239, 0.301, 0.358, 0.417, 0.501, 0.679, 1.0]
 );
 
+addColorScale(
+  "covariate",
+  [
+    "rgb(140, 81, 10)",
+    "rgb(216, 179, 101)",
+    "rgb(246, 232, 195)",
+    "rgb(199, 234, 229)",
+    "rgb(90, 180, 172)",
+    "rgb(1, 102, 94)",
+  ],
+  [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+);
+
+export const COVARIATE_RAMP = [
+  {
+    offset: 0.0,
+    color: "rgb(140, 81, 10)",
+  },
+  {
+    offset: 20.0,
+    color: "rgb(216, 179, 101)",
+  },
+  {
+    offset: 40.0,
+    color: "rgb(246, 232, 195)",
+  },
+  {
+    offset: 60.0,
+    color: "rgb(199, 234, 229)",
+  },
+  {
+    offset: 80.0,
+    color: "rgb(90, 180, 172)",
+  },
+  {
+    offset: 100.0,
+    color: "rgb(1, 102, 94)",
+  },
+];
+
 export const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 
 async function loadTiff(path) {
@@ -70,13 +110,19 @@ export async function getAllImages(lng, lat, geotiffPaths, width, height) {
   return await Promise.all(promises);
 }
 
-export function initializeCanvasPlot(canvas, width, height, noData) {
+export function initializeCanvasPlot(
+  canvas,
+  width,
+  height,
+  noData,
+  colorScale
+) {
   return new Plot({
     canvas: canvas,
     width: width,
     height: height,
     noDataValue: noData,
-    colorScale: "refugia",
+    colorScale: colorScale,
     useWebGL: false,
   });
 }

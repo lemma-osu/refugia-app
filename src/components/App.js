@@ -193,6 +193,7 @@ export default function App({ config }) {
           miwSize={miwSize}
           currentSurface={state.surface}
           currentRegion={region}
+          ramp={ramp}
           onHide={handleMiwClose}
         />
       )}

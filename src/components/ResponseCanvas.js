@@ -21,7 +21,8 @@ export default function ResponseCanvas({
         canvas.current,
         width,
         height,
-        responseStats[currentIdx].noData
+        responseStats[currentIdx].noData,
+        "refugia"
       );
     }
   }, [plot, width, height]);

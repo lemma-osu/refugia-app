@@ -7,6 +7,7 @@ import { getCanvasData, getPercentiles } from "../utils";
 import ResponseCanvas from "./ResponseCanvas";
 import CovariateContainer from "./CovariateContainer";
 import RealizationGroup from "./RealizationGroup";
+import { CovariateColorRamp } from "./ColorRamp";
 
 // Async loader of all images
 export function useImagesFetch({ lng, lat, paths, width, height }) {
@@ -52,6 +53,7 @@ export default function MiwPanel({
   miwSize,
   currentSurface,
   currentRegion,
+  ramp,
   onHide,
 }) {
   const surfaceConfig = config.probability_surfaces[currentSurface];
@@ -215,6 +217,13 @@ export default function MiwPanel({
               <>
                 <div className="row">
                   <div id="response-panel" className="col-md-6">
+                    <CovariateColorRamp
+                      specification={ramp}
+                      name="response"
+                      imageStats={{ min: 0, max: 1 }}
+                      width={541}
+                      height={20}
+                    />
                     <ResponseCanvas
                       responseData={responseData}
                       responseStats={responseStats}
