@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 import AppWrapper from "./AppWrapper";
 import SwipeMapApp from "./SwipeMapApp";
@@ -9,6 +9,9 @@ export default function Router() {
   return (
     <BrowserRouter>
       <Switch>
+        <Route exact path="/projects/latest">
+          <Redirect to="/projects/v2_small" />
+        </Route>
         <Route exact path="/projects/:project">
           <AppWrapper />
         </Route>
