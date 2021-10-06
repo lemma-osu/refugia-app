@@ -121,6 +121,7 @@ export default function ResponseMap({
   regionGeojson,
   idx,
   miwSize,
+  miwRecenter,
   initialLng,
   initialLat,
   initialZoom,
@@ -136,6 +137,26 @@ export default function ResponseMap({
     { initialLng, initialLat, miwSize },
     initialize
   );
+
+  useEffect(() => {
+    if (miwRecenter) {
+      const bounds = map.getBounds();
+      const lat = (bounds._ne.lat + bounds._sw.lat) / 2.0;
+      const lng = (bounds._ne.lng + bounds._sw.lng) / 2.0;
+      const coord = { lng: lng, lat: lat };
+      dispatch({
+        type: "SET_COORD",
+        payload: coord,
+      });
+      renderBox(coord);
+      const point = map.project(coord);
+      const features = map.queryRenderedFeatures(point, {
+        layers: ["regions-layer"],
+      });
+      const region = features[0].properties.Id;
+      onMiwMove({ coord: coord, region: region });
+    }
+  }, [miwRecenter]);
 
   // Render box based on current coordinate
   const renderBox = useCallback(

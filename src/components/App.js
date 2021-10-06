@@ -75,6 +75,7 @@ export default function App({ config }) {
   const [tileIdx, setTileIdx] = useState(0);
   const [miwResponseIdx, setMiwResponseIdx] = useState(0);
   const [miwSize, setMiwSize] = useState([300, 200]);
+  const [miwRecenter, setMiwRecenter] = useState(false);
   const [ramp, setRamp] = useState(() => {
     var key = config.probability_surfaces[state.surface].color_ramp;
     return config.color_ramps[key];
@@ -85,6 +86,7 @@ export default function App({ config }) {
   const handleIntroShow = () => setShowIntro(true);
   const handleMiwClose = () => setShowMiw(false);
   const handleMiwShow = () => setShowMiw(true);
+  const handleMiwRecenter = () => setMiwRecenter(true);
 
   const handleSurfaceChange = (event) => {
     dispatch({ type: "SET_SURFACE", payload: +event.target.value });
@@ -106,6 +108,7 @@ export default function App({ config }) {
   const handleMiwLocationChange = useCallback(({ coord, region }) => {
     setMiwLocation(coord);
     setRegion(region);
+    setMiwRecenter(false);
   }, []);
 
   useEffect(() => {
@@ -131,6 +134,7 @@ export default function App({ config }) {
         regionGeojson={config.region_geojson}
         idx={tileIdx}
         miwSize={miwSize}
+        miwRecenter={miwRecenter}
         initialLng={config.map.initial_lng}
         initialLat={config.map.initial_lat}
         initialZoom={config.map.initial_zoom}
@@ -169,6 +173,9 @@ export default function App({ config }) {
           <MiwDropdown onChange={handleMiwSizeChange} />
           <ColorRamp specification={ramp} width={286} height={30} />
           <div className="d-grid gap-3">
+            <Button variant="success" onClick={handleMiwRecenter}>
+              Recenter MIW Window
+            </Button>
             <Button variant="success" onClick={handleMiwShow}>
               To the MIW!!!
             </Button>
