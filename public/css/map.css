@@ -11,7 +11,7 @@ body {
 }
 
 .modal-content {
-  min-height: 890px;
+  min-height: 920px;
 }
 
 canvas {
@@ -22,14 +22,14 @@ canvas {
 /* Covariate panel, canvas and chart */
 #covariate-panel {
   display: inline-flex;
-  height: 350px;
+  height: 400px;
   overflow: hidden;
   overflow-x: scroll;
 }
 
 #covariate-panel div.covariate-group {
-  margin-left: 4px;
-  margin-right: 4px;
+  margin-left: 10px;
+  margin-right: 10px;
   width: 223px;
 }
 
@@ -62,9 +62,9 @@ canvas {
 }
 
 #realization-panel div.realization-group {
-  margin-left: 4px;
-  margin-right: 4px;
-  width: 223px;
+  margin-left: 8px;
+  margin-right: 8px;
+  width: 250px;
 }
 
 /* Chart styling */

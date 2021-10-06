@@ -22,10 +22,17 @@ export default function RealizationGroup({
 
   return (
     <div className="realization-group">
-      <ResponseVariableDropdown v={v} selected={selected} onChange={onChange} />
+      <ResponseVariableDropdown
+        v={v}
+        selected={selected}
+        className="mb-2"
+        onChange={onChange}
+      />
       <PartialDependencePlot
         chartDataPath={chartDataPath}
         variableValue={variableValue.current}
+        width={250}
+        height={148}
       />
     </div>
   );

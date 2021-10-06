@@ -35,6 +35,8 @@ export default function CovariateGroup({
       <PartialDependencePlot
         chartDataPath={chartDataPath}
         variableValue={variableValue.current}
+        width={223}
+        height={148}
       />
     </div>
   );

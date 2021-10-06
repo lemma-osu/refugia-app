@@ -232,6 +232,10 @@ export default function MiwPanel({
                     />
                   </div>
                   <div id="ui" className="col-md-6">
+                    <h6>
+                      Probability map: {surfaceConfig.description} | Region:{" "}
+                      {regionConfig.description}
+                    </h6>
                     <p>
                       The map on the left is refugial probability. Each map
                       below is a covariate that helps determine probability of

@@ -173,7 +173,9 @@ export default function App({ config }) {
               To the MIW!!!
             </Button>
             <Button variant="success" onClick={handleIntroShow}>
-              Download Current Layer
+              Download Current Probability Map
+              <br />
+              <small>This will download the entire region</small>
             </Button>
           </div>
         </Card.Body>

@@ -18,4 +18,4 @@ export default function AppWrapper() {
   }, [config, url]);
 
   return <>{config && <App config={config} />}</>;
-};
+}

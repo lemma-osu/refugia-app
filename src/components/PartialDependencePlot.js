@@ -31,13 +31,13 @@ const moveDotFactory = (data, xScale, yScale) => {
 export default function PartialDependencePlot({
   chartDataPath,
   variableValue,
+  width,
+  height,
 }) {
   const [data, setData] = useState([{ X: 0, Y: 0 }]);
   const [dot, setDot] = useState([0, 0]);
 
-  const width = 223;
-  const height = 148;
-  const margin = { top: 5, right: 5, bottom: 20, left: 20 };
+  const margin = { top: 5, right: 5, bottom: 20, left: 30 };
 
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
@@ -89,7 +89,7 @@ export default function PartialDependencePlot({
   }, [variableValue, moveDot]);
 
   return (
-    <Svg width={width} height={height} margin={margin}>
+    <Svg width={width} height={height} margin={margin} className="mt-2">
       <XAxis
         xScale={xScale}
         innerHeight={innerHeight}

@@ -1,9 +1,9 @@
 import React from "react";
 import { line, max, format } from "d3";
 
-export function Svg({ width, height, margin, children }) {
+export function Svg({ width, height, margin, className, children }) {
   return (
-    <svg width={width} height={height}>
+    <svg width={width} height={height} className={className}>
       <g transform={`translate(${margin.left},${margin.top})`}>{children}</g>
     </svg>
   );
