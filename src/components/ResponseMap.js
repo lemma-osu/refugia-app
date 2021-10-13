@@ -138,23 +138,27 @@ export default function ResponseMap({
     initialize
   );
 
+  function handleMovement(coord, point) {
+    dispatch({
+      type: "SET_COORD",
+      payload: coord,
+    });
+    renderBox(coord);
+    const features = map.queryRenderedFeatures(point, {
+      layers: ["regions-layer"],
+    });
+    const region = features.length === 0 ? 0 : features[0].properties.Id;
+    onMiwMove({ coord: coord, region: region });
+  }
+
   useEffect(() => {
     if (miwRecenter) {
       const bounds = map.getBounds();
       const lat = (bounds._ne.lat + bounds._sw.lat) / 2.0;
       const lng = (bounds._ne.lng + bounds._sw.lng) / 2.0;
       const coord = { lng: lng, lat: lat };
-      dispatch({
-        type: "SET_COORD",
-        payload: coord,
-      });
-      renderBox(coord);
       const point = map.project(coord);
-      const features = map.queryRenderedFeatures(point, {
-        layers: ["regions-layer"],
-      });
-      const region = features[0].properties.Id;
-      onMiwMove({ coord: coord, region: region });
+      handleMovement(coord, point);
     }
   }, [miwRecenter]);
 
@@ -178,18 +182,8 @@ export default function ResponseMap({
 
     // Grab and move the MIW
     function onMove(e) {
-      const coord = e.lngLat;
       canvas.style.cursor = "grabbing";
-      dispatch({
-        type: "SET_COORD",
-        payload: coord,
-      });
-      renderBox(coord);
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ["regions-layer"],
-      });
-      const region = features[0].properties.Id;
-      onMiwMove({ coord: coord, region: region });
+      handleMovement(e.lngLat, e.point);
     }
 
     // On mouse released, turn off onMove event
