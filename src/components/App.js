@@ -7,6 +7,7 @@ import MiwPanel from "./MiwPanel";
 import { ResponseSurfaceDropdown, MiwDropdown } from "./Dropdown";
 import IntroductionPanel from "./IntroductionPanel";
 import HowToPanel from "./HowToPanel";
+import DownloadPanel from "./DownloadPanel";
 import ColorRamp from "./ColorRamp";
 import { isEqual } from "lodash";
 
@@ -87,6 +88,7 @@ export default function App({ config }) {
   const [showIntro, setShowIntro] = useState(false);
   const [showHowTo, setShowHowTo] = useState(false);
   const [showMiw, setShowMiw] = useState(false);
+  const [showDownload, setShowDownload] = useState(false);
   const [tileIdx, setTileIdx] = useState(0);
   const [miwResponseIdx, setMiwResponseIdx] = useState(0);
   const [miwSize, setMiwSize] = useState([300, 200]);
@@ -104,6 +106,8 @@ export default function App({ config }) {
   const handleMiwClose = () => setShowMiw(false);
   const handleMiwShow = () => setShowMiw(true);
   const handleMiwRecenter = () => setMiwRecenter(true);
+  const handleDownloadClose = () => setShowDownload(false);
+  const handleDownloadShow = () => setShowDownload(true);
 
   const handleSurfaceChange = (event) => {
     dispatch({ type: "SET_SURFACE", payload: +event.target.value });
@@ -207,10 +211,8 @@ export default function App({ config }) {
             <Button variant="success" onClick={handleMiwRecenter}>
               Recenter MIW Window
             </Button>
-            <Button variant="success" onClick={handleIntroShow}>
-              Download Current Probability Map
-              <br />
-              <small>This will download the entire region</small>
+            <Button variant="success" onClick={handleDownloadShow}>
+              Download Data
             </Button>
           </div>
         </Card.Body>
@@ -223,6 +225,12 @@ export default function App({ config }) {
       />
 
       <HowToPanel title="How-To" show={showHowTo} onHide={handleHowToClose} />
+
+      <DownloadPanel
+        config={config}
+        show={showDownload}
+        onHide={handleDownloadClose}
+      />
 
       {showMiw && (
         <MiwPanel

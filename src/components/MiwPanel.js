@@ -212,7 +212,7 @@ export default function MiwPanel({
       aria-hidden="true"
     >
       <div className="modal-dialog modal-xl modal-dialog-centered">
-        <div className="modal-content">
+        <div id="miw-content" className="modal-content">
           <div className="modal-header">
             <h5>Model Inspector Window (MIW)</h5>
             <button
