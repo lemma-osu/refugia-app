@@ -89,3 +89,7 @@ canvas {
 .ramp-text {
   font-size: 0.75em;
 }
+
+.x.label {
+  font-size: 0.8em;
+}

@@ -7,6 +7,7 @@ import { COVARIATE_RAMP } from "../utils";
 export default function CovariateGroup({
   name,
   description,
+  units,
   imageData,
   imageStats,
   chartDataPath,
@@ -36,7 +37,8 @@ export default function CovariateGroup({
         chartDataPath={chartDataPath}
         variableValue={variableValue.current}
         width={223}
-        height={148}
+        height={168}
+        units={units}
       />
     </div>
   );

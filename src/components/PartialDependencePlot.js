@@ -8,7 +8,7 @@ import {
   scaleLinear,
 } from "d3";
 
-import { Svg, XAxis, YAxis, Line, Dot } from "./Chart";
+import { Svg, XAxis, XAxisLabel, YAxis, Line, Dot } from "./Chart";
 
 const xValue = (d) => d.X;
 const yValue = (d) => d.Y;
@@ -33,6 +33,7 @@ export default function PartialDependencePlot({
   variableValue,
   width,
   height,
+  units,
 }) {
   const [data, setData] = useState([{ X: 0, Y: 0 }]);
   const [dot, setDot] = useState([0, 0]);
@@ -40,7 +41,7 @@ export default function PartialDependencePlot({
   const margin = { top: 5, right: 5, bottom: 20, left: 30 };
 
   const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+  const innerHeight = height - 20 - margin.top - margin.bottom;
 
   const xScale = useMemo(
     () =>
@@ -50,7 +51,7 @@ export default function PartialDependencePlot({
 
   const yScale = useMemo(
     () =>
-      scaleLinear().domain(extent(data, yValue)).range([0, innerHeight]).nice(),
+      scaleLinear().domain(extent(data, yValue)).range([innerHeight, 0]).nice(),
     [data, innerHeight]
   );
 
@@ -117,6 +118,7 @@ export default function PartialDependencePlot({
         yValue={yValue}
         circleRadius={5}
       />
+      <XAxisLabel label={units} width={innerWidth / 2} height={height} />
     </Svg>
   );
 }

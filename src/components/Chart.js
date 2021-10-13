@@ -57,3 +57,13 @@ export function Line({ data, xScale, yScale, xValue, yValue }) {
 export function Dot({ d, circleRadius }) {
   return <circle className="dot" cx={d.x} cy={d.y} r={circleRadius} />;
 }
+
+export function XAxisLabel({ label, width, height }) {
+  return (
+    <>
+      <text className="x label" textAnchor="middle" x={width} y={height - 10}>
+        {label}
+      </text>
+    </>
+  );
+}
