@@ -93,7 +93,18 @@ export default function App({ config }) {
   };
 
   const handleResponseChange = (changed) => {
-    const responses = { ...state.responses, ...changed };
+    // Commented out for now - this allows independent varying of
+    // response variables.  Currently we're doing this as paired such
+    // that any response change triggers a value change in all reponses
+    // const responses = { ...state.responses, ...changed };
+    const value = Object.values(changed)[0];
+    const responses = Object.keys(state.responses).reduce(
+      (obj, el) => ({
+        ...obj,
+        [el]: value,
+      }),
+      {}
+    );
     dispatch({ type: "SET_RESPONSES", payload: responses });
   };
 
@@ -173,11 +184,11 @@ export default function App({ config }) {
           <MiwDropdown onChange={handleMiwSizeChange} />
           <ColorRamp specification={ramp} width={286} height={30} />
           <div className="d-grid gap-3">
-            <Button variant="success" onClick={handleMiwRecenter}>
-              Recenter MIW Window
-            </Button>
             <Button variant="success" onClick={handleMiwShow}>
               To the MIW!!!
+            </Button>
+            <Button variant="success" onClick={handleMiwRecenter}>
+              Recenter MIW Window
             </Button>
             <Button variant="success" onClick={handleIntroShow}>
               Download Current Probability Map
