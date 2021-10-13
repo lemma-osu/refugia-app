@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 
-import { drawToPlot, initializeCanvasPlot } from "../utils";
+import { drawToPlot, initializeCanvasPlot, unscaleArray } from "../utils";
 
 export default function ResponseCanvas({
   responseData,
@@ -11,7 +11,6 @@ export default function ResponseCanvas({
   const canvas = useRef();
   const plot = useRef();
   const arrs = useRef();
-  arrs.current = responseData;
   const width = responseData[0].width;
   const height = responseData[0].height;
 
@@ -26,6 +25,14 @@ export default function ResponseCanvas({
       );
     }
   }, [plot, width, height]);
+
+  useEffect(() => {
+    arrs.current = responseData.map((data, idx) => {
+      const scale = responseStats[idx].scale;
+      const offset = responseStats[idx].offset;
+      return unscaleArray(data, scale, offset);
+    });
+  }, [arrs, responseData, responseStats]);
 
   useEffect(() => {
     if (!plot.current) return;

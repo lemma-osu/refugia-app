@@ -64,6 +64,8 @@ export default function MiwPanel({
   const responseStats = responses.map((r) => ({
     min: 0.0,
     max: 1.0,
+    scale: 10000.0,
+    offset: 0.0,
     noData: r.nodata,
   }));
 
