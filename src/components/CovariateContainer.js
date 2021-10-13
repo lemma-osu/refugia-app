@@ -10,6 +10,7 @@ export default function CovariateContainer({ covariates, covariateData, xy }) {
           key={covariate.name}
           name={covariate.name}
           description={covariate.description}
+          importance={covariate.variable_importance}
           units={covariate.units}
           imageData={data}
           imageStats={{

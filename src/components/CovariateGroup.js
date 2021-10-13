@@ -7,6 +7,7 @@ import { COVARIATE_RAMP } from "../utils";
 export default function CovariateGroup({
   name,
   description,
+  importance,
   units,
   imageData,
   imageStats,
@@ -17,7 +18,9 @@ export default function CovariateGroup({
   return (
     <div className="covariate-group">
       <div>
-        <small>{description}</small>
+        <small>
+          {description} ({importance.toFixed(2)})
+        </small>
       </div>
       <CovariateColorRamp
         specification={COVARIATE_RAMP}
