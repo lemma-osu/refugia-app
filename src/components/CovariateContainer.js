@@ -15,6 +15,8 @@ export default function CovariateContainer({ covariates, covariateData, xy }) {
           imageStats={{
             min: covariate.min,
             max: covariate.max,
+            scale: covariate.scale,
+            offset: covariate.offset,
             noData: covariate.nodata,
           }}
           chartDataPath={covariate.chart_data_path}

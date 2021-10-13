@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 
-import { drawToPlot, initializeCanvasPlot } from "../utils";
+import { drawToPlot, initializeCanvasPlot, unscaleArray } from "../utils";
 
 export default function CovariateCanvas({
   id,
@@ -13,7 +13,6 @@ export default function CovariateCanvas({
   const pointCanvas = useRef();
   const plot = useRef();
   const arr = useRef();
-  arr.current = imageData;
   const width = imageData.width;
   const height = imageData.height;
 
@@ -30,10 +29,16 @@ export default function CovariateCanvas({
     }
   }, [plot, width, height]);
 
+  useEffect(() => {
+    if (arr.current) return;
+    arr.current = unscaleArray(imageData, imageStats.scale, imageStats.offset);
+  }, [arr, imageData, imageStats]);
+
   // Load the image once the canvas has initialized
   useEffect(() => {
+    if (!arr.current) return;
     drawToPlot(plot.current, arr.current, imageStats);
-  }, [plot]);
+  }, [plot, arr]);
 
   // Retrieve the value in the array at the xy offset and store in
   // variableValue ref provided by parent

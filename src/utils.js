@@ -143,3 +143,9 @@ export async function getPercentiles(statisticsPath, percentileArr) {
     return dict[percentile];
   });
 }
+
+export function unscaleArray(img, scale, offset) {
+  const scaled = { ...img };
+  scaled[0] = Float32Array.from(img[0], (x) => (x - offset) / scale);
+  return scaled;
+}
