@@ -88,12 +88,15 @@ const items = [
         <ul>
           <li className="pb-3">
             <em>Probability surface maps:</em> The raster maps available on
-            Eco-Vis consist of pixel-level model predictions that, together,
-            describe the probability surface for each variable of interest. The
-            predictions range from 0 (low probability) to 1 (high probability).
-            These maps are useful for understanding large- or fine-scale
-            patterns in the likelihood of a phenomenon, given any specific set
-            of conditions.{" "}
+            Eco-Vis consist of pixel-level predictions from boosted regression
+            tree models that, together, describe the probability surface for
+            each variable of interest. The predictions range from 0 (low
+            probability) to 1 (high probability). These maps are useful for
+            understanding large- or fine-scale patterns in the likelihood of a
+            phenomenon, given any specific set of conditions. These models are
+            based on a suite of topographic, vegetation, fire behavior, fire
+            weather, and climatic predictor variables from burned areas
+            occurring in the Pacific Northwest during 2002-2017.{" "}
           </li>
           <li className="pb-3">
             <em>Drivers/predictors:</em> Model predictions are based on a suite
@@ -154,15 +157,11 @@ const items = [
     header: "Let’s start looking at maps and models in the MIW!",
     body: (
       <p>
-        For the data and context provided here, using boosted regression tree
-        models and a suite of topographic, vegetation, fire behavior, fire
-        weather, and climatic variables, we have developed predictive maps of
-        fire refugia for forests of the Pacific Northwest, based on fires
-        occurring in the region from 2002-2017. Eco-Vis allows the user to
-        select from a list of predictive fire severity maps (xxx), explore
-        and/or download these maps, view the predictions side-by-side with the
-        underlying geospatial data inputs, and examine the modeled relationships
-        between the severity predictions and their drivers.
+        Eco-Vis allows the user to select from a list of predictive fire
+        severity maps (fire refugia or high severity fire), explore and download
+        these maps, view the predictions side-by-side with the underlying
+        geospatial data inputs, and examine the modeled relationships between
+        the severity predictions and their drivers.
       </p>
     ),
   },

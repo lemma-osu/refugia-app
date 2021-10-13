@@ -6,6 +6,7 @@ import ResponseMap from "./ResponseMap";
 import MiwPanel from "./MiwPanel";
 import { ResponseSurfaceDropdown, MiwDropdown } from "./Dropdown";
 import IntroductionPanel from "./IntroductionPanel";
+import HowToPanel from "./HowToPanel";
 import ColorRamp from "./ColorRamp";
 import { isEqual } from "lodash";
 
@@ -59,6 +60,19 @@ function reducer(state, action) {
   }
 }
 
+const introText = (
+  <small>
+    Welcome to Eco-Vis! This web tool allows you to explore predictive
+    ecological maps and understand their drivers. Check out our maps of fire
+    refugia and high severity fire for forests of the Pacific Northwest. You can
+    browse, zoom in and out, swipe between predicted and actual conditions,
+    change fire weather scenarios, examine the influence of predictor variables,
+    and download data directly. Click on Show Introduction for more background
+    and details on the data products and of using Eco-Vis. The How-To button
+    provides technical guidance on how to best use the features provided here.
+  </small>
+);
+
 export default function App({ config }) {
   const [state, dispatch] = useReducer(reducer, config, initializeState);
   const [location, setLocation] = useState({
@@ -71,6 +85,7 @@ export default function App({ config }) {
   });
   const [region, setRegion] = useState(0);
   const [showIntro, setShowIntro] = useState(false);
+  const [showHowTo, setShowHowTo] = useState(false);
   const [showMiw, setShowMiw] = useState(false);
   const [tileIdx, setTileIdx] = useState(0);
   const [miwResponseIdx, setMiwResponseIdx] = useState(0);
@@ -84,6 +99,8 @@ export default function App({ config }) {
   // Event handlers
   const handleIntroClose = () => setShowIntro(false);
   const handleIntroShow = () => setShowIntro(true);
+  const handleHowToClose = () => setShowHowTo(false);
+  const handleHowToShow = () => setShowHowTo(true);
   const handleMiwClose = () => setShowMiw(false);
   const handleMiwShow = () => setShowMiw(true);
   const handleMiwRecenter = () => setMiwRecenter(true);
@@ -161,13 +178,13 @@ export default function App({ config }) {
       >
         <Card.Body>
           <Card.Title>Eco-Vis</Card.Title>
-          <div className="pb-3">
-            Placeholder text for any descriptive text of Eco-Vis that users
-            should have before hitting the "Show Introduction" button
-          </div>
-          <div className="d-grid">
+          <div className="pb-3">{introText}</div>
+          <div className="d-grid gap-2">
             <Button variant="primary" onClick={handleIntroShow}>
               Show Introduction
+            </Button>
+            <Button variant="primary" onClick={handleHowToShow}>
+              How-To
             </Button>
           </div>
           <div className="mt-3">
@@ -183,7 +200,7 @@ export default function App({ config }) {
           />
           <MiwDropdown onChange={handleMiwSizeChange} />
           <ColorRamp specification={ramp} width={286} height={30} />
-          <div className="d-grid gap-3">
+          <div className="d-grid gap-2">
             <Button variant="success" onClick={handleMiwShow}>
               To the MIW!!!
             </Button>
@@ -204,6 +221,8 @@ export default function App({ config }) {
         show={showIntro}
         onHide={handleIntroClose}
       />
+
+      <HowToPanel title="How-To" show={showHowTo} onHide={handleHowToClose} />
 
       {showMiw && (
         <MiwPanel
