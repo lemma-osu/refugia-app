@@ -1,18 +1,25 @@
 import React, { useRef, useEffect } from "react";
 import PartialDependencePlot from "./PartialDependencePlot";
 import { ResponseVariableDropdown } from "./Dropdown";
+import { unscaleArray } from "../utils";
 
 export default function RealizationGroup({
   v,
   imageData,
   selected,
-  chartDataPath,
+  config,
   xy,
   onChange,
 }) {
   const variableValue = useRef(0);
   const arr = useRef();
-  arr.current = imageData[selected - 1];
+
+  useEffect(() => {
+    const image = imageData[selected - 1];
+    const scale = config.geotiff_paths[selected - 1].scale;
+    const offset = config.geotiff_paths[selected - 1].offset;
+    arr.current = unscaleArray(image, scale, offset);
+  }, [arr, imageData, selected, config]);
 
   useEffect(() => {
     if (!arr.current) return;
@@ -29,10 +36,11 @@ export default function RealizationGroup({
         onChange={onChange}
       />
       <PartialDependencePlot
-        chartDataPath={chartDataPath}
+        chartDataPath={config.chart_data_path}
         variableValue={variableValue.current}
         width={250}
         height={148}
+        units={config.units}
       />
     </div>
   );

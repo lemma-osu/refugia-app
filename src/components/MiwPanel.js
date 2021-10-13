@@ -248,9 +248,7 @@ export default function MiwPanel({
                         v={realizations[0]}
                         imageData={firstVaryingData}
                         selected={thresholds[realizations[0].name]}
-                        chartDataPath={
-                          regionConfig.dynamic_covariates[0].chart_data_path
-                        }
+                        config={regionConfig.dynamic_covariates[0]}
                         xy={xy}
                         onChange={handleThresholdChange}
                       />
@@ -258,9 +256,7 @@ export default function MiwPanel({
                         v={realizations[1]}
                         imageData={secondVaryingData}
                         selected={thresholds[realizations[1].name]}
-                        chartDataPath={
-                          regionConfig.dynamic_covariates[1].chart_data_path
-                        }
+                        config={regionConfig.dynamic_covariates[1]}
                         xy={xy}
                         onChange={handleThresholdChange}
                       />
