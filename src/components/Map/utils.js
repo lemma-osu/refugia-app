@@ -2,7 +2,8 @@ export function createTilejson(layer) {
   return {
     source: {
       type: "raster",
-      scheme: "xyz",
+      // scheme: "xyz",
+      scheme: "tms",
       tiles: layer.tile_urls,
       tileSize: 256,
     },
