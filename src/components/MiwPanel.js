@@ -143,10 +143,19 @@ export default function MiwPanel({
 
   const handleThresholdChange = useCallback(
     (obj) => {
-      setThresholds({
-        ...thresholds,
-        ...obj,
-      });
+      // Commented out for now - this allows independent varying of
+      // thresholds.  Currently we're doing this as paired such
+      // that any response change triggers a value change in all reponses
+      // const newThresholds = { ...thresholds, ...obj };
+      const value = Object.values(obj)[0];
+      const newThresholds = Object.keys(thresholds).reduce(
+        (obj, el) => ({
+          ...obj,
+          [el]: value,
+        }),
+        {}
+      );
+      setThresholds(newThresholds);
       setXy({ ...xy });
     },
     [thresholds]
