@@ -298,6 +298,19 @@ export default function ResponseMap({
         "fill-opacity": 0,
       },
     });
+
+    map.addLayer({
+      id: "regions-line",
+      type: "line",
+      source: "regions",
+      layout: {
+        "line-cap": "round",
+      },
+      paint: {
+        "line-color": "#ffffff",
+        "line-opacity": 0.4,
+      },
+    });
   }, [map]);
 
   return (
