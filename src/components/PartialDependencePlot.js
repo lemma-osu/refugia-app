@@ -8,7 +8,7 @@ import {
   scaleLinear,
 } from "d3";
 
-import { Svg, XAxis, XAxisLabel, YAxis, Line, Dot } from "./Chart";
+import { Svg, XAxis, XAxisLabel, YAxis, YAxisLabel, Line, Dot } from "./Chart";
 
 const xValue = (d) => d.X;
 const yValue = (d) => d.Y;
@@ -38,10 +38,10 @@ export default function PartialDependencePlot({
   const [data, setData] = useState([{ X: 0, Y: 0 }]);
   const [dot, setDot] = useState([0, 0]);
 
-  const margin = { top: 5, right: 5, bottom: 20, left: 30 };
+  const margin = { top: 5, right: 20, bottom: 35, left: 45 };
 
   const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - 20 - margin.top - margin.bottom;
+  const innerHeight = height - margin.top - margin.bottom;
 
   const xScale = useMemo(
     () =>
@@ -118,7 +118,12 @@ export default function PartialDependencePlot({
         yValue={yValue}
         circleRadius={5}
       />
-      <XAxisLabel label={units} width={innerWidth / 2} height={height} />
+      <XAxisLabel
+        label={units}
+        x={innerWidth / 2}
+        y={margin.top + innerHeight + 25}
+      />
+      <YAxisLabel label="Probability" x={-35} y={innerHeight / 2} />
     </Svg>
   );
 }

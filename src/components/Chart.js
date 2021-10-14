@@ -58,12 +58,24 @@ export function Dot({ d, circleRadius }) {
   return <circle className="dot" cx={d.x} cy={d.y} r={circleRadius} />;
 }
 
-export function XAxisLabel({ label, width, height }) {
+export function XAxisLabel({ label, x, y }) {
   return (
-    <>
-      <text className="x label" textAnchor="middle" x={width} y={height - 10}>
-        {label}
-      </text>
-    </>
+    <text className="x label" textAnchor="middle" x={x} y={y}>
+      {label}
+    </text>
+  );
+}
+
+export function YAxisLabel({ label, x, y }) {
+  return (
+    <text
+      className="y label"
+      textAnchor="middle"
+      x={x}
+      y={y}
+      transform={`rotate(-90,${x},${y})`}
+    >
+      {label}
+    </text>
   );
 }

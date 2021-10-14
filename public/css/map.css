@@ -90,6 +90,7 @@ canvas {
   font-size: 0.75em;
 }
 
-.x.label {
+.x.label,
+.y.label {
   font-size: 0.8em;
 }
