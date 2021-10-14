@@ -13,6 +13,7 @@ export default function RealizationGroup({
 }) {
   const variableValue = useRef(0);
   const arr = useRef();
+  const title = `${v.description} (${config.variable_importance.toFixed(2)}%)`;
 
   useEffect(() => {
     const image = imageData[selected - 1];
@@ -30,7 +31,9 @@ export default function RealizationGroup({
   return (
     <div className="realization-group">
       <ResponseVariableDropdown
-        v={v}
+        name={v.name}
+        title={title}
+        options={v.steps}
         selected={selected}
         className="mb-2"
         onChange={onChange}

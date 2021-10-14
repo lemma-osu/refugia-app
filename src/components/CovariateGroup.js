@@ -19,7 +19,7 @@ export default function CovariateGroup({
     <div className="covariate-group">
       <div>
         <small>
-          {description} ({importance.toFixed(2)})
+          {description} ({importance.toFixed(2)}%)
         </small>
       </div>
       <CovariateColorRamp

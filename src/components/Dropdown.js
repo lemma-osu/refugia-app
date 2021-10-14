@@ -1,21 +1,28 @@
 import React from "react";
 import Form from "react-bootstrap/Form";
 
-export function ResponseVariableDropdown({ v, selected, className, onChange }) {
+export function ResponseVariableDropdown({
+  name,
+  title,
+  options,
+  selected,
+  className,
+  onChange,
+}) {
   function handleChange(e) {
     onChange({ [e.target.name]: +e.target.value });
   }
 
   return (
     <Form.Group className={className}>
-      <Form.Label>{v.description}</Form.Label>
+      <Form.Label>{title}</Form.Label>
       <Form.Select
-        name={v.name}
-        aria-label={v.description}
+        name={name}
+        aria-label={title}
         value={selected}
         onChange={handleChange}
       >
-        {v.steps.map((d) => (
+        {options.map((d) => (
           <option key={d.value} value={d.value}>
             {d.label}
           </option>
@@ -35,7 +42,9 @@ export function ResponseVariableDropdownGroup({
       {variables.map((v, idx) => (
         <ResponseVariableDropdown
           key={idx}
-          v={v}
+          name={v.name}
+          title={v.description}
+          options={v.steps}
           selected={responses[v.name]}
           className="mb-2 mt-2 ms-3"
           onChange={onChange}
