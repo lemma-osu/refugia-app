@@ -78,7 +78,10 @@ export default function DownloadPanel({ config, show, onHide }) {
       isEqual(r.combination, state.responses)
     );
     const href =
-      window.location.protocol + "//" + window.location.host + responseConfig.zip_path;
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      responseConfig.zip_path;
     setDownloadHref(href);
   });
 
@@ -89,13 +92,11 @@ export default function DownloadPanel({ config, show, onHide }) {
       </Modal.Header>
       <Modal.Body>
         <p>
-          Text describing the download and how it will show up as a zip file
-          through the browser. Notify user that this will download the currently
-          selected layer.
-          <br />
-          <br />
-          Also give the download links to the final report and to ScienceBase
-          where the data will eventually reside.
+          To download the probability maps, specify the desired response surface
+          and scenario. Then press the “Download Selected Probability Map”
+          button to start the download. Your file will be provided a compressed
+          (zipped) file. A shapefile of our the ecoregional boundaries used for
+          modeling are available here.
         </p>
         <ResponseSurfaceDropdown
           config={config}

@@ -17,15 +17,17 @@ const items = [
         <a href="http://firerefugia.forestry.oregonstate.edu/about">
           dig in for more information
         </a>
-        . The data we present here focuses on the context of{" "}
+        . The data we present here focuses on the context of fire refugia in
+        forests of the Pacific Northwest of the United States, where
+        conservation issues focus on{" "}
         <a href="http://firerefugia.forestry.oregonstate.edu/home">
-          fire refugia in mature and old-growth forests of the Pacific Northwest
-        </a>{" "}
-        of the United States. We’re interested in patches of forest that persist
-        through recent fire events as living legacies. These forests can be
-        burned at low severity or be truly unburned, but the key characteristic
-        is that most trees survive through the fire event and contribute as
-        living trees to the post-fire landscape mosaic
+          maintenance of mature and old-growth forest
+        </a>
+        . We’re interested in patches of forest that persist through recent fire
+        events as living legacies. These forests can be burned at low severity
+        or be truly unburned, but the key characteristic is that most trees
+        survive through the fire event and contribute as living trees to the
+        post-fire landscape mosaic
       </p>
     ),
   },
@@ -33,14 +35,17 @@ const items = [
     header: "What is Eco-Vis?",
     body: (
       <p>
-        This Eco-Vis web application and tool is designed to provide a data
-        access, dynamic mapping and exploration, visualization, and download
-        platform for data and predictive maps of ecological phenomena generated
-        by Oregon State University’s Landscape Fire and Conservation Science
-        Research Group. Eco-Vis provides tools that facilitate understanding of
-        the geography of biophysical data. In particular, our goal is to help
-        users understand how data are incorporated into our predictive models
-        developed for conservation-adaptation science and land management.{" "}
+        This Eco-Vis web application and tool is designed to provide a platform
+        for data access, dynamic mapping and exploration, visualization, and
+        data download. The maps and models are developed by Oregon State
+        University’s{" "}
+        <a href="http://people.forestry.oregonstate.edu/meg-krawchuk/">
+          Landscape Fire and Conservation Science Research Group
+        </a>
+        . Eco-Vis provides tools that facilitate understanding of the geography
+        of biophysical data. In particular, our goal is to help users understand
+        how data are incorporated into our predictive models developed for
+        conservation-adaptation science and land management.{" "}
       </p>
     ),
   },
@@ -149,6 +154,20 @@ const items = [
             the model, providing a useful benchmark for interpreting key
             drivers.
           </li>
+          <li className="pb-3">
+            <em>Modeling ecoregions:</em> To permit model adaptability to
+            different fire dynamics and biophysical conditions across our broad
+            study region, we built separate models for each of our response
+            variables (fire refugia, high severity) for two broad ecoregions.
+            The non-fire-prone ecoregion encompasses the moist
+            Douglas-fir/western hemlock forests of the northwestern portion of
+            our study area. The fire-prone ecoregion encompasses forests with
+            more fire-resistant species such as pines, larch, and oaks that
+            characterize the eastern Cascades and southwest portion of our study
+            region. All products are seamless composites derived from these
+            joint models. Ecoregional boundaries can be downloaded using the
+            Data Download button.
+          </li>
         </ul>
       </>
     ),
@@ -162,6 +181,10 @@ const items = [
         these maps, view the predictions side-by-side with the underlying
         geospatial data inputs, and examine the modeled relationships between
         the severity predictions and their drivers.
+        <br />
+        <br />
+        Take a look at the How-to materials for more information on how to work
+        with Eco-Vis and MIW.
       </p>
     ),
   },
