@@ -37,7 +37,7 @@ export function ResponseVariableDropdownGroup({
           key={idx}
           v={v}
           selected={responses[v.name]}
-          className="mb-3 mt-3 ms-3"
+          className="mb-2 mt-2 ms-3"
           onChange={onChange}
         />
       ))}
@@ -53,7 +53,7 @@ export function ResponseSurfaceDropdown({
   onResponseChange,
 }) {
   return (
-    <Form.Group className="mb-3 mt-3">
+    <Form.Group className="mb-3 mt-2">
       <Form.Label>Response Surface</Form.Label>
       <Form.Select
         name="response"
@@ -78,7 +78,7 @@ export function ResponseSurfaceDropdown({
 
 export function MiwDropdown({ onChange }) {
   return (
-    <Form.Group className="mb-3 mt-3">
+    <Form.Group className="mb-3 mt-2">
       <Form.Label>Model Inspector Window (MIW) Size</Form.Label>
       <Form.Select
         name="miw-select"

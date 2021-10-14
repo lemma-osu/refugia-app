@@ -6,7 +6,7 @@ export default function ColorRamp({ specification, width, height }) {
   const textHeight = 15;
   const barOffset = textHeight + 10;
   const labelOffset = barOffset + height + 20;
-  const totalHeight = labelOffset + 15;
+  const totalHeight = labelOffset;
   return (
     <Svg width={width} height={totalHeight} margin={margin}>
       <defs>
@@ -33,6 +33,7 @@ export default function ColorRamp({ specification, width, height }) {
       <g>
         <text
           fill="white"
+          fontSize="0.8em"
           textAnchor="start"
           transform={`translate(0, ${labelOffset})`}
         >
@@ -40,6 +41,7 @@ export default function ColorRamp({ specification, width, height }) {
         </text>
         <text
           fill="white"
+          fontSize="0.8em"
           textAnchor="middle"
           transform={`translate(${width / 2}, ${labelOffset})`}
         >
@@ -47,6 +49,7 @@ export default function ColorRamp({ specification, width, height }) {
         </text>
         <text
           fill="white"
+          fontSize="0.8em"
           textAnchor="end"
           transform={`translate(${width}, ${labelOffset})`}
         >

@@ -61,16 +61,19 @@ function reducer(state, action) {
   }
 }
 
-const introText = (
+const introText1 = (
   <small>
-    Welcome to Eco-Vis! This web tool allows you to explore predictive
-    ecological maps and understand their drivers. Check out our maps of fire
-    refugia and high severity fire for forests of the Pacific Northwest. You can
-    browse, zoom in and out, swipe between predicted and actual conditions,
-    change fire weather scenarios, examine the influence of predictor variables,
-    and download data directly. Click on Show Introduction for more background
-    and details on the data products and of using Eco-Vis. The How-To button
-    provides technical guidance on how to best use the features provided here.
+    Explore predictive ecological maps of fire refugia and high severity fire
+    for forests of the Pacific Northwest. Pan, zoom in-out, swipe between
+    predicted and actual conditions, change fire weather scenarios, examine the
+    influence of predictor variables, and download data directly. For background
+    and details on data products and for using Eco-Vis:
+  </small>
+);
+
+const introText2 = (
+  <small>
+    Explainer on how to best use the features of the Eco-Vis webapp:
   </small>
 );
 
@@ -181,19 +184,22 @@ export default function App({ config }) {
         style={{ maxWidth: "20rem", height: "calc(100vh - 32px)" }}
       >
         <Card.Body>
-          <Card.Title>Eco-Vis</Card.Title>
-          <div className="pb-3">{introText}</div>
+          <Card.Title>Welcome to Eco-Vis!</Card.Title>
           <div className="d-grid gap-2">
+            <div>{introText1}</div>
             <Button variant="primary" onClick={handleIntroShow}>
               Show Introduction
             </Button>
+            <div>{introText2}</div>
             <Button variant="primary" onClick={handleHowToShow}>
               How-To
             </Button>
           </div>
-          <div className="mt-3">
-            Latitude: {location.lat.toFixed(4)} | Longitude:{" "}
-            {location.lng.toFixed(4)}
+          <div className="mt-2">
+            <small>
+              Latitude: {location.lat.toFixed(4)} | Longitude:{" "}
+              {location.lng.toFixed(4)}
+            </small>
           </div>
           <ResponseSurfaceDropdown
             config={config}
@@ -202,8 +208,8 @@ export default function App({ config }) {
             onSurfaceChange={handleSurfaceChange}
             onResponseChange={handleResponseChange}
           />
-          <MiwDropdown onChange={handleMiwSizeChange} />
           <ColorRamp specification={ramp} width={286} height={30} />
+          <MiwDropdown onChange={handleMiwSizeChange} />
           <div className="d-grid gap-2">
             <Button variant="success" onClick={handleMiwShow}>
               To the MIW!!!
