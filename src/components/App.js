@@ -212,7 +212,7 @@ export default function App({ config }) {
           <MiwDropdown onChange={handleMiwSizeChange} />
           <div className="d-grid gap-2">
             <Button variant="success" onClick={handleMiwShow}>
-              To the MIW!!!
+              To the MIW!
             </Button>
             <Button variant="success" onClick={handleMiwRecenter}>
               Recenter MIW Window

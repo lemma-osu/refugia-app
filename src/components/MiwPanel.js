@@ -184,7 +184,7 @@ export default function MiwPanel({
         {}
       );
       setThresholds(newThresholds);
-      setXy((xy) => xy);
+      setXy((xy) => ({ x: xy.x, y: xy.y }));
     },
     [thresholds]
   );

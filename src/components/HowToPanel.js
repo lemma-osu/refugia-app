@@ -25,8 +25,8 @@ const items = [
         a true color composite satellite image.
         <br />
         <br />
-        Direct download of the selected response variable is possible by
-        clicking on the Download Current Probability Map button.
+        Direct download of the probability maps for all fire weather scenarios
+        are possible by clicking on the Download Data button.
         <br />
         <br />
         If further exploration of the data and the model predictions is desired,
@@ -44,7 +44,7 @@ const items = [
     ),
   },
   {
-    header: "Model Inspection Window",
+    header: "Model Inspection Window (MIW)",
     body: (
       <p>
         The MIW has several important features. The upper left panel displays

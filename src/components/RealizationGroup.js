@@ -35,7 +35,7 @@ export default function RealizationGroup({
         title={title}
         options={v.steps}
         selected={selected}
-        className="mb-2"
+        className="mb-2 small"
         onChange={onChange}
       />
       <PartialDependencePlot
