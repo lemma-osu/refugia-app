@@ -24,7 +24,7 @@ export default function ResponseCanvas({
         "refugia"
       );
     }
-  }, [plot, width, height]);
+  }, [plot, width, height, responseStats, currentIdx]);
 
   useEffect(() => {
     arrs.current = responseData.map((data, idx) => {
@@ -35,22 +35,13 @@ export default function ResponseCanvas({
   }, [arrs, responseData, responseStats]);
 
   useEffect(() => {
-    if (!plot.current) return;
-    drawToPlot(
-      plot.current,
-      arrs.current[currentIdx],
-      responseStats[currentIdx]
-    );
-  }, [plot, currentIdx]);
-
-  useEffect(() => {
     if (!plot.current || !arrs.current) return;
     drawToPlot(
       plot.current,
       arrs.current[currentIdx],
       responseStats[currentIdx]
     );
-  }, [currentIdx]);
+  }, [currentIdx, responseStats]);
 
   return (
     <canvas

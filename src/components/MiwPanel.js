@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { Modal } from "bootstrap";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { isEqual } from "lodash";
@@ -31,7 +37,7 @@ export function useImagesFetch({ lng, lat, paths, width, height }) {
     Promise.all(promises).then((data) => {
       setState((state) => ({ loading: false, done: state.done, data }));
     });
-  }, []);
+  }, [paths, lng, lat, height, width]);
 
   return state;
 }
@@ -58,16 +64,22 @@ export default function MiwPanel({
 }) {
   const surfaceConfig = config.probability_surfaces[currentSurface];
   const regionConfig = surfaceConfig.regions[currentRegion];
+  const [responseStats, setResponseStats] = useState(null);
 
   // Get the responses
   const responses = surfaceConfig.responses;
-  const responseStats = responses.map((r) => ({
-    min: 0.0,
-    max: 1.0,
-    scale: 10000.0,
-    offset: 0.0,
-    noData: r.nodata,
-  }));
+
+  useEffect(() => {
+    setResponseStats(
+      responses.map((r) => ({
+        min: 0.0,
+        max: 1.0,
+        scale: 10000.0,
+        offset: 0.0,
+        noData: r.nodata,
+      }))
+    );
+  }, [responses]);
 
   const realizations = surfaceConfig.realizations;
 
@@ -78,6 +90,22 @@ export default function MiwPanel({
   const [thresholds, setThresholds] = useState(currentResponse);
   const [currentIdx, setCurrentIdx] = useState(miwResponseIdx);
 
+  const covariatePaths = useMemo(() => {
+    return returnPaths(regionConfig.static_covariates);
+  }, [regionConfig]);
+
+  const responsePaths = useMemo(() => {
+    return returnPaths(responses);
+  }, [responses]);
+
+  const firstVaryingPaths = useMemo(() => {
+    return returnDynamicPaths(regionConfig.dynamic_covariates[0]);
+  }, [regionConfig.dynamic_covariates]);
+
+  const secondVaryingPaths = useMemo(() => {
+    return returnDynamicPaths(regionConfig.dynamic_covariates[1]);
+  }, [regionConfig.dynamic_covariates]);
+
   // Retrieve all the needed images
   const {
     loading: covariateLoading,
@@ -86,7 +114,7 @@ export default function MiwPanel({
   } = useImagesFetch({
     lng: miwLocation.lng,
     lat: miwLocation.lat,
-    paths: returnPaths(regionConfig.static_covariates),
+    paths: covariatePaths,
     width: miwSize[0],
     height: miwSize[1],
   });
@@ -97,7 +125,7 @@ export default function MiwPanel({
   } = useImagesFetch({
     lng: miwLocation.lng,
     lat: miwLocation.lat,
-    paths: returnPaths(responses),
+    paths: responsePaths,
     width: miwSize[0],
     height: miwSize[1],
   });
@@ -108,7 +136,7 @@ export default function MiwPanel({
   } = useImagesFetch({
     lng: miwLocation.lng,
     lat: miwLocation.lat,
-    paths: returnDynamicPaths(regionConfig.dynamic_covariates[0]),
+    paths: firstVaryingPaths,
     width: miwSize[0],
     height: miwSize[1],
   });
@@ -119,7 +147,7 @@ export default function MiwPanel({
   } = useImagesFetch({
     lng: miwLocation.lng,
     lat: miwLocation.lat,
-    paths: returnDynamicPaths(regionConfig.dynamic_covariates[1]),
+    paths: secondVaryingPaths,
     width: miwSize[0],
     height: miwSize[1],
   });
@@ -156,16 +184,10 @@ export default function MiwPanel({
         {}
       );
       setThresholds(newThresholds);
-      setXy({ ...xy });
+      setXy((xy) => xy);
     },
     [thresholds]
   );
-
-  useEffect(() => {
-    if (!thresholds) return;
-    const idx = responses.findIndex((r) => isEqual(r.combination, thresholds));
-    setCurrentIdx(idx);
-  }, [thresholds, responses, currentSurface]);
 
   const handleResponseMousemove = useCallback((event) => {
     const rect = event.target.getBoundingClientRect();
@@ -175,6 +197,12 @@ export default function MiwPanel({
     const y = (event.clientY - rect.top) * scaleY;
     setXy({ x: x, y: y });
   }, []);
+
+  useEffect(() => {
+    if (!thresholds) return;
+    const idx = responses.findIndex((r) => isEqual(r.combination, thresholds));
+    setCurrentIdx(idx);
+  }, [thresholds, responses, currentSurface]);
 
   useEffect(() => {
     if (modal.current) return;

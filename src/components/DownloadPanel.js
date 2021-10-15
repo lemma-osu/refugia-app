@@ -83,7 +83,7 @@ export default function DownloadPanel({ config, show, onHide }) {
       window.location.host +
       responseConfig.zip_path;
     setDownloadHref(href);
-  });
+  }, [config.probability_surfaces, state.surface, state.responses]);
 
   return (
     <Modal show={show} onHide={onHide} dialogClassName="modal-50w">

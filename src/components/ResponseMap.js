@@ -138,30 +138,6 @@ export default function ResponseMap({
     initialize
   );
 
-  function handleMovement(coord, point) {
-    dispatch({
-      type: "SET_COORD",
-      payload: coord,
-    });
-    renderBox(coord);
-    const features = map.queryRenderedFeatures(point, {
-      layers: ["regions-layer"],
-    });
-    const region = features.length === 0 ? 0 : features[0].properties.Id;
-    onMiwMove({ coord: coord, region: region });
-  }
-
-  useEffect(() => {
-    if (miwRecenter) {
-      const bounds = map.getBounds();
-      const lat = (bounds._ne.lat + bounds._sw.lat) / 2.0;
-      const lng = (bounds._ne.lng + bounds._sw.lng) / 2.0;
-      const coord = { lng: lng, lat: lat };
-      const point = map.project(coord);
-      handleMovement(coord, point);
-    }
-  }, [miwRecenter]);
-
   // Render box based on current coordinate
   const renderBox = useCallback(
     (coord) => {
@@ -173,6 +149,22 @@ export default function ResponseMap({
       map.getSource("box").setData(state.geojson);
     },
     [map, state.offset, state.geojson]
+  );
+
+  const handleMovement = useCallback(
+    (coord, point) => {
+      dispatch({
+        type: "SET_COORD",
+        payload: coord,
+      });
+      renderBox(coord);
+      const features = map.queryRenderedFeatures(point, {
+        layers: ["regions-layer"],
+      });
+      const region = features.length === 0 ? 0 : features[0].properties.Id;
+      onMiwMove({ coord: coord, region: region });
+    },
+    [map, onMiwMove, renderBox]
   );
 
   // Set map handlers each time focus is on MIW
@@ -208,12 +200,23 @@ export default function ResponseMap({
 
     // Register the mousedown on box
     map.on("mousedown", "box", onDown);
-  }, [map, renderBox, onMiwMove]);
+  }, [map, handleMovement]);
 
   // Set the map reference once the maps have loaded
-  function handleMapLoad(compareMaps) {
+  const handleMapLoad = useCallback((compareMaps) => {
     setMap(compareMaps.left);
-  }
+  }, []);
+
+  useEffect(() => {
+    if (miwRecenter) {
+      const bounds = map.getBounds();
+      const lat = (bounds._ne.lat + bounds._sw.lat) / 2.0;
+      const lng = (bounds._ne.lng + bounds._sw.lng) / 2.0;
+      const coord = { lng: lng, lat: lat };
+      const point = map.project(coord);
+      handleMovement(coord, point);
+    }
+  }, [map, miwRecenter, handleMovement]);
 
   // Change the box offsets if the MIW size changes
   useEffect(() => {
@@ -311,7 +314,7 @@ export default function ResponseMap({
         "line-opacity": 0.4,
       },
     });
-  }, [map]);
+  }, [map, regionGeojson]);
 
   return (
     <SwipeMap
