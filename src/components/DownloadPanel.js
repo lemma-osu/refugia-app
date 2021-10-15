@@ -1,89 +1,73 @@
 import React, { useEffect, useState, useReducer } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { isEqual } from "lodash";
+import Form from "react-bootstrap/Form";
 
-import { ResponseSurfaceDropdown } from "./Dropdown";
 import DownloadButton from "./DownloadButton";
+import { ResponseVariableDropdown } from "./Dropdown";
 
-const getDefaultResponses = (config) => {
-  return config.probability_surfaces.reduce(
-    (obj, el, idx) => ({
-      ...obj,
-      [idx]: el.realizations.reduce(
-        (obj, el) => ({ ...obj, [el.name]: el.initial_value }),
-        {}
-      ),
-    }),
-    {}
+export function DownloadDropdown({
+  config,
+  selectedSurface,
+  selectedScenario,
+  onSurfaceChange,
+  onScenarioChange,
+}) {
+  const surfaceOptions = config.probability_surfaces.map((s, i) => {
+    return { value: i, label: s.description };
+  });
+  const scenarioOptions = [
+    { value: 0, label: "Mild" },
+    { value: 1, label: "Moderate" },
+    { value: 2, label: "Extreme" },
+  ];
+  return (
+    <Form.Group className="mb-3 mt-2">
+      <ResponseVariableDropdown
+        name="surface"
+        title="Probability Surface"
+        options={surfaceOptions}
+        selected={selectedSurface}
+        className="mt-1"
+        onChange={onSurfaceChange}
+      />
+      <ResponseVariableDropdown
+        name="scenario"
+        title="Fire Weather Extremity Scenario"
+        options={scenarioOptions}
+        selected={selectedScenario}
+        className="mt-1"
+        onChange={onScenarioChange}
+      />
+    </Form.Group>
   );
-};
-
-const initializeState = (config) => {
-  const defaultResponses = getDefaultResponses(config);
-  return {
-    surface: 0,
-    responses: defaultResponses[0],
-    defaultResponses: defaultResponses,
-  };
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case "SET_SURFACE":
-      return {
-        ...state,
-        surface: action.payload,
-        responses: state.defaultResponses[action.payload],
-      };
-
-    case "SET_RESPONSES":
-      return {
-        ...state,
-        responses: action.payload,
-      };
-
-    default:
-      return state;
-  }
 }
 
 export default function DownloadPanel({ config, show, onHide }) {
-  const [state, dispatch] = useReducer(reducer, config, initializeState);
+  const [surface, setSurface] = useState(0);
+  const [scenario, setScenario] = useState(1);
   const [downloadHref, setDownloadHref] = useState(0);
 
   const handleSurfaceChange = (event) => {
-    dispatch({ type: "SET_SURFACE", payload: +event.target.value });
+    const value = +Object.values(event)[0];
+    setSurface(value);
   };
 
-  const handleResponseChange = (changed) => {
-    // Commented out for now - this allows independent varying of
-    // response variables.  Currently we're doing this as paired such
-    // that any response change triggers a value change in all reponses
-    // const responses = { ...state.responses, ...changed };
-    const value = Object.values(changed)[0];
-    const responses = Object.keys(state.responses).reduce(
-      (obj, el) => ({
-        ...obj,
-        [el]: value,
-      }),
-      {}
-    );
-    dispatch({ type: "SET_RESPONSES", payload: responses });
+  const handleScenarioChange = (event) => {
+    const value = +Object.values(event)[0];
+    setScenario(value);
   };
 
   useEffect(() => {
-    const surface = config.probability_surfaces[state.surface];
-    const responseConfig = surface.responses.find((r) =>
-      isEqual(r.combination, state.responses)
-    );
+    const surfaceConfig = config.probability_surfaces[surface];
+    const responseConfig = surfaceConfig.responses[scenario];
     const href =
       window.location.protocol +
       "//" +
       window.location.host +
       responseConfig.zip_path;
     setDownloadHref(href);
-  }, [config.probability_surfaces, state.surface, state.responses]);
+  }, [config.probability_surfaces, surface, scenario]);
 
   return (
     <Modal show={show} onHide={onHide} dialogClassName="modal-50w">
@@ -98,12 +82,12 @@ export default function DownloadPanel({ config, show, onHide }) {
           (zipped) file. A shapefile of our the ecoregional boundaries used for
           modeling are available here.
         </p>
-        <ResponseSurfaceDropdown
+        <DownloadDropdown
           config={config}
-          surface={state.surface}
-          responses={state.responses}
+          selectedSurface={surface}
+          selectedScenario={scenario}
           onSurfaceChange={handleSurfaceChange}
-          onResponseChange={handleResponseChange}
+          onScenarioChange={handleScenarioChange}
         />
         <div className="d-grid">
           <DownloadButton
