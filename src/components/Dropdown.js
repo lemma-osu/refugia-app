@@ -9,10 +9,6 @@ export function ResponseVariableDropdown({
   className,
   onChange,
 }) {
-  function handleChange(e) {
-    onChange({ [e.target.name]: +e.target.value });
-  }
-
   return (
     <Form.Group className={className}>
       <Form.Label>{title}</Form.Label>
@@ -20,7 +16,7 @@ export function ResponseVariableDropdown({
         name={name}
         aria-label={title}
         value={selected}
-        onChange={handleChange}
+        onChange={onChange}
       >
         {options.map((d) => (
           <option key={d.value} value={d.value}>

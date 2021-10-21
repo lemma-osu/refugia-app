@@ -49,13 +49,11 @@ export default function DownloadPanel({ config, show, onHide }) {
   const [downloadHref, setDownloadHref] = useState(0);
 
   const handleSurfaceChange = (event) => {
-    const value = +Object.values(event)[0];
-    setSurface(value);
+    setSurface(+event.target.value);
   };
 
   const handleScenarioChange = (event) => {
-    const value = +Object.values(event)[0];
-    setScenario(value);
+    setScenario(+event.target.value);
   };
 
   useEffect(() => {

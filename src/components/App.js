@@ -1,44 +1,25 @@
-import React, { useEffect, useState, useReducer, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useReducer,
+  useCallback,
+  useMemo,
+} from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
 import ResponseMap from "./ResponseMap";
 import MiwPanel from "./MiwPanel";
-import { ResponseSurfaceDropdown, MiwDropdown } from "./Dropdown";
+import { ResponseVariableDropdown, MiwDropdown } from "./Dropdown";
 import IntroductionPanel from "./IntroductionPanel";
 import HowToPanel from "./HowToPanel";
 import DownloadPanel from "./DownloadPanel";
 import ColorRamp from "./ColorRamp";
-import { isEqual } from "lodash";
 
 const MIW_SIZES = {
   0: [150, 100],
   1: [300, 200],
   2: [600, 400],
-};
-
-// Function to set the default values for the varying variables
-// for each of the response surfaces
-const getDefaultResponses = (config) => {
-  return config.probability_surfaces.reduce(
-    (obj, el, idx) => ({
-      ...obj,
-      [idx]: el.realizations.reduce(
-        (obj, el) => ({ ...obj, [el.name]: el.initial_value }),
-        {}
-      ),
-    }),
-    {}
-  );
-};
-
-const initializeState = (config) => {
-  const defaultResponses = getDefaultResponses(config);
-  return {
-    surface: 0,
-    responses: defaultResponses[0],
-    defaultResponses: defaultResponses,
-  };
 };
 
 function reducer(state, action) {
@@ -47,13 +28,12 @@ function reducer(state, action) {
       return {
         ...state,
         surface: action.payload,
-        responses: state.defaultResponses[action.payload],
       };
 
-    case "SET_RESPONSES":
+    case "SET_SCENARIO":
       return {
         ...state,
-        responses: action.payload,
+        scenario: action.payload,
       };
 
     default:
@@ -77,8 +57,14 @@ const introText2 = (
   </small>
 );
 
+const scenarioOptions = [
+  { value: 0, label: "Mild" },
+  { value: 1, label: "Moderate" },
+  { value: 2, label: "Extreme" },
+];
+
 export default function App({ config }) {
-  const [state, dispatch] = useReducer(reducer, config, initializeState);
+  const [state, dispatch] = useReducer(reducer, { surface: 0, scenario: 1 });
   const [location, setLocation] = useState({
     lng: config.map.initial_lng,
     lat: config.map.initial_lat,
@@ -101,6 +87,12 @@ export default function App({ config }) {
     return config.color_ramps[key];
   });
 
+  const surfaceOptions = useMemo(() => {
+    return config.probability_surfaces.map((s, i) => {
+      return { value: i, label: s.description };
+    });
+  }, [config]);
+
   // Event handlers
   const handleIntroClose = () => setShowIntro(false);
   const handleIntroShow = () => setShowIntro(true);
@@ -116,20 +108,8 @@ export default function App({ config }) {
     dispatch({ type: "SET_SURFACE", payload: +event.target.value });
   };
 
-  const handleResponseChange = (changed) => {
-    // Commented out for now - this allows independent varying of
-    // response variables.  Currently we're doing this as paired such
-    // that any response change triggers a value change in all reponses
-    // const responses = { ...state.responses, ...changed };
-    const value = Object.values(changed)[0];
-    const responses = Object.keys(state.responses).reduce(
-      (obj, el) => ({
-        ...obj,
-        [el]: value,
-      }),
-      {}
-    );
-    dispatch({ type: "SET_RESPONSES", payload: responses });
+  const handleScenarioChange = (event) => {
+    dispatch({ type: "SET_SCENARIO", payload: +event.target.value });
   };
 
   const handleMiwSizeChange = (event) => {
@@ -147,15 +127,9 @@ export default function App({ config }) {
   }, []);
 
   useEffect(() => {
-    const surface = config.probability_surfaces[state.surface];
-    const responses = surface.responses;
-    setTileIdx(
-      responses.findIndex((r) => isEqual(r.combination, state.responses))
-    );
-    setMiwResponseIdx(
-      responses.findIndex((r) => isEqual(r.combination, state.responses))
-    );
-  }, [config, state.surface, state.responses]);
+    setTileIdx(state.scenario);
+    setMiwResponseIdx(state.scenario);
+  }, [state.scenario]);
 
   useEffect(() => {
     const key = config.probability_surfaces[state.surface].color_ramp;
@@ -201,12 +175,21 @@ export default function App({ config }) {
               {location.lng.toFixed(4)}
             </small>
           </div>
-          <ResponseSurfaceDropdown
-            config={config}
-            surface={state.surface}
-            responses={state.responses}
-            onSurfaceChange={handleSurfaceChange}
-            onResponseChange={handleResponseChange}
+          <ResponseVariableDropdown
+            name="surface"
+            title="Probability Map"
+            options={surfaceOptions}
+            selected={state.surface}
+            className="mt-1"
+            onChange={handleSurfaceChange}
+          />
+          <ResponseVariableDropdown
+            name="scenario"
+            title="Fire Weather Extremity Scenario"
+            options={scenarioOptions}
+            selected={state.scenario}
+            className="mt-1 mb-2"
+            onChange={handleScenarioChange}
           />
           <ColorRamp specification={ramp} width={286} height={30} />
           <MiwDropdown onChange={handleMiwSizeChange} />
