@@ -9,13 +9,13 @@ const items = [
     body: (
       <p>
         The main page allows selection of the response variable and fire weather
-        scenario of interest, dynamic navigation of the probability surface
-        maps, and data download. To begin, you must first select a response
-        surface (refugia or high severity), i.e. a probability map, of interest
-        (note the color scale legend for the values displayed in the maps). Once
-        a response surface is selected, the top fire weather predictor variables
-        for that model are displayed and fire weather scenarios (low, moderate,
-        or high extremity) can be selected. The low, moderate and high extremity
+        scenario of interest, dynamic navigation of the probability maps, and
+        data download. To begin, you must first select a response surface
+        (refugia or high severity), i.e. a probability map, of interest (note
+        the color scale legend for the values displayed in the maps). Once a
+        response surface is selected, key fire weather predictor variables for
+        that model are displayed and fire weather scenarios (low, moderate, or
+        high extremity) can be selected. The low, moderate and high extremity
         scenarios correspond to the 10th, 50th, and 90th percentile values for
         each pixel during the 1986-2018 period of data availability, permitting
         evaluation of the model predictions over a broad range of conditions.
@@ -29,11 +29,11 @@ const items = [
         are possible by clicking on the Download Data button.
         <br />
         <br />
-        If further exploration of the data and the model predictions is desired,
-        you’ll want to use the MIW. Before opening the MIW, the Model Inspector
-        Window size must be selected from a pre-set list of three options on the
-        main page. This window size sets the scale of the area displayed in the
-        MIW. Navigate to the desired general location and place the MIW window
+        For further exploration of the data and the model predictions, you’ll
+        want to use the MIW. Before opening the MIW, the Model Inspector Window
+        size must be selected from a pre-set list of three options on the main
+        page. This window size sets the scale of the area displayed in the MIW.
+        Navigate to the desired general location and place the MIW window
         (yellow rectangle) over the specific area of interest for viewing in the
         MIW. If the MIW window is not visible on your screen, press the
         “Recenter MIW Window” button. Then click on the green “To the MIW!!!” to

@@ -14,13 +14,21 @@ const items = [
         the landscape that burn less frequently or severely than their
         surroundings. There’s a lot of interesting and important variability
         with the concept of “fire refugia”, so feel free to{" "}
-        <a href="http://firerefugia.forestry.oregonstate.edu/about">
+        <a
+          href="http://firerefugia.forestry.oregonstate.edu/about"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           dig in for more information
         </a>
         . The data we present here focuses on the context of fire refugia in
         forests of the Pacific Northwest of the United States, where
         conservation issues focus on{" "}
-        <a href="http://firerefugia.forestry.oregonstate.edu/home">
+        <a
+          href="http://firerefugia.forestry.oregonstate.edu/home"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           maintenance of mature and old-growth forest
         </a>
         . We’re interested in patches of forest that persist through recent fire
@@ -39,7 +47,11 @@ const items = [
         for data access, dynamic mapping and exploration, visualization, and
         data download. The maps and models are developed by Oregon State
         University’s{" "}
-        <a href="http://people.forestry.oregonstate.edu/meg-krawchuk/">
+        <a
+          href="http://people.forestry.oregonstate.edu/meg-krawchuk/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Landscape Fire and Conservation Science Research Group
         </a>
         . Eco-Vis provides tools that facilitate understanding of the geography
@@ -79,47 +91,49 @@ const items = [
       <>
         <p>
           Eco-Vis allows exploration and access to predictive maps, and it also
-          features a unique visualization too, the Model Inspection Window –MIW
+          features a unique visualization tool, the Model Inspection Window –MIW
           (say out loud then imagine a baby kitty). The MIW permits detailed
-          exploration of the <em>probability surface maps</em>, underlying{" "}
+          exploration of the <em>probability maps</em>, underlying{" "}
           <em>driver/predictor</em> variable maps and{" "}
-          <em>response functions</em> that describe how predictions are
-          influenced by each predictor variable. Once activated, the MIW
-          displays the probability surface and a true color image of the
-          selected area of interest, clipped maps of the predictor variables for
-          the area of interest, and the response function curves for each
-          predictor variable.{" "}
+          <em>response functions</em> that describe how predicted probabilities
+          are influenced by each predictor variable. Once activated, the MIW
+          displays the probability map and a true color image of the selected
+          area of interest, clipped maps of the predictor variables for the area
+          of interest, and the response function curves for each predictor
+          variable.{" "}
         </p>
         <ul>
           <li className="pb-3">
-            <em>Probability surface maps:</em> The raster maps available on
-            Eco-Vis consist of pixel-level predictions from boosted regression
-            tree models that, together, describe the probability surface for
-            each variable of interest. The predictions range from 0 (low
-            probability) to 1 (high probability). These maps are useful for
-            understanding large- or fine-scale patterns in the likelihood of a
-            phenomenon, given any specific set of conditions. These models are
+            <em>Probability maps:</em> The raster maps available on Eco-Vis
+            consist of pixel-level predictions from boosted regression tree
+            models that, together, describe the probability surface for each
+            variable of interest. The predictions range from 0 (low probability)
+            to 1 (high probability). These maps are useful for understanding
+            large- or fine-scale patterns in the likelihood of a phenomenon,
+            given any specific set of conditions. The models served up here are
             based on a suite of topographic, vegetation, fire behavior, fire
             weather, and climatic predictor variables from burned areas
             occurring in the Pacific Northwest during 2002-2017.{" "}
           </li>
           <li className="pb-3">
             <em>Drivers/predictors:</em> Model predictions are based on a suite
-            of time-invariant (spatial) and time-varying (spatio-temporal)
-            predictors. The time-invariant predictor surfaces, such as
-            topography, are fixed and require no input from the user. However,
-            time-varying predictors, such as fire weather or climate, can
-            fluctuate and require user input to tune these dials to the levels
-            desired for each map. Eco-Vis allows the two most influential
-            time-varying predictors for any model to be set to low (10th
-            percentile), moderate (50th percentile), or extreme (90th
-            percentile) conditions, based on July-September data from 1986-2018.
-            This functionality permits the user to observe changes in the
-            spatial patterns of predicted fire severity under a range of
-            conditions, to examine why these changes occur based on the modeled
-            relationships between each driver and the modeled probability, and
-            to explore the spatial and geographic patterns of the underlying
-            predictor variables side-by-side with the predictions.
+            of time-invariant (we mean they vary spatially, but not temporally)
+            and time-varying (varying spatially and temporally) predictors. The
+            time-invariant predictor surfaces, such as topography, are fixed and
+            require no input from the user. However, time-varying predictors,
+            such as fire weather or climate, can fluctuate and require user
+            input to tune these dials to the levels desired for each map.
+            Eco-Vis allows two influential time-varying predictors for any model
+            to be set to low (10th percentile), moderate (50th percentile), or
+            extreme (90th percentile) conditions, based on July-September data
+            from 1986-2018. This showcase uses minimum relative humidity and
+            maximum temperature as time-varying predictor "levers". This
+            functionality permits the user to observe changes in the spatial
+            patterns of predicted fire severity under a range of conditions, to
+            examine why these changes occur based on the modeled relationships
+            between each driver and the modeled probability, and to explore the
+            spatial and geographic patterns of the underlying predictor
+            variables side-by-side with the predictions.
           </li>
           <li className="pb-3">
             <em>Response functions:</em> Partial dependence (PD) plots show the
@@ -165,8 +179,10 @@ const items = [
             more fire-resistant species such as pines, larch, and oaks that
             characterize the eastern Cascades and southwest portion of our study
             region. All products are seamless composites derived from these
-            joint models. Ecoregional boundaries can be downloaded using the
-            Data Download button.
+            joint models. You can see the boundary of the fire-prone and
+            non-fire-prone ecoregions when you zoom out to broader extents of
+            view. Ecoregional boundaries can be downloaded using the Data
+            Download button.
           </li>
         </ul>
       </>
@@ -185,6 +201,24 @@ const items = [
         <br />
         Take a look at the How-to materials for more information on how to work
         with Eco-Vis and MIW.
+      </p>
+    ),
+  },
+  {
+    header: "More Information",
+    body: (
+      <p>
+        Additional context, literature on fire refugia, and documentation for
+        this project can be found at:{" "}
+        <a
+          href="http://firerefugia.forestry.oregonstate.edu/home"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          http://firerefugia.forestry.oregonstate.edu/home
+        </a>
+        . For questions and comments, please email: Dr. Meg A. Krawchuk,
+        meg.krawchuk [at] oregonstate.edu for contact/help/information.
       </p>
     ),
   },

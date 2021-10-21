@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -77,8 +77,8 @@ export default function DownloadPanel({ config, show, onHide }) {
           To download the probability maps, specify the desired response surface
           and scenario. Then press the “Download Selected Probability Map”
           button to start the download. Your file will be provided a compressed
-          (zipped) file. A shapefile of our the ecoregional boundaries used for
-          modeling are available here.
+          (zipped) file. A shapefile of the ecoregional boundaries used for
+          modeling are available below.
         </p>
         <DownloadDropdown
           config={config}
@@ -92,6 +92,31 @@ export default function DownloadPanel({ config, show, onHide }) {
             title="Download Selected Probability Map"
             href={downloadHref}
           />
+        </div>
+        <p className="mt-2">
+          A shapefile of the ecoregional boundaries used for modeling are
+          available below.
+        </p>
+        <div className="d-grid">
+          <DownloadButton
+            title="Download Ecoregion Boundaries (SHP)"
+            href={downloadHref}
+          />
+        </div>
+        <div className="mt-2">
+          <p>
+            Additional context, literature on fire refugia, and documentation
+            for this project can be found at:{" "}
+            <a
+              href="http://firerefugia.forestry.oregonstate.edu/home"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              http://firerefugia.forestry.oregonstate.edu/home
+            </a>
+            . For questions and comments, please email: Dr. Meg A. Krawchuk,
+            meg.krawchuk [at] oregonstate.edu for contact/help/information.
+          </p>
         </div>
       </Modal.Body>
       <Modal.Footer>
