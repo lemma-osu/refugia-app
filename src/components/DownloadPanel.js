@@ -25,7 +25,7 @@ export function DownloadDropdown({
     <Form.Group className="mb-3 mt-2">
       <ResponseVariableDropdown
         name="surface"
-        title="Probability Surface"
+        title="Probability Map"
         options={surfaceOptions}
         selected={selectedSurface}
         className="mt-1"
@@ -74,7 +74,7 @@ export default function DownloadPanel({ config, show, onHide }) {
       </Modal.Header>
       <Modal.Body>
         <p>
-          To download the probability maps, specify the desired response surface
+          To download the probability maps, specify the desired probability map
           and scenario. Then press the “Download Selected Probability Map”
           button to start the download. Your file will be provided a compressed
           (zipped) file. A shapefile of the ecoregional boundaries used for
