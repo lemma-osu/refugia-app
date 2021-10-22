@@ -68,6 +68,12 @@ export default function MiwPanel({
   ramp,
   onHide,
 }) {
+  let validRegion = true;
+  if (currentRegion === -1) {
+    currentRegion = 0;
+    validRegion = false;
+  }
+
   const surfaceConfig = config.probability_surfaces[currentSurface];
   const regionConfig = surfaceConfig.regions[currentRegion];
   const [responseStats, setResponseStats] = useState(null);
@@ -210,6 +216,45 @@ export default function MiwPanel({
       <ProgressBar now={progress} />
     </>
   );
+
+  if (!validRegion) {
+    return (
+      <div
+        className="modal fade"
+        id="miw-modal"
+        tabIndex="-1"
+        aria-labelledby="miw-model-label"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-50w modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5>Model Inspector Window (MIW)</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body container-fluid">
+              You've chosen an invalid MIW window. Please close this window and
+              drag the yellow box to a location with modeled data.
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

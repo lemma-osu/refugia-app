@@ -161,7 +161,7 @@ export default function ResponseMap({
       const features = map.queryRenderedFeatures(point, {
         layers: ["regions-layer"],
       });
-      const region = features.length === 0 ? 0 : features[0].properties.Id;
+      const region = features.length === 0 ? -1 : features[0].properties.Id;
       onMiwMove({ coord: coord, region: region });
     },
     [map, onMiwMove, renderBox]
