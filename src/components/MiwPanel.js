@@ -16,9 +16,9 @@ import { CovariateColorRamp } from "./ColorRamp";
 import { ResponseVariableDropdown } from "./Dropdown";
 
 const scenarioOptions = [
-  { value: 0, label: "Mild" },
-  { value: 1, label: "Moderate" },
-  { value: 2, label: "Extreme" },
+  { value: 0, label: "Mild (90th RH, 10th Tmmx)" },
+  { value: 1, label: "Moderate (50th RH, 50th Tmmx)" },
+  { value: 2, label: "Extreme (10th RH, 90th Tmmx)" },
 ];
 
 // Async loader of all images

@@ -46,8 +46,9 @@ const introText1 = (
     Explore predictive ecological maps of fire refugia and high severity fire
     for forests of the Pacific Northwest. Pan, zoom in-out, swipe between
     predicted and actual conditions, change fire weather scenarios, examine the
-    influence of predictor variables, and download data directly. For background
-    and details on data products and for using Eco-Vis:
+    influence of predictor variables, and download data directly. Use the Model
+    Inspector Window (MIW; yellow box on map) for detailed assessment. For
+    background and details on data products and for using Eco-Vis:
   </div>
 );
 
@@ -58,9 +59,9 @@ const introText2 = (
 );
 
 const scenarioOptions = [
-  { value: 0, label: "Mild" },
-  { value: 1, label: "Moderate" },
-  { value: 2, label: "Extreme" },
+  { value: 0, label: "Mild (90th RH, 10th Tmmx)" },
+  { value: 1, label: "Moderate (50th RH, 50th Tmmx)" },
+  { value: 2, label: "Extreme (10th RH, 90th Tmmx)" },
 ];
 
 export default function App({ config }) {

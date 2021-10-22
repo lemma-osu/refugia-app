@@ -17,12 +17,12 @@ export function DownloadDropdown({
     return { value: i, label: s.description };
   });
   const scenarioOptions = [
-    { value: 0, label: "Mild" },
-    { value: 1, label: "Moderate" },
-    { value: 2, label: "Extreme" },
+    { value: 0, label: "Mild (90th RH, 10th Tmmx)" },
+    { value: 1, label: "Moderate (50th RH, 50th Tmmx)" },
+    { value: 2, label: "Extreme (10th RH, 90th Tmmx)" },
   ];
   return (
-    <Form.Group className="mb-3 mt-2">
+    <Form.Group className="mb-2 mt-2">
       <ResponseVariableDropdown
         name="surface"
         title="Probability Map"
@@ -74,19 +74,24 @@ export default function DownloadPanel({ config, show, onHide }) {
   }, [config.probability_surfaces, surface, scenario]);
 
   return (
-    <Modal show={show} onHide={onHide} dialogClassName="modal-50w">
+    <Modal
+      id="download-panel"
+      show={show}
+      onHide={onHide}
+      dialogClassName="modal-50w"
+    >
       <Modal.Header closeButton>
         <Modal.Title>Download Data</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
+        <small>
           To download the probability maps, specify the desired probability map
           and scenario. Then press the “Download Selected Probability Map”
           button to start the download. Your file will be provided as a
           compressed (zipped) GeoTiff file. In order to create smaller rasters,
-          probability scores have been multiplied by 10000 and converting to
-          integer rasters.
-        </p>
+          probability scores have been multiplied by 10000 and converted to
+          integer rasters (e.g. 0.5 becomes 5000).
+        </small>
         <DownloadDropdown
           config={config}
           selectedSurface={surface}
@@ -94,16 +99,24 @@ export default function DownloadPanel({ config, show, onHide }) {
           onSurfaceChange={handleSurfaceChange}
           onScenarioChange={handleScenarioChange}
         />
+        <div className="mt-1 mb-1">
+          <small>
+            The rasters are stored in Web Mercator projection (EPSG:3857) and
+            should be viewable in most desktop GIS programs (e.g. ArcGIS, QGIS).
+          </small>
+        </div>
         <div className="d-grid">
           <DownloadButton
             title="Download Selected Probability Map"
             href={downloadHref}
           />
         </div>
-        <p className="mt-2">
-          A zipped shapefile of the ecoregional boundaries used for modeling are
-          available below.
-        </p>
+        <div className="mt-1 mb-1">
+          <small>
+            A zipped shapefile of the ecoregional boundaries used for modeling
+            are available below.
+          </small>
+        </div>
         <div className="d-grid">
           <DownloadButton
             title="Download Ecoregion Boundaries (SHP)"
@@ -111,7 +124,7 @@ export default function DownloadPanel({ config, show, onHide }) {
           />
         </div>
         <div className="mt-2">
-          <p>
+          <small>
             Additional context, literature on fire refugia, and documentation
             for this project can be found at:{" "}
             <a
@@ -121,9 +134,11 @@ export default function DownloadPanel({ config, show, onHide }) {
             >
               http://firerefugia.forestry.oregonstate.edu/home
             </a>
-            . For questions and comments, please email: Dr. Meg A. Krawchuk,
+            .
+            <br />
+            For questions and comments, please email: Dr. Meg A. Krawchuk,
             meg.krawchuk [at] oregonstate.edu for contact/help/information.
-          </p>
+          </small>
         </div>
       </Modal.Body>
       <Modal.Footer>

@@ -82,6 +82,12 @@ canvas {
   background-color: #a8bbbf;
 }
 
+/* Download panel */
+#download-panel .form-label,
+#download-panel .form-select {
+  font-size: 0.8rem;
+}
+
 /* Covariate panel, canvas and chart */
 #covariate-panel {
   display: inline-flex;
