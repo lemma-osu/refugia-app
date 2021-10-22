@@ -64,6 +64,32 @@ const scenarioOptions = [
   { value: 2, label: "Extreme (10th RH, 90th Tmmx)" },
 ];
 
+function DataDisclaimer() {
+  return (
+    <Card
+      id="data-disclaimer"
+      bg="dark"
+      text="white"
+      fontSize="0.875rem"
+      className="m-1"
+      style={{
+        padding: "0.5rem",
+        position: "absolute",
+        fontSize: "0.8rem",
+        maxWidth: "20rem",
+        bottom: 20,
+        right: 0,
+      }}
+    >
+      <div>
+        GNN data used in predictive models uses 2017 imagery. There may be
+        noticeable discrepancies between this data and more current satellite
+        imagery on the right.
+      </div>
+    </Card>
+  );
+}
+
 export default function App({ config }) {
   const [state, dispatch] = useReducer(reducer, { surface: 0, scenario: 1 });
   const [location, setLocation] = useState({
@@ -228,6 +254,8 @@ export default function App({ config }) {
           </div>
         </Card.Body>
       </Card>
+
+      <DataDisclaimer />
 
       <IntroductionPanel
         title="EcoVis Tool"
