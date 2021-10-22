@@ -56,6 +56,12 @@ export default function DownloadPanel({ config, show, onHide }) {
     setScenario(+event.target.value);
   };
 
+  const shapefileHref =
+    window.location.protocol +
+    "//" +
+    window.location.host +
+    config.zipped_shapefile;
+
   useEffect(() => {
     const surfaceConfig = config.probability_surfaces[surface];
     const responseConfig = surfaceConfig.responses[scenario];
@@ -76,9 +82,10 @@ export default function DownloadPanel({ config, show, onHide }) {
         <p>
           To download the probability maps, specify the desired probability map
           and scenario. Then press the “Download Selected Probability Map”
-          button to start the download. Your file will be provided a compressed
-          (zipped) file. A shapefile of the ecoregional boundaries used for
-          modeling are available below.
+          button to start the download. Your file will be provided as a
+          compressed (zipped) GeoTiff file. In order to create smaller rasters,
+          probability scores have been multiplied by 10000 and converting to
+          integer rasters.
         </p>
         <DownloadDropdown
           config={config}
@@ -94,13 +101,13 @@ export default function DownloadPanel({ config, show, onHide }) {
           />
         </div>
         <p className="mt-2">
-          A shapefile of the ecoregional boundaries used for modeling are
+          A zipped shapefile of the ecoregional boundaries used for modeling are
           available below.
         </p>
         <div className="d-grid">
           <DownloadButton
             title="Download Ecoregion Boundaries (SHP)"
-            href={downloadHref}
+            href={shapefileHref}
           />
         </div>
         <div className="mt-2">
