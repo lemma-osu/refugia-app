@@ -42,19 +42,19 @@ function reducer(state, action) {
 }
 
 const introText1 = (
-  <small>
+  <div className="small">
     Explore predictive ecological maps of fire refugia and high severity fire
     for forests of the Pacific Northwest. Pan, zoom in-out, swipe between
     predicted and actual conditions, change fire weather scenarios, examine the
     influence of predictor variables, and download data directly. For background
     and details on data products and for using Eco-Vis:
-  </small>
+  </div>
 );
 
 const introText2 = (
-  <small>
+  <div className="small">
     Explainer on how to best use the features of the Eco-Vis webapp:
-  </small>
+  </div>
 );
 
 const scenarioOptions = [
@@ -152,6 +152,7 @@ export default function App({ config }) {
       />
 
       <Card
+        id="vis-card"
         bg="dark"
         text="white"
         className="m-3"
@@ -161,19 +162,27 @@ export default function App({ config }) {
           <Card.Title>Welcome to Eco-Vis!</Card.Title>
           <div className="d-grid gap-2">
             <div>{introText1}</div>
-            <Button variant="primary" onClick={handleIntroShow}>
+            <Button
+              className="btn-custom"
+              variant="primary"
+              onClick={handleIntroShow}
+            >
               Show Introduction
             </Button>
             <div>{introText2}</div>
-            <Button variant="primary" onClick={handleHowToShow}>
+            <Button
+              className="btn-custom"
+              variant="primary"
+              onClick={handleHowToShow}
+            >
               How-To
             </Button>
           </div>
           <div className="mt-2">
-            <small>
+            <div className="small">
               Latitude: {location.lat.toFixed(4)} | Longitude:{" "}
               {location.lng.toFixed(4)}
-            </small>
+            </div>
           </div>
           <ResponseVariableDropdown
             name="surface"
@@ -194,13 +203,25 @@ export default function App({ config }) {
           <ColorRamp specification={ramp} width={286} height={30} />
           <MiwDropdown onChange={handleMiwSizeChange} />
           <div className="d-grid gap-2">
-            <Button variant="success" onClick={handleMiwShow}>
+            <Button
+              className="btn-custom"
+              variant="success"
+              onClick={handleMiwShow}
+            >
               To the MIW!
             </Button>
-            <Button variant="success" onClick={handleMiwRecenter}>
+            <Button
+              className="btn-custom"
+              variant="success"
+              onClick={handleMiwRecenter}
+            >
               Recenter MIW Window
             </Button>
-            <Button variant="success" onClick={handleDownloadShow}>
+            <Button
+              className="btn-custom"
+              variant="success"
+              onClick={handleDownloadShow}
+            >
               Download Data
             </Button>
           </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Svg } from "./Chart";
 
-export default function ColorRamp({ specification, width, height }) {
+export default function ColorRamp({ specification, className, width, height }) {
   const margin = { left: 0, right: 0, top: 0, bottom: 0 };
   const textHeight = 15;
   const barOffset = textHeight + 10;
@@ -20,7 +20,11 @@ export default function ColorRamp({ specification, width, height }) {
           ))}
         </linearGradient>
       </defs>
-      <text fill="white" transform={`translate(0, ${textHeight})`}>
+      <text
+        className={className}
+        fill="white"
+        transform={`translate(0, ${textHeight})`}
+      >
         Probability
       </text>
       <rect
