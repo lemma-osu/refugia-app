@@ -1,6 +1,7 @@
 import React, {
   useEffect,
   useState,
+  useRef,
   useReducer,
   useCallback,
   useMemo,
@@ -79,6 +80,7 @@ function DataDisclaimer() {
         maxWidth: "20rem",
         bottom: 20,
         right: 0,
+        zIndex: 2,
       }}
     >
       <div>
@@ -90,7 +92,52 @@ function DataDisclaimer() {
   );
 }
 
+// From: https://medium.com/@eymaslive/react-hooks-useobserve-use-resizeobserver-custom-hook-45ec95ad9844
+const useResizeObserver = ({ callback, element }) => {
+  const current = element && element.current;
+
+  const observer = useRef(null);
+
+  const observe = useCallback(() => {
+    if (element && element.current && observer.current) {
+      observer.current.observe(element.current);
+    }
+  }, [element, observer]);
+
+  useEffect(() => {
+    const elementCopy = element.current;
+    if (observer && observer.current && current) {
+      observer.current.unobserve(current);
+    }
+    observer.current = new ResizeObserver(callback);
+    observe();
+
+    return () => {
+      if (observer && observer.current && element && elementCopy) {
+        observer.current.unobserve(elementCopy);
+      }
+    };
+  }, [callback, element, current, observe]);
+};
+
 export default function App({ config }) {
+  const [panelWidth, setPanelWidth] = useState(0);
+  const widthRef = useRef(null);
+
+  const handlePanelResize = (entries) => {
+    const entry = entries[0];
+    let width;
+    if (entry.contentRect) {
+      width = entry.contentRect.width;
+    } else {
+      width = Array.isArray(entry.contentBoxSize)
+        ? entry.contentBoxSize[0]
+        : entry.contentBoxSize;
+    }
+    setPanelWidth(width);
+  };
+  useResizeObserver({ callback: handlePanelResize, element: widthRef });
+
   const [state, dispatch] = useReducer(reducer, { surface: 0, scenario: 1 });
   const [location, setLocation] = useState({
     lng: config.map.initial_lng,
@@ -187,7 +234,7 @@ export default function App({ config }) {
       >
         <Card.Body>
           <Card.Title>Welcome to Eco-Vis!</Card.Title>
-          <div className="d-grid gap-2">
+          <div ref={widthRef} className="d-grid gap-2">
             <div>{introText1}</div>
             <Button
               className="btn-custom"
@@ -227,7 +274,12 @@ export default function App({ config }) {
             className="mt-1 mb-2"
             onChange={handleScenarioChange}
           />
-          <ColorRamp specification={ramp} width={286} height={30} />
+          <ColorRamp
+            specification={ramp}
+            className="ramp-label"
+            width={panelWidth}
+            height={30}
+          />
           <MiwDropdown onChange={handleMiwSizeChange} />
           <div className="d-grid gap-2">
             <Button
