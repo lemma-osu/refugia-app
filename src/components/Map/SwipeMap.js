@@ -22,6 +22,7 @@ export default function SwipeMap({ left, right, onLoaded }) {
   useEffect(() => {
     if (!compare) return;
     onLoaded({ left: leftMap, right: rightMap });
+    compare.setSlider(parseInt(window.innerWidth * 0.7, 10));
   }, [compare, leftMap, rightMap, onLoaded]);
 
   return (
