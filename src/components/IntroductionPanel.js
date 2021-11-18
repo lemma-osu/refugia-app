@@ -208,7 +208,15 @@ const items = [
     header: "More Information",
     body: (
       <p>
-        Additional context, literature on fire refugia, and documentation for
+        The final report for this project is available{" "}
+        <a
+          href="http://firerefugia.forestry.oregonstate.edu/export/fire_refugia_casc_final_report_dugger_v2.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          here
+        </a>
+        . Additional context, literature on fire refugia, and documentation for
         this project can be found at:{" "}
         <a
           href="http://firerefugia.forestry.oregonstate.edu/home"

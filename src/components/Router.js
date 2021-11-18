@@ -10,7 +10,7 @@ export default function Router() {
     <BrowserRouter>
       <Switch>
         <Route exact path="/projects/latest">
-          <Redirect to="/projects/v2_small" />
+          <Redirect to="/projects/v2" />
         </Route>
         <Route exact path="/projects/:project">
           <AppWrapper />

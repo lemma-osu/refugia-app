@@ -88,9 +88,8 @@ export default function DownloadPanel({ config, show, onHide }) {
           To download the probability maps, specify the desired probability map
           and scenario. Then press the “Download Selected Probability Map”
           button to start the download. Your file will be provided as a
-          compressed (zipped) GeoTiff file. In order to create smaller rasters,
-          probability scores have been multiplied by 10000 and converted to
-          integer rasters (e.g. 0.5 becomes 5000).
+          compressed (zipped) GeoTiff file. Probability scores range between
+          0-100.
         </small>
         <DownloadDropdown
           config={config}
@@ -101,8 +100,9 @@ export default function DownloadPanel({ config, show, onHide }) {
         />
         <div className="mt-1 mb-1">
           <small>
-            The rasters are stored in Web Mercator projection (EPSG:3857) and
-            should be viewable in most desktop GIS programs (e.g. ArcGIS, QGIS).
+            The rasters are stored in USGS National Albers projection
+            (EPSG:5070) and should be viewable in most desktop GIS programs
+            (e.g. ArcGIS, QGIS).
           </small>
         </div>
         <div className="d-grid">
@@ -125,7 +125,15 @@ export default function DownloadPanel({ config, show, onHide }) {
         </div>
         <div className="mt-2">
           <small>
-            Additional context, literature on fire refugia, and documentation
+            The final report for this project is available{" "}
+            <a
+              href="http://firerefugia.forestry.oregonstate.edu/export/fire_refugia_casc_final_report_dugger_v2.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              here
+            </a>
+            . Additional context, literature on fire refugia, and documentation
             for this project can be found at:{" "}
             <a
               href="http://firerefugia.forestry.oregonstate.edu/home"
