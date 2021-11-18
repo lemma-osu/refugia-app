@@ -1,132 +1,340 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useReducer,
+  useCallback,
+  useMemo,
+} from "react";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
 
-import { create_source_objects } from "../generate-map-spec";
+import ResponseMap from "./ResponseMap";
+import MiwPanel from "./MiwPanel";
+import { ResponseVariableDropdown, MiwDropdown } from "./Dropdown";
+import IntroductionPanel from "./IntroductionPanel";
+import HowToPanel from "./HowToPanel";
+import DownloadPanel from "./DownloadPanel";
+import ColorRamp from "./ColorRamp";
 
-import DemoPanel from "./DemoPanel";
+const MIW_SIZES = {
+  0: [150, 100],
+  1: [300, 200],
+  2: [600, 400],
+};
 
-const App = ({ config }) => {
-  mapboxgl.accessToken = config.access_token;
-  const map = useRef(null);
-  const map_container = useRef(null);
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_SURFACE":
+      return {
+        ...state,
+        surface: action.payload,
+      };
 
-  const [lng, set_lng] = useState(parseFloat(config.initial_lng));
-  const [lat, set_lat] = useState(parseFloat(config.initial_lat));
-  const [zoom, set_zoom] = useState(parseFloat(config.initial_zoom));
-  const [current_layer, set_current_layer] = useState();
-  const [clicked_coord, set_clicked_coord] = useState(null);
+    case "SET_SCENARIO":
+      return {
+        ...state,
+        scenario: action.payload,
+      };
 
-  const zoom_cursor_switch = 11.0;
-  const zoom_limit = 12.3;
+    default:
+      return state;
+  }
+}
 
-  const handle_cursor = () => {
-    map.current.getCanvas().style.cursor =
-      map.current.getZoom() >= zoom_cursor_switch ? "crosshair" : "grab";
-  };
+const introText1 = (
+  <div className="small">
+    Explore predictive ecological maps of fire refugia and high severity fire
+    for forests of the Pacific Northwest. Pan, zoom in-out, swipe between
+    predicted and actual conditions, change fire weather scenarios, examine the
+    influence of predictor variables, and download data directly. Use the Model
+    Inspector Window (MIW; yellow box on map) for detailed assessment. For
+    background and details on data products and for using Eco-Vis:
+  </div>
+);
 
-  const handle_move_end = () => {
-    set_lng(map.current.getCenter().lng.toFixed(4));
-    set_lat(map.current.getCenter().lat.toFixed(4));
-    set_zoom(map.current.getZoom().toFixed(2));
-  };
+const introText2 = (
+  <div className="small">
+    Explainer on how to best use the features of the Eco-Vis webapp:
+  </div>
+);
 
-  const handle_dbl_click = (event) => {
-    if (map.current.getZoom() >= zoom_cursor_switch) {
-      event.preventDefault();
-      map.current.getCanvas().style.cursor = "wait";
-      set_clicked_coord(event.lngLat);
-    }
-  };
+const scenarioOptions = [
+  { value: 0, label: "Mild (90th RH, 10th Tmmx)" },
+  { value: 1, label: "Moderate (50th RH, 50th Tmmx)" },
+  { value: 2, label: "Extreme (10th RH, 90th Tmmx)" },
+];
 
-  const handle_modal_close = useCallback(() => {
-    set_clicked_coord(null);
-    handle_cursor();
-  }, []);
-
-  const change_map = useCallback(
-    (layer_definition) => {
-      // Pop the current layer off
-      if (current_layer !== undefined) {
-        map.current.removeLayer(current_layer);
-      }
-
-      // Add the new source if necessary
-      var key = layer_definition.layer.source;
-      if (
-        map.current.getSource(key) === undefined ||
-        !map.current.isSourceLoaded(key)
-      ) {
-        map.current.addSource(key, layer_definition.source);
-      }
-
-      // Add the new layer
-      var before_layer =
-        map.current.getLayer("forest-mask-layer") === undefined
-          ? "land-structure-polygon"
-          : "forest-mask-layer";
-      map.current.addLayer(layer_definition.layer, before_layer);
-      return layer_definition.layer.id;
-    },
-    [current_layer]
+function DataDisclaimer() {
+  return (
+    <Card
+      id="data-disclaimer"
+      bg="dark"
+      text="white"
+      fontSize="0.875rem"
+      className="m-1"
+      style={{
+        padding: "0.5rem",
+        position: "absolute",
+        fontSize: "0.8rem",
+        maxWidth: "20rem",
+        bottom: 20,
+        right: 0,
+        zIndex: 2,
+      }}
+    >
+      <div>
+        GNN data used in predictive models uses 2017 imagery. There may be
+        noticeable discrepancies between this data and more current satellite
+        imagery on the right.
+      </div>
+    </Card>
   );
+}
 
-  const initialize = useCallback(async () => {
-    const map_layers = await create_source_objects(config);
-    set_current_layer(change_map(map_layers[config.tiles[0].name]));
-  }, [config, change_map]);
+// From: https://medium.com/@eymaslive/react-hooks-useobserve-use-resizeobserver-custom-hook-45ec95ad9844
+const useResizeObserver = ({ callback, element }) => {
+  const current = element && element.current;
+
+  const observer = useRef(null);
+
+  const observe = useCallback(() => {
+    if (element && element.current && observer.current) {
+      observer.current.observe(element.current);
+    }
+  }, [element, observer]);
 
   useEffect(() => {
-    if (map.current) return;
-    map.current = new mapboxgl.Map({
-      container: map_container.current,
-      style: "mapbox://styles/mapbox/dark-v10",
-      center: [lng, lat],
-      zoom: zoom,
-      maxZoom: zoom_limit,
+    const elementCopy = element.current;
+    if (observer && observer.current && current) {
+      observer.current.unobserve(current);
+    }
+    observer.current = new ResizeObserver(callback);
+    observe();
+
+    return () => {
+      if (observer && observer.current && element && elementCopy) {
+        observer.current.unobserve(elementCopy);
+      }
+    };
+  }, [callback, element, current, observe]);
+};
+
+export default function App({ config }) {
+  const [panelWidth, setPanelWidth] = useState(0);
+  const widthRef = useRef(null);
+
+  const handlePanelResize = (entries) => {
+    const entry = entries[0];
+    let width;
+    if (entry.contentRect) {
+      width = entry.contentRect.width;
+    } else {
+      width = Array.isArray(entry.contentBoxSize)
+        ? entry.contentBoxSize[0]
+        : entry.contentBoxSize;
+    }
+    setPanelWidth(width);
+  };
+  useResizeObserver({ callback: handlePanelResize, element: widthRef });
+
+  const [state, dispatch] = useReducer(reducer, { surface: 0, scenario: 1 });
+  const [location, setLocation] = useState({
+    lng: config.map.initial_lng,
+    lat: config.map.initial_lat,
+  });
+  const [miwLocation, setMiwLocation] = useState({
+    lng: config.map.initial_lng,
+    lat: config.map.initial_lat,
+  });
+  const [region, setRegion] = useState(0);
+  const [showIntro, setShowIntro] = useState(false);
+  const [showHowTo, setShowHowTo] = useState(false);
+  const [showMiw, setShowMiw] = useState(false);
+  const [showDownload, setShowDownload] = useState(false);
+  const [tileIdx, setTileIdx] = useState(0);
+  const [miwResponseIdx, setMiwResponseIdx] = useState(0);
+  const [miwSize, setMiwSize] = useState([300, 200]);
+  const [miwRecenter, setMiwRecenter] = useState(false);
+  const [ramp, setRamp] = useState(() => {
+    var key = config.probability_surfaces[state.surface].color_ramp;
+    return config.color_ramps[key];
+  });
+
+  const surfaceOptions = useMemo(() => {
+    return config.probability_surfaces.map((s, i) => {
+      return { value: i, label: s.description };
     });
-    map.current.on("load", initialize);
-    map.current.on("moveend", handle_move_end);
-    map.current.on("zoomend", handle_cursor);
-    map.current.on("dblclick", handle_dbl_click);
-  }, [initialize, lng, lat, zoom]);
+  }, [config]);
+
+  // Event handlers
+  const handleIntroClose = () => setShowIntro(false);
+  const handleIntroShow = () => setShowIntro(true);
+  const handleHowToClose = () => setShowHowTo(false);
+  const handleHowToShow = () => setShowHowTo(true);
+  const handleMiwClose = () => setShowMiw(false);
+  const handleMiwShow = () => setShowMiw(true);
+  const handleMiwRecenter = () => setMiwRecenter(true);
+  const handleDownloadClose = () => setShowDownload(false);
+  const handleDownloadShow = () => setShowDownload(true);
+
+  const handleSurfaceChange = (event) => {
+    dispatch({ type: "SET_SURFACE", payload: +event.target.value });
+  };
+
+  const handleScenarioChange = (event) => {
+    dispatch({ type: "SET_SCENARIO", payload: +event.target.value });
+  };
+
+  const handleMiwSizeChange = (event) => {
+    setMiwSize(MIW_SIZES[+event.target.value]);
+  };
+
+  const handleLocationChange = useCallback((event) => {
+    setLocation(event.lngLat);
+  }, []);
+
+  const handleMiwLocationChange = useCallback(({ coord, region }) => {
+    setMiwLocation(coord);
+    setRegion(region);
+    setMiwRecenter(false);
+  }, []);
+
+  useEffect(() => {
+    setTileIdx(state.scenario);
+    setMiwResponseIdx(state.scenario);
+  }, [state.scenario]);
+
+  useEffect(() => {
+    const key = config.probability_surfaces[state.surface].color_ramp;
+    setRamp(config.color_ramps[key]);
+  }, [config, state.surface]);
 
   return (
     <>
-      <div ref={map_container} className="map"></div>
-      <div
-        className="card text-white bg-dark m-3"
+      <ResponseMap
+        tiles={config.probability_surfaces[state.surface].responses}
+        regionGeojson={config.region_geojson}
+        idx={tileIdx}
+        miwSize={miwSize}
+        miwRecenter={miwRecenter}
+        initialLng={config.map.initial_lng}
+        initialLat={config.map.initial_lat}
+        initialZoom={config.map.initial_zoom}
+        onMouseMove={handleLocationChange}
+        onMiwMove={handleMiwLocationChange}
+      />
+
+      <Card
+        id="vis-card"
+        bg="dark"
+        text="white"
+        className="m-3"
         style={{ maxWidth: "20rem", height: "calc(100vh - 32px)" }}
       >
-        <div className="card-body">
-          <h5 className="card-title">Fire Refugia Demonstration</h5>
-          <p className="card-text">
-            This application is pretty much the coolest application in the
-            entire world even though it basically does nothing at present. This
-            card gives information about the map to the right and provides the
-            instructions to the user on how to create the modal for a particular
-            study area.
-          </p>
-          <p className="card-text">
-            To enable the modal demonstration, zoom in to an extent where the
-            cursor changes to a crosshair and double click the button. This will
-            load the modal window and show the demonstration.
-          </p>
-          <p className="card-text">
-            Longitude: {lng}
-            <br />
-            Latitude: {lat}
-            <br />
-            Zoom: {zoom}
-          </p>
-        </div>
-      </div>
-      <DemoPanel
-        config={config}
-        clicked_coord={clicked_coord}
-        onHideModal={handle_modal_close}
+        <Card.Body>
+          <Card.Title>Welcome to Eco-Vis!</Card.Title>
+          <div ref={widthRef} className="d-grid gap-2">
+            <div>{introText1}</div>
+            <Button
+              className="btn-custom"
+              variant="primary"
+              onClick={handleIntroShow}
+            >
+              Show Introduction
+            </Button>
+            <div>{introText2}</div>
+            <Button
+              className="btn-custom"
+              variant="primary"
+              onClick={handleHowToShow}
+            >
+              How-To
+            </Button>
+          </div>
+          <div className="mt-2">
+            <div className="small">
+              Latitude: {location.lat.toFixed(4)} | Longitude:{" "}
+              {location.lng.toFixed(4)}
+            </div>
+          </div>
+          <ResponseVariableDropdown
+            name="surface"
+            title="Probability Map"
+            options={surfaceOptions}
+            selected={state.surface}
+            className="mt-1"
+            onChange={handleSurfaceChange}
+          />
+          <ResponseVariableDropdown
+            name="scenario"
+            title="Fire Weather Extremity Scenario"
+            options={scenarioOptions}
+            selected={state.scenario}
+            className="mt-1 mb-2"
+            onChange={handleScenarioChange}
+          />
+          <ColorRamp
+            specification={ramp}
+            className="ramp-label"
+            width={panelWidth}
+            height={30}
+          />
+          <MiwDropdown onChange={handleMiwSizeChange} />
+          <div className="d-grid gap-2">
+            <Button
+              className="btn-custom"
+              variant="success"
+              onClick={handleMiwShow}
+            >
+              To the MIW!
+            </Button>
+            <Button
+              className="btn-custom"
+              variant="success"
+              onClick={handleMiwRecenter}
+            >
+              Recenter MIW Window
+            </Button>
+            <Button
+              className="btn-custom"
+              variant="success"
+              onClick={handleDownloadShow}
+            >
+              Download Data
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+
+      <DataDisclaimer />
+
+      <IntroductionPanel
+        title="EcoVis Tool"
+        show={showIntro}
+        onHide={handleIntroClose}
       />
+
+      <HowToPanel title="How-To" show={showHowTo} onHide={handleHowToClose} />
+
+      <DownloadPanel
+        config={config}
+        show={showDownload}
+        onHide={handleDownloadClose}
+      />
+
+      {showMiw && (
+        <MiwPanel
+          config={config}
+          miwResponseIdx={miwResponseIdx}
+          miwLocation={miwLocation}
+          miwSize={miwSize}
+          currentSurface={state.surface}
+          currentRegion={region}
+          ramp={ramp}
+          onHide={handleMiwClose}
+        />
+      )}
     </>
   );
-};
-
-export default App;
+}

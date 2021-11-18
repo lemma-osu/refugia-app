@@ -1,57 +1,47 @@
 import React, { useRef, useEffect } from "react";
-import { isEqual } from "lodash";
 
-import { get_all_images, draw_to_plot, initialize_canvas_plot } from "../utils";
+import { drawToPlot, initializeCanvasPlot, unscaleArray } from "../utils";
 
-const ResponseCanvas = ({
-  responses,
-  clicked_coord,
-  thresholds,
+export default function ResponseCanvas({
+  responseData,
+  responseStats,
+  currentIdx,
   onMouseMove,
-  loaded_func,
-}) => {
+}) {
   const canvas = useRef();
   const plot = useRef();
   const arrs = useRef();
-  const initial_idx = useRef();
-  const width = 300;
-  const height = 200;
-
-  initial_idx.current = responses.findIndex((r) =>
-    isEqual(r.combination, thresholds)
-  );
+  const width = responseData[0].width;
+  const height = responseData[0].height;
 
   useEffect(() => {
     if (!plot.current) {
-      plot.current = initialize_canvas_plot(canvas.current, width, height);
-    }
-  }, [plot]);
-
-  useEffect(() => {
-    if (!plot.current || !clicked_coord) return;
-    async function get_data(coord) {
-      const paths = responses.map((r) => r.geotiff_path);
-      arrs.current = await get_all_images(
-        coord.lng,
-        coord.lat,
-        paths,
+      plot.current = initializeCanvasPlot(
+        canvas.current,
         width,
-        height
+        height,
+        responseStats[currentIdx].noData,
+        "refugia"
       );
     }
-    get_data(clicked_coord).then(() => {
-      draw_to_plot(plot.current, arrs.current[initial_idx.current]);
-      responses.forEach((r) => {
-        loaded_func(r.geotiff_path);
-      });
+  }, [plot, width, height, responseStats, currentIdx]);
+
+  useEffect(() => {
+    arrs.current = responseData.map((data, idx) => {
+      const scale = responseStats[idx].scale;
+      const offset = responseStats[idx].offset;
+      return unscaleArray(data, scale, offset);
     });
-  }, [plot, clicked_coord, responses, loaded_func]);
+  }, [arrs, responseData, responseStats]);
 
   useEffect(() => {
     if (!plot.current || !arrs.current) return;
-    const idx = responses.findIndex((r) => isEqual(r.combination, thresholds));
-    draw_to_plot(plot.current, arrs.current[idx]);
-  }, [thresholds, responses]);
+    drawToPlot(
+      plot.current,
+      arrs.current[currentIdx],
+      responseStats[currentIdx]
+    );
+  }, [currentIdx, responseStats]);
 
   return (
     <canvas
@@ -63,6 +53,4 @@ const ResponseCanvas = ({
       onMouseMove={onMouseMove}
     ></canvas>
   );
-};
-
-export default ResponseCanvas;
+}

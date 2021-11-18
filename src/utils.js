@@ -1,35 +1,92 @@
+import { useRef, useEffect } from "react";
 import { fromUrl } from "geotiff";
-import { quantile } from "d3";
-import { plot as Plot } from "plotty";
+import { csv, autoType } from "d3";
+import { plot as Plot, addColorScale } from "plotty";
 
-import { project_point } from "./projection";
+import { projectPoint } from "./projection";
+
+// Color scales for plotty
+addColorScale(
+  "refugia",
+  [
+    "rgb(140, 81, 10)",
+    "rgb(140, 81, 10)",
+    "rgb(216, 179, 101)",
+    "rgb(246, 232, 195)",
+    "rgb(199, 234, 229)",
+    "rgb(90, 180, 172)",
+    "rgb(1, 102, 94)",
+    "rgb(1, 102, 94)",
+  ],
+  [0.0, 0.239, 0.301, 0.358, 0.417, 0.501, 0.679, 1.0]
+);
+
+addColorScale(
+  "covariate",
+  [
+    "rgb(140, 81, 10)",
+    "rgb(216, 179, 101)",
+    "rgb(246, 232, 195)",
+    "rgb(199, 234, 229)",
+    "rgb(90, 180, 172)",
+    "rgb(1, 102, 94)",
+  ],
+  [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+);
+
+export const COVARIATE_RAMP = [
+  {
+    offset: 0.0,
+    color: "rgb(140, 81, 10)",
+  },
+  {
+    offset: 20.0,
+    color: "rgb(216, 179, 101)",
+  },
+  {
+    offset: 40.0,
+    color: "rgb(246, 232, 195)",
+  },
+  {
+    offset: 60.0,
+    color: "rgb(199, 234, 229)",
+  },
+  {
+    offset: 80.0,
+    color: "rgb(90, 180, 172)",
+  },
+  {
+    offset: 100.0,
+    color: "rgb(1, 102, 94)",
+  },
+];
 
 export const zip = (rows) => rows[0].map((_, c) => rows.map((row) => row[c]));
 
-async function load_tiff(path) {
+async function loadTiff(path) {
   const tiff = await fromUrl(path);
   return await tiff.getImage();
 }
 
-function get_rc(img, xy) {
-  const [ul_x, ul_y] = img.getOrigin();
-  const [x_res, y_res] = img.getResolution();
-  const row = Math.floor(Math.abs((xy[1] - ul_y) / y_res));
-  const col = Math.floor(Math.abs((xy[0] - ul_x) / x_res));
+function getRowCol(img, xy) {
+  const [ulX, ulY] = img.getOrigin();
+  const [xRes, yRes] = img.getResolution();
+  const row = Math.floor(Math.abs((xy[1] - ulY) / yRes));
+  const col = Math.floor(Math.abs((xy[0] - ulX) / xRes));
   return [row, col];
 }
 
-function get_corners(center_rc, width, height) {
-  const [r, c] = center_rc;
-  const half_width = Math.floor(width / 2);
-  const half_height = Math.floor(height / 2);
-  return [c - half_width, r - half_height, c + half_width, r + half_height];
+function getCorners(centerRowCol, width, height) {
+  const [r, c] = centerRowCol;
+  const halfWidth = Math.floor(width / 2);
+  const halfHeight = Math.floor(height / 2);
+  return [c - halfWidth, r - halfHeight, c + halfWidth, r + halfHeight];
 }
 
-async function read_raster_definition(path, xy, canvas_width, canvas_height) {
-  const img = await load_tiff(path, xy);
-  const pt = get_rc(img, xy);
-  const window = get_corners(pt, canvas_width, canvas_height);
+async function readRasterDefinition(path, xy, canvasWidth, canvasHeight) {
+  const img = await loadTiff(path, xy);
+  const pt = getRowCol(img, xy);
+  const window = getCorners(pt, canvasWidth, canvasHeight);
   return {
     img: img,
     window: window,
@@ -37,37 +94,90 @@ async function read_raster_definition(path, xy, canvas_width, canvas_height) {
   };
 }
 
-async function read_tiff(img, window) {
+async function readTiff(img, window) {
   return await img.readRasters({ window: window });
 }
 
-export async function get_canvas_data(lng, lat, geotiff_path, width, height) {
-  const xy = project_point(lng, lat);
-  const def = await read_raster_definition(geotiff_path, xy, width, height);
-  return await read_tiff(def.img, def.window);
+export async function getCanvasData(lng, lat, geotiffPath, width, height) {
+  const xy = projectPoint(lng, lat);
+  const def = await readRasterDefinition(geotiffPath, xy, width, height);
+  return await readTiff(def.img, def.window);
 }
 
-export async function get_all_images(lng, lat, geotiff_paths, width, height) {
-  const promises = geotiff_paths.map((path) =>
-    get_canvas_data(lng, lat, path, width, height)
+export async function getAllImages(lng, lat, geotiffPaths, width, height) {
+  const promises = geotiffPaths.map((path) =>
+    getCanvasData(lng, lat, path, width, height)
   );
   return await Promise.all(promises);
 }
 
-export function initialize_canvas_plot(canvas, width, height) {
+export function initializeCanvasPlot(
+  canvas,
+  width,
+  height,
+  noData,
+  colorScale
+) {
   return new Plot({
     canvas: canvas,
     width: width,
     height: height,
-    colorScale: "viridis",
+    noDataValue: noData,
+    colorScale: colorScale,
     useWebGL: false,
   });
 }
 
-export function draw_to_plot(plot, arr) {
-  const min = quantile(arr[0], 0.02);
-  const max = quantile(arr[0], 0.98);
+export function drawToPlot(plot, arr, imageStats) {
+  // const min = quantile(arr[0], 0.02);
+  // const max = quantile(arr[0], 0.98);
   plot.setData(arr[0], arr.width, arr.height);
-  plot.setDomain([min, max]);
+  plot.setDomain([imageStats.min, imageStats.max]);
   plot.render();
+}
+
+export async function getPercentiles(statisticsPath, percentileArr) {
+  const data = await csv(statisticsPath, autoType);
+  const dict = {};
+  data.forEach((d) => (dict[d.PERCENTILE] = d.VALUE));
+  return percentileArr.map((percentile) => {
+    return dict[percentile];
+  });
+}
+
+export function unscaleArray(img, scale, offset) {
+  const scaled = { ...img };
+  scaled[0] = Float32Array.from(img[0], (x) => (x - offset) / scale);
+  return scaled;
+}
+
+export function useWhyDidYouUpdate(name, props) {
+  // Get a mutable ref object where we can store props ...
+  // ... for comparison next time this hook runs.
+  const previousProps = useRef();
+  useEffect(() => {
+    if (previousProps.current) {
+      // Get all keys from previous and current props
+      const allKeys = Object.keys({ ...previousProps.current, ...props });
+      // Use this object to keep track of changed props
+      const changesObj = {};
+      // Iterate through keys
+      allKeys.forEach((key) => {
+        // If previous is different from current
+        if (previousProps.current[key] !== props[key]) {
+          // Add to changesObj
+          changesObj[key] = {
+            from: previousProps.current[key],
+            to: props[key],
+          };
+        }
+      });
+      // If changesObj not empty then output to console
+      if (Object.keys(changesObj).length) {
+        console.log("[why-did-you-update]", name, changesObj);
+      }
+    }
+    // Finally update previousProps with current props for next hook call
+    previousProps.current = props;
+  });
 }

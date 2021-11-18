@@ -1,63 +1,82 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 
-import {
-  get_canvas_data,
-  draw_to_plot,
-  initialize_canvas_plot,
-} from "../utils";
+import { drawToPlot, initializeCanvasPlot, unscaleArray } from "../utils";
 
-const CovariateCanvas = ({
+export default function CovariateCanvas({
   id,
-  geotiff_path,
-  clicked_coord,
+  imageData,
+  imageStats,
   xy,
-  variable_value,
-  loaded_func,
-}) => {
+  variableValue,
+}) {
   const canvas = useRef();
+  const pointCanvas = useRef();
   const plot = useRef();
   const arr = useRef();
-  const width = 300;
-  const height = 200;
+  const width = imageData.width;
+  const height = imageData.height;
 
+  // Create canvas element with the correct size
   useEffect(() => {
     if (!plot.current) {
-      plot.current = initialize_canvas_plot(canvas.current, width, height);
-    }
-  }, [plot]);
-
-  useEffect(() => {
-    if (!plot.current || !clicked_coord) return;
-    async function get_data(coord) {
-      arr.current = await get_canvas_data(
-        coord.lng,
-        coord.lat,
-        geotiff_path,
+      plot.current = initializeCanvasPlot(
+        canvas.current,
         width,
-        height
+        height,
+        imageStats.noData,
+        "covariate"
       );
     }
-    get_data(clicked_coord).then(() => {
-      draw_to_plot(plot.current, arr.current);
-      loaded_func(geotiff_path);
-    });
-  }, [plot, clicked_coord, geotiff_path, loaded_func]);
+  }, [plot, width, height, imageStats.noData]);
 
+  const drawPoint = useCallback(
+    (xy) => {
+      const pointSize = parseInt(0.02 * width);
+      const ctx = pointCanvas.current.getContext("2d");
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#ffff00";
+      ctx.beginPath();
+      ctx.arc(xy.x, xy.y, pointSize, 0, Math.PI * 2, true);
+      ctx.fill();
+    },
+    [pointCanvas, width, height]
+  );
+
+  useEffect(() => {
+    if (arr.current) return;
+    arr.current = unscaleArray(imageData, imageStats.scale, imageStats.offset);
+  }, [arr, imageData, imageStats]);
+
+  // Load the image once the canvas has initialized
+  useEffect(() => {
+    if (!arr.current) return;
+    drawToPlot(plot.current, arr.current, imageStats);
+  }, [plot, arr, imageStats]);
+
+  // Retrieve the value in the array at the xy offset and store in
+  // variableValue ref provided by parent
   useEffect(() => {
     if (!plot.current || !arr.current) return;
     const offset = parseInt(xy.y, 10) * arr.current.width + parseInt(xy.x, 10);
-    variable_value.current = arr.current[0][offset];
-  }, [xy, variable_value]);
+    variableValue.current = arr.current[0][offset];
+    drawPoint(xy);
+  }, [xy, variableValue, drawPoint]);
 
   return (
-    <canvas
-      id={id}
-      ref={canvas}
-      className="modal-canvas"
-      width={width}
-      height={height}
-    ></canvas>
+    <div className="stage">
+      <canvas
+        id={id}
+        ref={canvas}
+        className="modal-canvas background"
+        width={width}
+        height={height}
+      ></canvas>
+      <canvas
+        ref={pointCanvas}
+        className="modal-canvas foreground"
+        width={width}
+        height={height}
+      ></canvas>
+    </div>
   );
-};
-
-export default CovariateCanvas;
+}

@@ -1,36 +1,48 @@
 import React, { useRef } from "react";
 import CovariateCanvas from "./CovariateCanvas";
 import PartialDependencePlot from "./PartialDependencePlot";
+import { CovariateColorRamp } from "./ColorRamp";
+import { COVARIATE_RAMP } from "../utils";
 
-const CovariateGroup = ({
+export default function CovariateGroup({
   name,
   description,
-  geotiff_path,
-  clicked_coord,
-  chart_data_path,
+  importance,
+  units,
+  imageData,
+  imageStats,
+  chartDataPath,
   xy,
-  loaded_func,
-}) => {
-  const variable_value = useRef(0);
+}) {
+  const variableValue = useRef(0);
   return (
     <div className="covariate-group">
       <div>
-        <small>{description}</small>
+        <small>
+          {description} ({importance.toFixed(2)}%)
+        </small>
       </div>
+      <CovariateColorRamp
+        specification={COVARIATE_RAMP}
+        name={name}
+        imageStats={imageStats}
+        width={223}
+        height={20}
+      />
       <CovariateCanvas
         id={name}
-        geotiff_path={geotiff_path}
-        clicked_coord={clicked_coord}
+        imageData={imageData}
+        imageStats={imageStats}
         xy={xy}
-        variable_value={variable_value}
-        loaded_func={loaded_func}
+        variableValue={variableValue}
       />
       <PartialDependencePlot
-        chart_data_path={chart_data_path}
-        variable_value={variable_value.current}
+        chartDataPath={chartDataPath}
+        variableValue={variableValue.current}
+        width={223}
+        height={168}
+        units={units}
       />
     </div>
   );
-};
-
-export default CovariateGroup;
+}

@@ -10,29 +10,130 @@ body {
   width: 100%;
 }
 
+#miw-content {
+  min-height: 920px;
+}
+
 canvas {
   width: 100%;
   height: auto;
 }
 
+/* Side panel */
+@media (min-height: 990px) {
+  #vis-card {
+    max-width: 20rem;
+    height: calc(100vh - 60px);
+  }
+  #vis-card .small,
+  #vis-card .form-label,
+  #vis-card .form-select,
+  #vis-card .ramp-label {
+    font-size: 0.875rem;
+  }
+  #vis-card .btn-custom {
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+  }
+}
+@media (max-height: 990px) {
+  #vis-card {
+    overflow-y: visible;
+    max-width: 20rem;
+    height: calc(100vh - 60px);
+  }
+  #vis-card .small,
+  #vis-card .form-label,
+  #vis-card .form-select,
+  #vis-card .ramp-label {
+    font-size: 0.8rem;
+  }
+  #vis-card .btn-custom {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+  }
+}
+@media (max-height: 840px) {
+  #vis-card {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
+}
+
+/* Download panel */
+#download-panel .form-label,
+#download-panel .form-select {
+  font-size: 0.8rem;
+}
+
 /* Covariate panel, canvas and chart */
 #covariate-panel {
   display: inline-flex;
-  height: 350px;
+  height: 400px;
   overflow: hidden;
   overflow-x: scroll;
 }
 
 #covariate-panel div.covariate-group {
-  margin-left: 4px;
-  margin-right: 4px;
+  margin-left: 10px;
+  margin-right: 10px;
   width: 223px;
 }
 
-#covariate-panel canvas.modal-canvas,
 #covariate-panel div.modal-chart {
   width: auto;
   height: 150px;
+}
+
+#covariate-panel div.stage {
+  position: relative;
+  width: auto;
+  height: 150px;
+}
+
+#covariate-panel canvas.modal-canvas {
+  position: absolute;
+}
+
+#covariate-panel canvas.background {
+  z-index: 1;
+}
+
+#covariate-panel canvas.foreground {
+  z-index: 2;
+}
+
+/* Realization panel */
+#realization-panel {
+  display: inline-flex;
+}
+
+#realization-panel div.realization-group {
+  margin-left: 8px;
+  margin-right: 8px;
+  width: 250px;
 }
 
 /* Chart styling */
@@ -52,4 +153,13 @@ canvas {
   stroke-width: 1;
   stroke-linejoin: round;
   stroke-linecap: round;
+}
+
+.ramp-text {
+  font-size: 0.75em;
+}
+
+.x.label,
+.y.label {
+  font-size: 0.8em;
 }

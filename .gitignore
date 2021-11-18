@@ -4,3 +4,5 @@ build
 dist
 node_modules
 public/projects
+public/swipe
+src/components/Map/token.js

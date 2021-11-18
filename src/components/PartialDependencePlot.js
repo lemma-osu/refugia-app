@@ -8,107 +8,122 @@ import {
   scaleLinear,
 } from "d3";
 
-import { Svg, XAxis, YAxis, Line, Dot } from "./Chart";
+import { Svg, XAxis, XAxisLabel, YAxis, YAxisLabel, Line, Dot } from "./Chart";
 
-const x_value = (d) => d.X;
-const y_value = (d) => d.Y;
+const xValue = (d) => d.X;
+const yValue = (d) => d.Y;
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
-const move_dot_factory = (data, x_scale, y_scale) => {
-  return (variable_value) => {
+const moveDotFactory = (data, xScale, yScale) => {
+  return (variableValue) => {
     // Find the X value that corresponds to the variable value
     // and return the (X,Y) pair at that location
     const idx = clamp(
-      bisectLeft(d3map(data, x_value), variable_value),
+      bisectLeft(d3map(data, xValue), variableValue),
       0,
       data.length - 1
     );
-    var pt = new DOMPoint(
-      x_scale(x_value(data[idx])),
-      y_scale(y_value(data[idx]))
-    );
+    var pt = new DOMPoint(xScale(xValue(data[idx])), yScale(yValue(data[idx])));
     return pt;
   };
 };
 
-const PartialDependencePlot = ({ chart_data_path, variable_value }) => {
-  const [data, set_data] = useState([{ X: 0, Y: 0 }]);
-  const [dot, set_dot] = useState([0, 0]);
+export default function PartialDependencePlot({
+  chartDataPath,
+  variableValue,
+  width,
+  height,
+  units,
+}) {
+  const [data, setData] = useState([{ X: 0, Y: 0 }]);
+  const [dot, setDot] = useState([0, 0]);
 
-  const width = 223;
-  const height = 148;
-  const margin = { top: 5, right: 5, bottom: 20, left: 20 };
+  const margin = { top: 5, right: 20, bottom: 35, left: 45 };
 
-  const inner_width = width - margin.left - margin.right;
-  const inner_height = height - margin.top - margin.bottom;
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
 
-  const x_scale = useMemo(
+  const xScale = useMemo(
     () =>
-      scaleLinear()
-        .domain(extent(data, x_value))
-        .range([0, inner_width])
-        .nice(),
-    [data, inner_width]
+      scaleLinear().domain(extent(data, xValue)).range([0, innerWidth]).nice(),
+    [data, innerWidth]
   );
 
-  const y_scale = useMemo(
+  const yScale = useMemo(
     () =>
-      scaleLinear()
-        .domain(extent(data, y_value))
-        .range([0, inner_height])
-        .nice(),
-    [data, inner_height]
+      scaleLinear().domain(extent(data, yValue)).range([innerHeight, 0]).nice(),
+    [data, innerHeight]
   );
 
-  const num_ticks = 5;
+  const numTicks = 5;
 
-  const move_dot = useMemo(() => {
-    return move_dot_factory(data, x_scale, y_scale);
-  }, [data, x_scale, y_scale]);
+  const moveDot = useMemo(() => {
+    return moveDotFactory(data, xScale, yScale);
+  }, [data, xScale, yScale]);
 
   useEffect(() => {
-    async function get_data() {
-      set_data(await csv(chart_data_path, autoType));
+    async function getData() {
+      const raw = await csv(chartDataPath, autoType);
+      const size = 200;
+      const step = (raw.length - 1) / (size - 1);
+      const interpolated = new Array(size);
+      for (let i = 0; i < size; i++) {
+        const t = i * step;
+        const lowerIdx = parseInt(Math.floor(t), 10);
+        const upperIdx = parseInt(Math.ceil(t), 10);
+        const x =
+          (t - lowerIdx) * (raw[upperIdx].X - raw[lowerIdx].X) +
+          raw[lowerIdx].X;
+        const y =
+          (t - lowerIdx) * (raw[upperIdx].Y - raw[lowerIdx].Y) +
+          raw[lowerIdx].Y;
+        interpolated[i] = { X: x, Y: y };
+      }
+      setData(interpolated);
     }
-    get_data();
-  }, [chart_data_path]);
+    getData();
+  }, [chartDataPath]);
 
   useEffect(() => {
-    if (!variable_value) return;
-    set_dot(move_dot(variable_value));
-  }, [variable_value, move_dot]);
+    if (variableValue === null || variableValue === undefined) return;
+    setDot(moveDot(variableValue));
+  }, [variableValue, moveDot]);
 
   return (
-    <Svg width={width} height={height} margin={margin}>
+    <Svg width={width} height={height} margin={margin} className="mt-2">
       <XAxis
-        x_scale={x_scale}
-        inner_height={inner_height}
-        num_ticks={num_ticks}
-        tick_offset={7}
+        xScale={xScale}
+        innerHeight={innerHeight}
+        numTicks={numTicks}
+        tickOffset={7}
       />
       <YAxis
-        y_scale={y_scale}
-        inner_width={inner_width}
-        num_ticks={num_ticks}
-        tick_offset={7}
+        yScale={yScale}
+        innerWidth={innerWidth}
+        numTicks={numTicks}
+        tickOffset={7}
       />
       <Line
         data={data}
-        x_scale={x_scale}
-        y_scale={y_scale}
-        x_value={x_value}
-        y_value={y_value}
+        xScale={xScale}
+        yScale={yScale}
+        xValue={xValue}
+        yValue={yValue}
       />
       <Dot
         d={dot}
-        x_scale={x_scale}
-        y_scale={y_scale}
-        x_value={x_value}
-        y_value={y_value}
-        circle_radius={5}
+        xScale={xScale}
+        yScale={yScale}
+        xValue={xValue}
+        yValue={yValue}
+        circleRadius={5}
       />
+      <XAxisLabel
+        label={units}
+        x={innerWidth / 2}
+        y={margin.top + innerHeight + 25}
+      />
+      <YAxisLabel label="Probability" x={-35} y={innerHeight / 2} />
     </Svg>
   );
-};
-
-export default PartialDependencePlot;
+}
