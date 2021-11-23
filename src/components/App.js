@@ -11,6 +11,7 @@ import Card from "react-bootstrap/Card";
 
 import ResponseMap from "./ResponseMap";
 import MiwPanel from "./MiwPanel";
+import InvalidRegionPanel from "./InvalidRegionPanel";
 import { ResponseVariableDropdown, MiwDropdown } from "./Dropdown";
 import IntroductionPanel from "./IntroductionPanel";
 import HowToPanel from "./HowToPanel";
@@ -323,7 +324,7 @@ export default function App({ config }) {
         onHide={handleDownloadClose}
       />
 
-      {showMiw && (
+      {showMiw && region !== -1 && (
         <MiwPanel
           config={config}
           miwResponseIdx={miwResponseIdx}
@@ -334,6 +335,10 @@ export default function App({ config }) {
           ramp={ramp}
           onHide={handleMiwClose}
         />
+      )}
+
+      {region === -1 && (
+        <InvalidRegionPanel show={showMiw} onHide={handleMiwClose} />
       )}
     </>
   );
