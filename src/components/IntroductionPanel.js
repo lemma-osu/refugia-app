@@ -210,7 +210,7 @@ const items = [
       <p>
         The final report for this project is available{" "}
         <a
-          href="http://firerefugia.forestry.oregonstate.edu/export/fire_refugia_casc_final_report_dugger_v2.pdf"
+          href="http://firerefugia.forestry.oregonstate.edu/export/fire_refugia_casc_final_report_dugger_reviewed_watermark.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >
